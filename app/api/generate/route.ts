@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 import { hashIP, checkRateLimit, recordGeneration } from '@/lib/rateLimit';
 
 export async function POST(request: NextRequest) {
@@ -14,20 +16,27 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // 2. Rate limiting via IP hash
+  // 2. Check if admin (bypasses rate limit)
+  const supabase = createRouteHandlerClient({ cookies });
+  const { data: { session } } = await supabase.auth.getSession();
+  const isAdmin = session?.user?.email === 'admin@boringlabs.co.uk';
+
+  // 3. Rate limiting via IP hash (skipped for admin)
   const forwarded = request.headers.get('x-forwarded-for');
   const ip = forwarded?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || 'unknown';
   const identifier = hashIP(ip);
 
-  const { allowed } = await checkRateLimit(identifier);
-  if (!allowed) {
-    return NextResponse.json(
-      { error: "You've created your free deck for today. Come back tomorrow." },
-      { status: 429 }
-    );
+  if (!isAdmin) {
+    const { allowed } = await checkRateLimit(identifier);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: "You've created your free deck for today. Come back tomorrow." },
+        { status: 429 }
+      );
+    }
   }
 
-  // 3. Parse and validate request
+  // 4. Parse and validate request
   let rawContent: string | string[];
   let topic: string | undefined;
 
@@ -55,7 +64,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // 4. Build the Gemini request
+  // 5. Build the Gemini request
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
   const systemPrompt = `You are a flashcard creation expert. Create study flashcards from the provided content.
@@ -66,6 +75,7 @@ Rules:
 - Questions should test understanding, not just recall
 - Answers should be brief but complete (1-3 sentences)
 - Cover the key concepts from the content
+- For mathematical expressions, use LaTeX notation: inline math with $...$ and block equations with $$...$$
 - Return ONLY a valid JSON array of objects with "question" and "answer" fields`;
 
   const instructionText = topic
@@ -161,8 +171,8 @@ Rules:
         answer: card.answer,
       }));
 
-    // 5. Record the generation
-    await recordGeneration(identifier);
+    // 6. Record the generation (skipped for admin)
+    if (!isAdmin) await recordGeneration(identifier);
 
     return NextResponse.json({ flashcards: validFlashcards });
   } catch (err) {

@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Flashcard } from '@/lib/types';
+import LatexRenderer from './LatexRenderer';
 
 interface SingleViewProps {
   flashcards: Flashcard[];
@@ -25,7 +26,7 @@ export default function SingleView({ flashcards, currentIndex, onNext, onPreviou
             <div style={{ fontSize: '2rem', flexShrink: 0 }}>⚡</div>
             <div style={{ fontSize: '0.7rem', opacity: 0.4, letterSpacing: '0.15em', margin: '0.5rem 0', flexShrink: 0 }}>QUESTION</div>
             <div className="flashcard-face-inner">
-              <p className="flashcard-text">{card.question}</p>
+              <p className="flashcard-text"><LatexRenderer text={card.question} /></p>
             </div>
             <div style={{ fontSize: '0.85rem', opacity: 0.5, flexShrink: 0, marginTop: '0.5rem' }}>Click to reveal answer</div>
           </div>
@@ -34,7 +35,7 @@ export default function SingleView({ flashcards, currentIndex, onNext, onPreviou
             <div style={{ fontSize: '2rem', color: 'var(--yellow-bolt)', flexShrink: 0 }}>⚡</div>
             <div style={{ fontSize: '0.7rem', opacity: 0.4, letterSpacing: '0.15em', margin: '0.5rem 0', flexShrink: 0 }}>ANSWER</div>
             <div className="flashcard-face-inner">
-              <p className="flashcard-text">{card.answer}</p>
+              <p className="flashcard-text"><LatexRenderer text={card.answer} /></p>
             </div>
             <div style={{ fontSize: '0.85rem', opacity: 0.5, flexShrink: 0, marginTop: '0.5rem' }}>Click to see question</div>
           </div>

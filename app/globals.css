@@ -292,6 +292,9 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .back-btn { background: var(--light-blue); border: 2px solid var(--cobalt-blue); color: var(--cobalt-blue); padding: 0.5rem 1rem; border-radius: 6px; font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 0.85rem; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
 .back-btn:hover { background: var(--cobalt-blue); color: white; }
 
+/* ── LATEX / MATH RENDERING ─────────────────────── */
+.math-block { display: block; overflow-x: auto; margin: 0.5rem 0; text-align: center; }
+
 /* ── RESPONSIVE ─────────────────────────────── */
 @media (max-width: 1024px) {
   .input-grid, .subject-grid { grid-template-columns: 1fr; }

@@ -22,11 +22,8 @@ export default function FlashboardModal({ isOpen, onClose }: FlashboardModalProp
         </div>
         {!user ? (
           <>
-            <button className="modal-btn" onClick={async () => { await signInWithGoogle(); onClose(); }}>
+            <button className="modal-btn" onClick={signInWithGoogle}>
               Continue with Google
-            </button>
-            <button className="modal-btn secondary" onClick={onClose}>
-              Log in
             </button>
           </>
         ) : (

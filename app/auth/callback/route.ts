@@ -7,12 +7,8 @@ export async function GET(request: Request) {
   const code = requestUrl.searchParams.get('code');
 
   if (code) {
-    try {
-      const supabase = createRouteHandlerClient({ cookies });
-      await supabase.auth.exchangeCodeForSession(code);
-    } catch {
-      // Supabase not configured - silently redirect home
-    }
+    const supabase = createRouteHandlerClient({ cookies });
+    await supabase.auth.exchangeCodeForSession(code);
   }
 
   return NextResponse.redirect(requestUrl.origin);

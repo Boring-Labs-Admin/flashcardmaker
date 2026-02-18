@@ -1,13 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Flashcard, ViewMode } from '@/lib/types';
+import { Flashcard, ViewMode, Deck } from '@/lib/types';
+import { useAuth } from '@/lib/auth-context';
 import InputSection from './InputSection';
 import ViewToggle from './ViewToggle';
 import SingleView from './SingleView';
 import SideBySideView from './SideBySideView';
 import GridView from './GridView';
 import FlashboardModal from './FlashboardModal';
+import SaveDeckModal from './SaveDeckModal';
 
 interface FlashcardGeneratorProps {
   onOpenModal?: () => void;
@@ -15,15 +17,18 @@ interface FlashcardGeneratorProps {
 }
 
 export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGeneratorProps) {
+  const { user } = useAuth();
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('single');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [savedDeck, setSavedDeck] = useState<Deck | null>(null);
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const openModal = onOpenModal ?? (() => setIsModalOpen(true));
+  const openAuthModal = onOpenModal ?? (() => setIsModalOpen(true));
 
   useEffect(() => {
     try {
@@ -42,6 +47,7 @@ export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGene
     }
     setIsLoading(true);
     setError(null);
+    setSavedDeck(null);
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
@@ -78,6 +84,15 @@ export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGene
     setFlashcards([]);
     setError(null);
     setCurrentIndex(0);
+    setSavedDeck(null);
+  };
+
+  const handleSaveClick = () => {
+    if (user) {
+      setIsSaveModalOpen(true);
+    } else {
+      openAuthModal();
+    }
   };
 
   // ── LOADING ──────────────────────────────────────────
@@ -107,11 +122,15 @@ export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGene
               )}
             </div>
             <div className="tool-toolbar-right">
-              <button className="locked-btn" onClick={openModal}>
-                💾 Save deck <span className="locked-icon">🔒</span>
-              </button>
-              <button className="locked-btn" onClick={openModal}>
-                ⬇️ Download <span className="locked-icon">🔒</span>
+              {savedDeck ? (
+                <span className="saved-indicator">✓ Saved to Flashboard</span>
+              ) : (
+                <button className="locked-btn" onClick={handleSaveClick}>
+                  💾 Save deck {!user && <span className="locked-icon">🔒</span>}
+                </button>
+              )}
+              <button className="locked-btn" onClick={openAuthModal}>
+                ⬇️ Download {!user && <span className="locked-icon">🔒</span>}
               </button>
               <button className="reset-btn" onClick={handleReset}>
                 🗑️ New deck
@@ -135,6 +154,13 @@ export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGene
         </div>
 
         <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        <SaveDeckModal
+          isOpen={isSaveModalOpen}
+          onClose={() => setIsSaveModalOpen(false)}
+          flashcards={flashcards}
+          topic={topic}
+          onSaved={(deck) => setSavedDeck(deck)}
+        />
       </>
     );
   }

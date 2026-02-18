@@ -14,11 +14,9 @@ export default function FlashboardModal({ isOpen, onClose }: FlashboardModalProp
     <div className="modal-overlay active" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-logo">⚡</div>
-        <div className="modal-title">Your Flashboard</div>
+        <div className="modal-title">Log in to your Flashboard</div>
         <div className="modal-subtitle">
-          {user
-            ? 'Deck saving is coming soon. Stay tuned!'
-            : 'Save your decks, access them anywhere, and track your progress.'}
+          Save your decks, access them anywhere, and track your progress.
         </div>
         {!user ? (
           <>
@@ -31,7 +29,7 @@ export default function FlashboardModal({ isOpen, onClose }: FlashboardModalProp
             ✨ Coming soon for logged-in users
           </div>
         )}
-        <button className="modal-close" onClick={onClose}>✕ Not now, continue studying</button>
+        <button className="modal-close" onClick={onClose}>✕ Not now</button>
       </div>
     </div>
   );

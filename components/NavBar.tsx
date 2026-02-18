@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import FlashboardModal from './FlashboardModal';
 
@@ -19,9 +20,14 @@ export default function NavBar({ onLoginClick }: NavBarProps) {
       <nav className="nav-bar">
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           {user && (
-            <span style={{ color: 'white', fontSize: '0.85rem', opacity: 0.8 }}>
-              {user.user_metadata?.full_name || user.email}
-            </span>
+            <>
+              <span style={{ color: 'white', fontSize: '0.85rem', opacity: 0.8 }}>
+                {user.user_metadata?.full_name || user.email}
+              </span>
+              <Link href="/dashboard" className="nav-login-btn">
+                My Decks
+              </Link>
+            </>
           )}
           <button
             className="nav-login-btn"

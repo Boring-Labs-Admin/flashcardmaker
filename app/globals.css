@@ -264,11 +264,40 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 /* ── HIDDEN ─────────────────────────────── */
 .hidden { display: none !important; }
 
+/* ── SAVED INDICATOR ─────────────────────────────── */
+.saved-indicator { font-size: 0.85rem; font-weight: 700; color: #1a7a4a; background: #e6f7ef; border: 2px solid #1a7a4a; padding: 0.5rem 1rem; border-radius: 6px; white-space: nowrap; }
+
+/* ── SAVE DECK MODAL ─────────────────────────────── */
+.deck-name-input { width: 100%; background: white; border: 2px solid var(--cobalt-blue); border-radius: 8px; color: var(--cobalt-blue); padding: 0.875rem 1rem; font-family: "IBM Plex Mono", monospace; font-size: 1rem; margin-bottom: 0.75rem; }
+.deck-name-input:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 0 0 3px rgba(255,231,91,0.2); }
+
+/* ── DASHBOARD ─────────────────────────────── */
+.dashboard-header { background: linear-gradient(135deg, var(--cobalt-blue) 0%, var(--dark-blue) 100%); color: white; padding: 3rem 1.5rem; text-align: center; }
+.dashboard-header-content { max-width: 1400px; margin: 0 auto; }
+.dashboard-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+.dashboard-subtitle { font-size: 1.1rem; opacity: 0.75; font-weight: 300; }
+.dashboard-empty { text-align: center; padding: 4rem 2rem; }
+.deck-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2rem; margin-bottom: 3rem; }
+.deck-card { background: var(--light-blue); border: 3px solid var(--cobalt-blue); border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem; transition: all 0.3s; }
+.deck-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,74,173,0.2); }
+.deck-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; }
+.deck-topic-badge { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; background: var(--cobalt-blue); color: var(--yellow-bolt); padding: 3px 10px; border-radius: 4px; text-transform: capitalize; }
+.deck-delete-btn { background: none; border: none; cursor: pointer; font-size: 1rem; opacity: 0.4; padding: 0; line-height: 1; transition: opacity 0.2s; flex-shrink: 0; }
+.deck-delete-btn:hover { opacity: 1; }
+.deck-card-title { font-size: 1.25rem; font-weight: 700; color: var(--cobalt-blue); line-height: 1.3; }
+.deck-card-meta { display: flex; justify-content: space-between; font-size: 0.8rem; opacity: 0.6; font-weight: 500; }
+.deck-study-btn { margin-top: auto; padding: 0.75rem 1rem; font-size: 0.9rem; }
+.dashboard-study-header { display: flex; align-items: center; gap: 1.5rem; padding: 1.5rem 0; }
+.dashboard-study-title { font-size: 1.5rem; font-weight: 700; }
+.back-btn { background: var(--light-blue); border: 2px solid var(--cobalt-blue); color: var(--cobalt-blue); padding: 0.5rem 1rem; border-radius: 6px; font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 0.85rem; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+.back-btn:hover { background: var(--cobalt-blue); color: white; }
+
 /* ── RESPONSIVE ─────────────────────────────── */
 @media (max-width: 1024px) {
   .input-grid, .subject-grid { grid-template-columns: 1fr; }
   .card-pair { grid-template-columns: 1fr; }
   .grid-view { grid-template-columns: repeat(2,1fr); }
+  .deck-grid { grid-template-columns: repeat(2,1fr); }
 }
 @media (max-width: 768px) {
   h1 { font-size: 2.5rem; }

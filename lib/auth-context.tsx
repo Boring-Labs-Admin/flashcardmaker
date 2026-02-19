@@ -28,14 +28,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const client = createClientComponentClient();
       setSupabase(client);
 
-      client.auth.getSession().then(({ data: { session } }) => {
+      const { data: { subscription } } = client.auth.onAuthStateChange((event, session) => {
         setUser(session?.user ?? null);
-        setLoading(false);
-      });
-
-      const { data: { subscription } } = client.auth.onAuthStateChange((_event, session) => {
-        setUser(session?.user ?? null);
-        setLoading(false);
+        if (event === 'INITIAL_SESSION') {
+          setLoading(false);
+        }
       });
 
       return () => subscription.unsubscribe();
@@ -51,7 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+        redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
   };

@@ -15,7 +15,7 @@ const CREDIT_PACKS = [
 ];
 
 export default function UpgradeModal({ isOpen, onClose, anonymous }: UpgradeModalProps) {
-  const { signIn } = useAuth();
+  const { signInWithGoogle } = useAuth();
 
   if (!isOpen) return null;
 
@@ -44,7 +44,7 @@ export default function UpgradeModal({ isOpen, onClose, anonymous }: UpgradeModa
               <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>Free account</div>
               <div style={{ fontSize: '0.82rem', opacity: 0.7, marginTop: '0.2rem' }}>Bank up to 5 generations • Save decks • No card required</div>
             </div>
-            <button className="btn" style={{ whiteSpace: 'nowrap', padding: '0.5rem 1.1rem', fontSize: '0.85rem' }} onClick={signIn}>
+            <button className="btn" style={{ whiteSpace: 'nowrap', padding: '0.5rem 1.1rem', fontSize: '0.85rem' }} onClick={signInWithGoogle}>
               Sign up free
             </button>
           </div>

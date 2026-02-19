@@ -1,0 +1,50 @@
+import { NextResponse } from 'next/server';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import type { UserPlanData } from '@/lib/plans';
+
+export async function GET() {
+  const supabase = createRouteHandlerClient({ cookies });
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (!session?.user) {
+    return NextResponse.json({ anonymous: true } satisfies Partial<UserPlanData> & { anonymous: boolean });
+  }
+
+  const { data: planData } = await supabaseAdmin
+    .from('user_plans')
+    .select('*')
+    .eq('user_id', session.user.id)
+    .single();
+
+  if (!planData) {
+    // Row not yet created (existing user pre-trigger) — return defaults
+    return NextResponse.json({
+      plan: 'free',
+      free_banked: 1,
+      paid_credits: 0,
+      total_remaining: 1,
+    } satisfies UserPlanData);
+  }
+
+  // Calculate display free_banked (lazy grant preview — read-only, no DB write)
+  const today = new Date().toISOString().split('T')[0];
+  let displayBanked: number = planData.free_banked;
+  if (planData.plan === 'free' && planData.last_grant_date !== today) {
+    const daysDiff = Math.floor(
+      (new Date(today).getTime() - new Date(planData.last_grant_date).getTime()) / 86400000
+    );
+    displayBanked = Math.min(planData.free_banked + daysDiff, 5);
+  }
+
+  const totalRemaining =
+    planData.plan === 'plus' ? null : displayBanked + planData.paid_credits;
+
+  return NextResponse.json({
+    plan: planData.plan,
+    free_banked: displayBanked,
+    paid_credits: planData.paid_credits,
+    total_remaining: totalRemaining,
+  } satisfies UserPlanData);
+}

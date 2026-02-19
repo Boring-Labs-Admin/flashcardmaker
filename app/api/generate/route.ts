@@ -3,34 +3,108 @@ import { GoogleGenAI } from '@google/genai';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { hashIP, checkRateLimit, recordGeneration } from '@/lib/rateLimit';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import { PLANS } from '@/lib/plans';
+
+const ADMIN_EMAIL = 'admin@boringlabs.co.uk';
 
 export async function POST(request: NextRequest) {
   // 1. Check API key
   if (!process.env.GEMINI_API_KEY) {
     return NextResponse.json(
-      {
-        error:
-          'Flashcard creation is not configured yet. Please add your GEMINI_API_KEY to the .env.local file.',
-      },
+      { error: 'Flashcard creation is not configured yet. Please add your GEMINI_API_KEY to the .env.local file.' },
       { status: 503 }
     );
   }
 
-  // 2. Check if admin (bypasses rate limit)
+  // 2. Get session
   const supabase = createRouteHandlerClient({ cookies });
   const { data: { session } } = await supabase.auth.getSession();
-  const isAdmin = session?.user?.email === 'admin@boringlabs.co.uk';
+  const isAdmin = session?.user?.email === ADMIN_EMAIL;
 
-  // 3. Rate limiting via IP hash (skipped for admin)
+  // IP identifier (used for anonymous rate limiting)
   const forwarded = request.headers.get('x-forwarded-for');
   const ip = forwarded?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || 'unknown';
   const identifier = hashIP(ip);
 
-  if (!isAdmin) {
+  // 3. Determine card/char limits and enforce rate limiting
+  let cardLimit = PLANS.free.cardLimit;
+  let charLimit = PLANS.free.charLimit;
+  let isAnonymous = false;
+
+  if (isAdmin) {
+    cardLimit = PLANS.plus.cardLimit;
+    charLimit = PLANS.plus.charLimit;
+  } else if (session?.user) {
+    // Logged-in user — use user_plans
+    const userId = session.user.id;
+
+    let { data: planData } = await supabaseAdmin
+      .from('user_plans')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    if (!planData) {
+      // Existing user pre-trigger — create their row now
+      const { data: newPlan } = await supabaseAdmin
+        .from('user_plans')
+        .upsert({ user_id: userId }, { onConflict: 'user_id' })
+        .select()
+        .single();
+      planData = newPlan;
+    }
+
+    if (!planData) {
+      return NextResponse.json({ error: 'Could not load user plan. Please try again.' }, { status: 500 });
+    }
+
+    if (planData.plan === 'plus') {
+      cardLimit = PLANS.plus.cardLimit;
+      charLimit = PLANS.plus.charLimit;
+    } else {
+      // Lazy free generation grant: credit days elapsed since last grant, cap at 5
+      const today = new Date().toISOString().split('T')[0];
+      let currentBanked: number = planData.free_banked;
+
+      if (planData.last_grant_date !== today) {
+        const daysDiff = Math.floor(
+          (new Date(today).getTime() - new Date(planData.last_grant_date).getTime()) / 86400000
+        );
+        currentBanked = Math.min(planData.free_banked + daysDiff, 5);
+        await supabaseAdmin
+          .from('user_plans')
+          .update({ free_banked: currentBanked, last_grant_date: today, updated_at: new Date().toISOString() })
+          .eq('user_id', userId);
+      }
+
+      if (currentBanked > 0) {
+        await supabaseAdmin
+          .from('user_plans')
+          .update({ free_banked: currentBanked - 1, updated_at: new Date().toISOString() })
+          .eq('user_id', userId);
+      } else if (planData.paid_credits > 0) {
+        await supabaseAdmin
+          .from('user_plans')
+          .update({ paid_credits: planData.paid_credits - 1, updated_at: new Date().toISOString() })
+          .eq('user_id', userId);
+      } else {
+        return NextResponse.json(
+          { error: 'You have no generations remaining.', upgradeRequired: true },
+          { status: 429 }
+        );
+      }
+
+      cardLimit = PLANS.free.cardLimit;
+      charLimit = PLANS.free.charLimit;
+    }
+  } else {
+    // Anonymous user — IP-based rate limiting
+    isAnonymous = true;
     const { allowed } = await checkRateLimit(identifier);
     if (!allowed) {
       return NextResponse.json(
-        { error: "You've created your free deck for today. Come back tomorrow." },
+        { error: "You've used your free generation for today.", upgradeRequired: true, anonymous: true },
         { status: 429 }
       );
     }
@@ -45,21 +119,31 @@ export async function POST(request: NextRequest) {
     rawContent = body.content;
     topic = body.topic;
   } catch {
+    return NextResponse.json({ error: 'Invalid request format.' }, { status: 400 });
+  }
+
+  const contents: string[] = Array.isArray(rawContent) ? rawContent : [rawContent];
+
+  const hasContent = contents.some((c) => typeof c === 'string' && c.trim().length >= 10);
+  if (!hasContent) {
     return NextResponse.json(
-      { error: 'Invalid request format.' },
+      { error: 'Please provide more content to create flashcards from (at least 10 characters).' },
       { status: 400 }
     );
   }
 
-  // Normalise to array so multi-file and single-string paths share one code path
-  const contents: string[] = Array.isArray(rawContent) ? rawContent : [rawContent];
+  // Check character limit on plain text content
+  const totalTextLength = contents
+    .filter((c) => typeof c === 'string' && !c.startsWith('data:'))
+    .reduce((sum, c) => sum + c.length, 0);
 
-  const hasContent = contents.some(
-    (c) => typeof c === 'string' && c.trim().length >= 10
-  );
-  if (!hasContent) {
+  if (totalTextLength > charLimit) {
     return NextResponse.json(
-      { error: 'Please provide more content to create flashcards from (at least 10 characters).' },
+      {
+        error: `Your text is too long. The limit is ${charLimit.toLocaleString()} characters${
+          charLimit === PLANS.free.charLimit ? ' — upgrade to Plus for a higher limit.' : '.'
+        }`,
+      },
       { status: 400 }
     );
   }
@@ -70,7 +154,7 @@ export async function POST(request: NextRequest) {
   const systemPrompt = `You are a flashcard creation expert. Create study flashcards from the provided content.
 
 Rules:
-- Create up to 30 flashcards maximum
+- Create up to ${cardLimit} flashcards maximum
 - Each flashcard must have a clear, specific question and a concise, accurate answer
 - Questions should test understanding, not just recall
 - Answers should be brief but complete (1-3 sentences)
@@ -82,13 +166,11 @@ Rules:
     ? `Create flashcards about ${topic} from the provided content.`
     : `Create flashcards from the provided content.`;
 
-  // Build parts: each item is either an inlineData part (base64 file) or plain text
   const fileParts: object[] = [];
   const textChunks: string[] = [];
 
   for (const c of contents) {
     if (typeof c === 'string' && c.startsWith('data:')) {
-      // File upload: "data:<mimeType>;base64,<data>"
       const commaIndex = c.indexOf(',');
       const header = c.slice(0, commaIndex);
       const base64Data = c.slice(commaIndex + 1);
@@ -101,17 +183,13 @@ Rules:
 
   let contentParts: object[];
   if (fileParts.length > 0) {
-    // One or more file uploads (images, PDFs, etc.)
     contentParts = [
       ...fileParts,
       ...(textChunks.length > 0 ? [{ text: textChunks.join('\n\n') }] : []),
       { text: instructionText },
     ];
   } else {
-    // Pure text paste
-    contentParts = [
-      { text: `${instructionText}\n\n${textChunks.join('\n\n')}` },
-    ];
+    contentParts = [{ text: `${instructionText}\n\n${textChunks.join('\n\n')}` }];
   }
 
   try {
@@ -128,13 +206,9 @@ Rules:
 
     if (!responseText) {
       console.error('Gemini returned empty response:', JSON.stringify(response));
-      return NextResponse.json(
-        { error: 'No response received. Please try again.' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'No response received. Please try again.' }, { status: 500 });
     }
 
-    // Parse the JSON response
     let flashcards;
     try {
       flashcards = JSON.parse(responseText);
@@ -144,35 +218,26 @@ Rules:
         flashcards = JSON.parse(jsonMatch[0]);
       } else {
         console.error('Failed to parse Gemini response as JSON:', responseText.slice(0, 500));
-        return NextResponse.json(
-          { error: 'Failed to process the flashcards. Please try again.' },
-          { status: 500 }
-        );
+        return NextResponse.json({ error: 'Failed to process the flashcards. Please try again.' }, { status: 500 });
       }
     }
 
     if (!Array.isArray(flashcards)) {
       console.error('Gemini response was not an array:', typeof flashcards);
-      return NextResponse.json(
-        { error: 'Failed to create flashcards. Please try again.' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to create flashcards. Please try again.' }, { status: 500 });
     }
 
     const validFlashcards = flashcards
-      .filter(
-        (card: { question?: string; answer?: string }) =>
-          card.question && card.answer
-      )
-      .slice(0, 30)
+      .filter((card: { question?: string; answer?: string }) => card.question && card.answer)
+      .slice(0, cardLimit)
       .map((card: { question: string; answer: string }, index: number) => ({
         id: `card-${index}-${Date.now()}`,
         question: card.question,
         answer: card.answer,
       }));
 
-    // 6. Record the generation (skipped for admin)
-    if (!isAdmin) await recordGeneration(identifier);
+    // Record anonymous generation only after success
+    if (isAnonymous) await recordGeneration(identifier);
 
     return NextResponse.json({ flashcards: validFlashcards });
   } catch (err) {
@@ -180,9 +245,6 @@ Rules:
     if (err instanceof Error) {
       console.error('Error details:', err.message, err.stack);
     }
-    return NextResponse.json(
-      { error: 'Failed to create flashcards. Please try again later.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create flashcards. Please try again later.' }, { status: 500 });
   }
 }

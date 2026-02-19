@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Flashcard, ViewMode, Deck } from '@/lib/types';
 import { useAuth } from '@/lib/auth-context';
+import { PLANS, UserPlanData } from '@/lib/plans';
 import InputSection from './InputSection';
 import ViewToggle from './ViewToggle';
 import SingleView from './SingleView';
@@ -10,11 +11,14 @@ import SideBySideView from './SideBySideView';
 import GridView from './GridView';
 import FlashboardModal from './FlashboardModal';
 import SaveDeckModal from './SaveDeckModal';
+import UpgradeModal from './UpgradeModal';
 
 interface FlashcardGeneratorProps {
   onOpenModal?: () => void;
   topic?: string;
 }
+
+const ADMIN_EMAIL = 'admin@boringlabs.co.uk';
 
 export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGeneratorProps) {
   const { user } = useAuth();
@@ -24,27 +28,33 @@ export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGene
   const [viewMode, setViewMode] = useState<ViewMode>('single');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [upgradeAnonymous, setUpgradeAnonymous] = useState(false);
   const [savedDeck, setSavedDeck] = useState<Deck | null>(null);
-  const [isRateLimited, setIsRateLimited] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [planData, setPlanData] = useState<UserPlanData | null>(null);
 
   const openAuthModal = onOpenModal ?? (() => setIsModalOpen(true));
+  const isAdmin = user?.email === ADMIN_EMAIL;
+
+  const fetchPlan = useCallback(async () => {
+    if (!user || isAdmin) return;
+    try {
+      const res = await fetch('/api/user/plan');
+      if (res.ok) {
+        const data = await res.json();
+        if (!data.anonymous) setPlanData(data as UserPlanData);
+      }
+    } catch {
+      // non-critical — silently fail
+    }
+  }, [user, isAdmin]);
 
   useEffect(() => {
-    try {
-      const lastDate = localStorage.getItem('fcm_last_generation');
-      const today = new Date().toISOString().split('T')[0];
-      if (lastDate === today) setIsRateLimited(true);
-    } catch {
-      // localStorage unavailable (private browsing, SSR, etc.)
-    }
-  }, []);
+    fetchPlan();
+  }, [fetchPlan]);
 
   const handleSubmit = async (content: string | string[]) => {
-    if (isRateLimited) {
-      setError("You've created your free deck for today. Come back tomorrow.");
-      return;
-    }
     setIsLoading(true);
     setError(null);
     setSavedDeck(null);
@@ -57,8 +67,8 @@ export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGene
       const data = await response.json();
       if (!response.ok) {
         if (response.status === 429) {
-          setIsRateLimited(true);
-          setError("You've created your free deck for today. Come back tomorrow.");
+          setUpgradeAnonymous(!!data.anonymous);
+          setIsUpgradeModalOpen(true);
         } else {
           setError(data.error || 'Something went wrong. Please try again.');
         }
@@ -66,13 +76,8 @@ export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGene
       }
       setFlashcards(data.flashcards);
       setCurrentIndex(0);
-      try {
-        const today = new Date().toISOString().split('T')[0];
-        localStorage.setItem('fcm_last_generation', today);
-      } catch {
-        // localStorage unavailable
-      }
-      setIsRateLimited(true);
+      // Refresh plan count after a successful generation
+      fetchPlan();
     } catch {
       setError('Failed to connect. Please check your internet connection.');
     } finally {
@@ -95,6 +100,22 @@ export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGene
     }
   };
 
+  // Plan limits to pass to InputSection
+  const charLimit = isAdmin ? PLANS.plus.charLimit : (planData?.plan === 'plus' ? PLANS.plus.charLimit : PLANS.free.charLimit);
+  const fileLimit = isAdmin ? PLANS.plus.fileLimit : (planData?.plan === 'plus' ? PLANS.plus.fileLimit : PLANS.free.fileLimit);
+
+  // Generation count label for logged-in free users
+  const genCountLabel = (() => {
+    if (!user || isAdmin || planData?.plan === 'plus') return null;
+    if (!planData) return null;
+    const total = (planData.free_banked ?? 0) + (planData.paid_credits ?? 0);
+    if (total === 0) return { text: 'No generations remaining', warn: true };
+    const parts: string[] = [];
+    if (planData.free_banked > 0) parts.push(`${planData.free_banked} free banked`);
+    if (planData.paid_credits > 0) parts.push(`${planData.paid_credits} credit${planData.paid_credits !== 1 ? 's' : ''}`);
+    return { text: parts.join(' · '), warn: false };
+  })();
+
   // ── LOADING ──────────────────────────────────────────
   if (isLoading) {
     return (
@@ -111,7 +132,6 @@ export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGene
     return (
       <>
         <div className="tool-panel">
-          {/* Toolbar */}
           <div className="tool-toolbar">
             <div className="tool-toolbar-left">
               <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
@@ -138,7 +158,6 @@ export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGene
             </div>
           </div>
 
-          {/* Viewport */}
           <div className="tool-viewport">
             {viewMode === 'single' && (
               <SingleView
@@ -168,14 +187,42 @@ export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGene
   // ── INPUT ──────────────────────────────────────────
   return (
     <>
-      {isRateLimited && (
-        <div className="limit-banner">
-          <strong>You've created your free deck for today.</strong> Come back tomorrow.
-        </div>
-      )}
       {error && <div className="error-message">{error}</div>}
 
-      <InputSection onSubmit={handleSubmit} isLoading={isLoading} />
+      <InputSection
+        onSubmit={handleSubmit}
+        isLoading={isLoading}
+        charLimit={charLimit}
+        fileLimit={fileLimit}
+      />
+
+      {/* Generation count for logged-in free users */}
+      {genCountLabel && (
+        <div style={{ textAlign: 'center', fontSize: '0.82rem', marginTop: '0.75rem', opacity: genCountLabel.warn ? 1 : 0.6 }}>
+          {genCountLabel.warn ? (
+            <>
+              <span style={{ color: '#c00' }}>No generations remaining — </span>
+              <button
+                onClick={() => setIsUpgradeModalOpen(true)}
+                style={{ background: 'none', border: 'none', color: '#004AAD', cursor: 'pointer', fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 700, padding: 0, textDecoration: 'underline' }}
+              >
+                upgrade
+              </button>
+            </>
+          ) : (
+            <>
+              {genCountLabel.text}
+              {' · '}
+              <button
+                onClick={() => setIsUpgradeModalOpen(true)}
+                style={{ background: 'none', border: 'none', color: '#004AAD', cursor: 'pointer', fontFamily: 'inherit', fontSize: 'inherit', padding: 0, textDecoration: 'underline' }}
+              >
+                get more
+              </button>
+            </>
+          )}
+        </div>
+      )}
 
       <div className="features">
         <div className="feature">
@@ -196,6 +243,11 @@ export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGene
       </div>
 
       <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <UpgradeModal
+        isOpen={isUpgradeModalOpen}
+        onClose={() => setIsUpgradeModalOpen(false)}
+        anonymous={upgradeAnonymous}
+      />
     </>
   );
 }

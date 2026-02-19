@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
   const identifier = hashIP(ip);
 
   // 3. Determine card/char limits and enforce rate limiting
-  let cardLimit = PLANS.free.cardLimit;
-  let charLimit = PLANS.free.charLimit;
+  let cardLimit: number = PLANS.free.cardLimit;
+  let charLimit: number = PLANS.free.charLimit;
   let isAnonymous = false;
 
   if (isAdmin) {

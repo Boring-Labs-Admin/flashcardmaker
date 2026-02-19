@@ -170,8 +170,8 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* ── PLAN SECTION (SECONDARY — non-admin only) ── */}
-        {!isAdmin && planData && (
+        {/* ── PLAN SECTION (SECONDARY) ── */}
+        {(isAdmin || planData) && (
           <div style={{ marginTop: '3rem', ...mono }}>
 
             <div style={{
@@ -185,8 +185,8 @@ export default function Dashboard() {
               <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', opacity: 0.4, textTransform: 'uppercase' }}>Your Plan</span>
             </div>
 
-            {/* ── PLUS USER VIEW ── */}
-            {isPlus ? (
+            {/* ── PLUS USER VIEW (also admin) ── */}
+            {(isPlus || isAdmin) ? (
               <div style={{
                 border: '2px solid #004AAD',
                 borderRadius: 12,

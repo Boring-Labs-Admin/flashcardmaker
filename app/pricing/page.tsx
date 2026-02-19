@@ -4,19 +4,15 @@ const FREE_FEATURES = [
   '1 free generation/day',
   'Banks up to 5 unused generations',
   '30 cards per deck',
-  '5,000 character input',
-  'Up to 5 files',
   'Save decks to Flashboard',
   'All 3 view modes',
   'Download decks as PDF',
 ];
 
 const CREDIT_FEATURES = [
-  'No account required',
-  'Credits stack — never expire',
+  'One-time purchase · no expiry',
+  'Credits stack with free generations',
   '30 cards per deck',
-  '5,000 character input',
-  'Up to 5 files',
 ];
 
 const PLUS_FEATURES = [
@@ -49,8 +45,7 @@ export default function PricingPage() {
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
             {FREE_FEATURES.map((f) => (
               <li key={f} style={{ display: 'flex', gap: '0.5rem', fontSize: '0.85rem' }}>
-                <span style={{ color: '#004AAD', flexShrink: 0 }}>✓</span>
-                {f}
+                <span style={{ color: '#004AAD', flexShrink: 0 }}>✓</span>{f}
               </li>
             ))}
           </ul>
@@ -60,8 +55,7 @@ export default function PricingPage() {
         <div style={{ border: '2px solid #004AAD', borderRadius: 14, padding: '1.75rem', background: 'white' }}>
           <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', opacity: 0.5, textTransform: 'uppercase', marginBottom: '0.5rem' }}>Credit Packs</div>
           <div style={{ fontSize: '2rem', fontWeight: 800, color: '#004AAD', marginBottom: '0.25rem' }}>From £0.99</div>
-          <div style={{ fontSize: '0.82rem', opacity: 0.6, marginBottom: '1.5rem' }}>One-time · no expiry</div>
-
+          <div style={{ fontSize: '0.82rem', opacity: 0.6, marginBottom: '1.5rem' }}>Available in your Flashboard</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem' }}>
             {[
               { label: '1 generation', price: '£0.99' },
@@ -74,16 +68,10 @@ export default function PricingPage() {
               </div>
             ))}
           </div>
-
-          <button disabled style={{ display: 'block', width: '100%', textAlign: 'center', background: '#E0E8F5', color: '#004AAD', border: '2px solid #004AAD', borderRadius: 8, padding: '0.6rem 1rem', fontWeight: 700, fontSize: '0.9rem', fontFamily: 'inherit', cursor: 'not-allowed', opacity: 0.65, marginBottom: '1.5rem' }}>
-            Coming soon
-          </button>
-
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
             {CREDIT_FEATURES.map((f) => (
               <li key={f} style={{ display: 'flex', gap: '0.5rem', fontSize: '0.85rem' }}>
-                <span style={{ color: '#004AAD', flexShrink: 0 }}>✓</span>
-                {f}
+                <span style={{ color: '#004AAD', flexShrink: 0 }}>✓</span>{f}
               </li>
             ))}
           </ul>
@@ -99,17 +87,11 @@ export default function PricingPage() {
             <span style={{ fontSize: '2rem', fontWeight: 800 }}>£4.99</span>
             <span style={{ opacity: 0.7, fontSize: '0.9rem' }}>/month</span>
           </div>
-          <div style={{ fontSize: '0.82rem', opacity: 0.65, marginBottom: '1.5rem' }}>or £50/year — save 2 months</div>
-
-          <button disabled style={{ display: 'block', width: '100%', textAlign: 'center', background: 'rgba(255,255,255,0.15)', color: 'white', border: '2px solid rgba(255,255,255,0.5)', borderRadius: 8, padding: '0.6rem 1rem', fontWeight: 700, fontSize: '0.9rem', fontFamily: 'inherit', cursor: 'not-allowed', marginBottom: '1.5rem' }}>
-            Coming soon
-          </button>
-
+          <div style={{ fontSize: '0.82rem', opacity: 0.65, marginBottom: '1.5rem' }}>or £50/year · available in your Flashboard</div>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
             {PLUS_FEATURES.map((f) => (
               <li key={f} style={{ display: 'flex', gap: '0.5rem', fontSize: '0.85rem' }}>
-                <span style={{ color: '#F5C518', flexShrink: 0 }}>✓</span>
-                {f}
+                <span style={{ color: '#F5C518', flexShrink: 0 }}>✓</span>{f}
               </li>
             ))}
           </ul>
@@ -117,8 +99,9 @@ export default function PricingPage() {
 
       </div>
 
-      <div style={{ textAlign: 'center', marginTop: '3rem', opacity: 0.5, fontSize: '0.82rem' }}>
-        Payments coming soon · Questions? <a href="mailto:admin@boringlabs.co.uk" style={{ color: 'inherit' }}>admin@boringlabs.co.uk</a>
+      <div style={{ textAlign: 'center', marginTop: '2.5rem', opacity: 0.5, fontSize: '0.82rem' }}>
+        Sign up to manage your plan · Questions?{' '}
+        <a href="mailto:admin@boringlabs.co.uk" style={{ color: 'inherit' }}>admin@boringlabs.co.uk</a>
       </div>
     </main>
   );

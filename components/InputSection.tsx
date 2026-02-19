@@ -4,8 +4,6 @@ import { useState, useRef } from 'react';
 interface InputSectionProps {
   onSubmit: (content: string | string[]) => void;
   isLoading: boolean;
-  charLimit: number;
-  fileLimit: number;
 }
 
 interface UploadedFile {
@@ -27,7 +25,7 @@ function readFile(file: File): Promise<UploadedFile> {
   });
 }
 
-export default function InputSection({ onSubmit, isLoading, charLimit, fileLimit }: InputSectionProps) {
+export default function InputSection({ onSubmit, isLoading }: InputSectionProps) {
   const [text, setText] = useState('');
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [fileError, setFileError] = useState('');
@@ -36,13 +34,8 @@ export default function InputSection({ onSubmit, isLoading, charLimit, fileLimit
 
   const handleFiles = async (fileList: FileList) => {
     setFileError('');
-    const remaining = fileLimit - files.length;
-    if (remaining <= 0) {
-      setFileError(`File limit reached (${fileLimit} files max). Upgrade to Plus for more.`);
-      return;
-    }
     const newFiles: UploadedFile[] = [];
-    for (const file of Array.from(fileList).slice(0, remaining)) {
+    for (const file of Array.from(fileList)) {
       try {
         const uploaded = await readFile(file);
         newFiles.push(uploaded);
@@ -57,15 +50,12 @@ export default function InputSection({ onSubmit, isLoading, charLimit, fileLimit
 
   const removeFile = (index: number) => {
     setFiles(prev => prev.filter((_, i) => i !== index));
-    setFileError('');
   };
 
   const handleSubmitFiles = () => {
     const contents = files.map(f => f.content);
     onSubmit(contents.length === 1 ? contents[0] : contents);
   };
-
-  const overCharLimit = text.length > charLimit;
 
   return (
     <div className="input-grid">
@@ -88,9 +78,7 @@ export default function InputSection({ onSubmit, isLoading, charLimit, fileLimit
           <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.5rem' }}>
             {files.length === 0 ? 'Click or drag files here' : 'Add more files'}
           </div>
-          <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>
-            TXT • PDF • DOCX • Images — up to {fileLimit} file{fileLimit !== 1 ? 's' : ''}
-          </div>
+          <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>TXT • PDF • DOCX • Images — multiple files OK</div>
           <input
             ref={fileRef}
             type="file"
@@ -130,25 +118,13 @@ export default function InputSection({ onSubmit, isLoading, charLimit, fileLimit
           onChange={(e) => setText(e.target.value)}
           placeholder="Paste your study notes, lecture content, or any text here..."
           disabled={isLoading}
-          style={overCharLimit ? { borderColor: '#c00' } : undefined}
         />
         {text.length > 0 && (
-          <div style={{
-            fontSize: '0.75rem',
-            textAlign: 'right',
-            marginTop: '0.25rem',
-            color: overCharLimit ? '#c00' : undefined,
-            opacity: overCharLimit ? 1 : 0.5,
-          }}>
-            {text.length.toLocaleString()} / {charLimit.toLocaleString()} characters
-            {overCharLimit && <span style={{ marginLeft: '0.4rem' }}>— upgrade to Plus for more</span>}
+          <div style={{ fontSize: '0.75rem', opacity: 0.5, textAlign: 'right', marginTop: '0.25rem' }}>
+            {text.length.toLocaleString()} characters
           </div>
         )}
-        <button
-          className="btn"
-          onClick={() => onSubmit(text)}
-          disabled={!text.trim() || isLoading || overCharLimit}
-        >
+        <button className="btn" onClick={() => onSubmit(text)} disabled={!text.trim() || isLoading}>
           ⚡ CREATE FLASHCARDS
         </button>
       </div>

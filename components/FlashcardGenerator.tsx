@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { Flashcard, ViewMode, Deck } from '@/lib/types';
 import { useAuth } from '@/lib/auth-context';
-import Link from 'next/link';
 import InputSection from './InputSection';
 import ViewToggle from './ViewToggle';
 import SingleView from './SingleView';
@@ -11,18 +10,21 @@ import SideBySideView from './SideBySideView';
 import GridView from './GridView';
 import FlashboardModal from './FlashboardModal';
 import SaveDeckModal from './SaveDeckModal';
+import LimitModal from './LimitModal';
 
 interface FlashcardGeneratorProps {
   onOpenModal?: () => void;
   topic?: string;
 }
 
+type LimitReason = 'daily' | 'generations' | 'chars';
+
 export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGeneratorProps) {
   const { user, signInWithGoogle } = useAuth();
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [limitHit, setLimitHit] = useState<'logged-in' | 'anonymous' | null>(null);
+  const [limitHit, setLimitHit] = useState<LimitReason | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('single');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
@@ -45,7 +47,9 @@ export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGene
       const data = await response.json();
       if (!response.ok) {
         if (response.status === 429) {
-          setLimitHit(data.anonymous ? 'anonymous' : 'logged-in');
+          setLimitHit(data.anonymous ? 'daily' : 'generations');
+        } else if (response.status === 400 && data.error && /too long|characters/i.test(data.error)) {
+          setLimitHit('chars');
         } else {
           setError(data.error || 'Something went wrong. Please try again.');
         }
@@ -149,29 +153,6 @@ export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGene
     <>
       {error && <div className="error-message">{error}</div>}
 
-      {/* Limit banners — clean, no modal */}
-      {limitHit === 'logged-in' && (
-        <div className="limit-banner">
-          <strong>You&apos;ve used all your generations.</strong>{' '}
-          <Link href="/dashboard" style={{ color: '#F5C518', fontWeight: 700 }}>
-            Go to your Flashboard →
-          </Link>{' '}
-          to top up.
-        </div>
-      )}
-      {limitHit === 'anonymous' && (
-        <div className="limit-banner">
-          <strong>You&apos;ve used today&apos;s free generation.</strong>{' '}
-          <button
-            onClick={signInWithGoogle}
-            style={{ background: 'none', border: 'none', color: '#F5C518', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', fontSize: 'inherit', padding: 0 }}
-          >
-            Sign up free
-          </button>{' '}
-          to bank up to 5 per day.
-        </div>
-      )}
-
       <InputSection onSubmit={handleSubmit} isLoading={isLoading} />
 
       <div className="features">
@@ -193,6 +174,13 @@ export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGene
       </div>
 
       <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+
+      <LimitModal
+        isOpen={limitHit !== null}
+        onClose={() => setLimitHit(null)}
+        reason={limitHit ?? 'daily'}
+        onSignIn={signInWithGoogle}
+      />
     </>
   );
 }

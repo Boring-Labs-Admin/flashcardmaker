@@ -32,6 +32,9 @@ export async function POST(request: NextRequest) {
   let charLimit: number = PLANS.free.charLimit;
   let isAnonymous = false;
 
+  // Deferred credit deduction — only called after successful generation
+  let deductCredit: (() => Promise<void>) | null = null;
+
   if (isAdmin) {
     cardLimit = PLANS.plus.cardLimit;
     charLimit = PLANS.plus.charLimit;
@@ -78,16 +81,22 @@ export async function POST(request: NextRequest) {
           .eq('user_id', userId);
       }
 
+      // Check quota — defer actual deduction until after successful generation
       if (currentBanked > 0) {
-        await supabaseAdmin
-          .from('user_plans')
-          .update({ free_banked: currentBanked - 1, updated_at: new Date().toISOString() })
-          .eq('user_id', userId);
+        deductCredit = async () => {
+          await supabaseAdmin
+            .from('user_plans')
+            .update({ free_banked: currentBanked - 1, updated_at: new Date().toISOString() })
+            .eq('user_id', userId);
+        };
       } else if (planData.paid_credits > 0) {
-        await supabaseAdmin
-          .from('user_plans')
-          .update({ paid_credits: planData.paid_credits - 1, updated_at: new Date().toISOString() })
-          .eq('user_id', userId);
+        const paidCredits = planData.paid_credits;
+        deductCredit = async () => {
+          await supabaseAdmin
+            .from('user_plans')
+            .update({ paid_credits: paidCredits - 1, updated_at: new Date().toISOString() })
+            .eq('user_id', userId);
+        };
       } else {
         return NextResponse.json(
           { error: 'You have no generations remaining.', upgradeRequired: true },
@@ -236,7 +245,8 @@ Rules:
         answer: card.answer,
       }));
 
-    // Record anonymous generation only after success
+    // Deduct credit and record generation only after success
+    if (deductCredit) await deductCredit();
     if (isAnonymous) await recordGeneration(identifier);
 
     return NextResponse.json({ flashcards: validFlashcards });

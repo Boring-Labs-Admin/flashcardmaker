@@ -1,44 +1,50 @@
-'use client';
+import type { Metadata } from 'next';
+import HomeContent from '@/components/HomeContent';
 
-import { useState } from 'react';
-import NavBar from '@/components/NavBar';
-import Header from '@/components/Header';
-import FlashcardGenerator from '@/components/FlashcardGenerator';
-import FlashboardModal from '@/components/FlashboardModal';
-import Link from 'next/link';
+export const metadata: Metadata = {
+  title: 'Free Flashcard Maker — Turn Notes & Documents Into Study Cards',
+  description: 'Upload your notes, textbooks, or photos and create study flashcards instantly with AI. Free to use — no account needed for your first deck.',
+  alternates: {
+    canonical: 'https://flashcardmaker.co.uk',
+  },
+  openGraph: {
+    title: 'Free Flashcard Maker — Turn Notes & Documents Into Study Cards',
+    description: 'Upload your notes, textbooks, or photos and create study flashcards instantly with AI.',
+    url: 'https://flashcardmaker.co.uk',
+    type: 'website',
+  },
+};
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Flashcard Maker',
+  url: 'https://flashcardmaker.co.uk',
+  description: 'Turn documents, notes and photos into flashcards instantly using AI.',
+  applicationCategory: 'EducationApplication',
+  operatingSystem: 'Any',
+  browserRequirements: 'Requires JavaScript',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'GBP',
+    description: 'Free plan — 1 generation per day, banks up to 5',
+  },
+  creator: {
+    '@type': 'Organization',
+    name: 'Boring Labs',
+    url: 'https://flashcardmaker.co.uk',
+  },
+};
 
 export default function Home() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const subjects = [
-    { name: 'Science Flashcards', icon: '🔬', href: '/science-flashcards' },
-    { name: 'Maths Flashcards', icon: '📐', href: '/maths-flashcards' },
-    { name: 'Law Flashcards', icon: '⚖️', href: '/law-flashcards' },
-    { name: 'Biology Flashcards', icon: '🧬', href: '/biology-flashcards' },
-    { name: 'Chemistry Flashcards', icon: '⚗️', href: '/chemistry-flashcards' },
-    { name: 'Physics Flashcards', icon: '⚛️', href: '/physics-flashcards' },
-  ];
-
   return (
-    <main>
-      <NavBar onLoginClick={() => setIsModalOpen(true)} />
-      <Header />
-      <div className="container">
-        <FlashcardGenerator onOpenModal={() => setIsModalOpen(true)} />
-        <div className="subject-section">
-          <h2 className="section-title">Flashcards by Subject</h2>
-          <p className="section-subtitle">Pick a subject and upload your notes — your deck is ready in seconds</p>
-          <div className="subject-grid">
-            {subjects.map((s) => (
-              <Link key={s.name} href={s.href} className="subject-card">
-                <div className="subject-icon">{s.icon}</div>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 700 }}>{s.name}</h3>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </div>
-      <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-    </main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <HomeContent />
+    </>
   );
 }

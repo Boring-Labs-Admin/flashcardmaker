@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
   // 3. Determine card/char limits and enforce rate limiting
   let cardLimit: number = PLANS.free.cardLimit;
   let charLimit: number = PLANS.free.charLimit;
+  let fileLimit: number = PLANS.free.fileLimit;
   let isAnonymous = false;
 
   // Deferred credit deduction — only called after successful generation
@@ -38,6 +39,7 @@ export async function POST(request: NextRequest) {
   if (isAdmin) {
     cardLimit = PLANS.plus.cardLimit;
     charLimit = PLANS.plus.charLimit;
+    fileLimit = PLANS.plus.fileLimit;
   } else if (session?.user) {
     // Logged-in user — use user_plans
     const userId = session.user.id;
@@ -65,6 +67,7 @@ export async function POST(request: NextRequest) {
     if (planData.plan === 'plus') {
       cardLimit = PLANS.plus.cardLimit;
       charLimit = PLANS.plus.charLimit;
+      fileLimit = PLANS.plus.fileLimit;
     } else {
       // Lazy free generation grant: credit days elapsed since last grant, cap at 5
       const today = new Date().toISOString().split('T')[0];
@@ -157,6 +160,19 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Check file limit
+  const fileCount = contents.filter((c) => typeof c === 'string' && c.startsWith('data:')).length;
+  if (fileCount > fileLimit) {
+    return NextResponse.json(
+      {
+        error: `You can upload up to ${fileLimit} file${fileLimit === 1 ? '' : 's'} per generation${
+          fileLimit === PLANS.free.fileLimit ? ' on the free plan — upgrade to Plus for more.' : '.'
+        }`,
+      },
+      { status: 400 }
+    );
+  }
+
   // 5. Build the Gemini request
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -167,6 +183,7 @@ Rules:
 - Each flashcard must have a clear, specific question and a concise, accurate answer
 - Questions should test understanding, not just recall
 - Answers should be brief but complete (1-3 sentences)
+- Do not begin answers by restating the question or using prefatory phrases (e.g. "The answer is...", "The reaction for X is:"). State the answer directly.
 - Cover the key concepts from the content
 - For mathematical expressions, use LaTeX notation: inline math with $...$ and block equations with $$...$$
 - Return ONLY a valid JSON array of objects with "question" and "answer" fields`;

@@ -191,7 +191,7 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .reset-btn:hover { background: var(--cobalt-blue); color: white; }
 
 /* ── VIEWPORT ─────────────────────────────── */
-.tool-viewport { height: 480px; overflow: hidden; position: relative; }
+.tool-viewport { height: 720px; overflow: hidden; position: relative; }
 
 /* ── SINGLE VIEW ─────────────────────────────── */
 .single-view { height: 100%; display: flex; flex-direction: column; }

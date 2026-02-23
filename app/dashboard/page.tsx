@@ -2,16 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import { Deck } from '@/lib/types';
-import { UserPlanData } from '@/lib/plans';
+import { UserPlanData, PLANS } from '@/lib/plans';
 import NavBar from '@/components/NavBar';
 import DeckCard from '@/components/DeckCard';
 import SingleView from '@/components/SingleView';
 import ViewToggle from '@/components/ViewToggle';
 import SideBySideView from '@/components/SideBySideView';
 import GridView from '@/components/GridView';
+import FlashcardGenerator from '@/components/FlashcardGenerator';
 import { ViewMode } from '@/lib/types';
 
 const ADMIN_EMAIL = 'admin@boringlabs.co.uk';
@@ -23,6 +23,20 @@ const CREDIT_PACKS = [
 ];
 
 const mono: React.CSSProperties = { fontFamily: '"IBM Plex Mono", monospace' };
+
+const SectionDivider = ({ label }: { label: string }) => (
+  <div style={{
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+    marginBottom: '1.5rem',
+    paddingTop: '1.5rem',
+    borderTop: '1.5px solid #E0E8F5',
+    ...mono,
+  }}>
+    <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', opacity: 0.4, textTransform: 'uppercase' }}>{label}</span>
+  </div>
+);
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -66,6 +80,10 @@ export default function Dashboard() {
     setViewMode('single');
   };
 
+  const handleDeckSaved = (deck: Deck) => {
+    setDecks(prev => [deck, ...prev]);
+  };
+
   if (loading || (!user && !loading)) return null;
 
   const isAdmin = user?.email === ADMIN_EMAIL;
@@ -73,6 +91,7 @@ export default function Dashboard() {
   const freeBanked = planData?.free_banked ?? 0;
   const paidCredits = planData?.paid_credits ?? 0;
   const totalRemaining = freeBanked + paidCredits;
+  const maxGenerations = PLANS.free.maxBanked as number;
 
   // ── STUDY VIEW ────────────────────────────────────────
   if (studyingDeck) {
@@ -124,24 +143,6 @@ export default function Dashboard() {
           <p className="dashboard-subtitle">
             {fetching ? 'Loading your decks...' : `${decks.length} deck${decks.length !== 1 ? 's' : ''} saved`}
           </p>
-          <Link
-            href="/"
-            style={{
-              display: 'inline-block',
-              marginTop: '1rem',
-              background: '#F5C518',
-              color: '#004AAD',
-              borderRadius: 8,
-              padding: '0.6rem 1.5rem',
-              fontWeight: 800,
-              fontSize: '0.88rem',
-              textDecoration: 'none',
-              fontFamily: '"IBM Plex Mono", monospace',
-              letterSpacing: '0.03em',
-            }}
-          >
-            ⚡ Create Flashcards
-          </Link>
         </div>
       </div>
 
@@ -157,10 +158,7 @@ export default function Dashboard() {
           <div className="dashboard-empty">
             <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📚</div>
             <h2 style={{ marginBottom: '0.5rem' }}>No decks saved yet</h2>
-            <p style={{ opacity: 0.7, marginBottom: '2rem' }}>Generate some flashcards and save them to your Flashboard.</p>
-            <Link href="/" className="btn" style={{ display: 'inline-block', width: 'auto', padding: '0.75rem 2rem', textDecoration: 'none' }}>
-              ⚡ Create Flashcards
-            </Link>
+            <p style={{ opacity: 0.7 }}>Generate a deck below to get started.</p>
           </div>
         ) : (
           <div className="deck-grid">
@@ -170,20 +168,17 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* ── PLAN SECTION (SECONDARY) ── */}
+        {/* ── CREATE NEW DECK ── */}
+        <div style={{ marginTop: decks.length === 0 ? '2rem' : '3rem' }}>
+          <SectionDivider label="Create New Deck" />
+          <FlashcardGenerator hideFeatures onDeckSaved={handleDeckSaved} />
+        </div>
+
+        {/* ── PLAN SECTION (SECONDARY — non-admin only for free view) ── */}
         {(isAdmin || planData) && (
           <div style={{ marginTop: '3rem', ...mono }}>
 
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-              marginBottom: '1.25rem',
-              paddingTop: '1.5rem',
-              borderTop: '1.5px solid #E0E8F5',
-            }}>
-              <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', opacity: 0.4, textTransform: 'uppercase' }}>Your Plan</span>
-            </div>
+            <SectionDivider label="Your Plan" />
 
             {/* ── PLUS USER VIEW (also admin) ── */}
             {(isPlus || isAdmin) ? (
@@ -288,14 +283,10 @@ export default function Dashboard() {
                     color: totalRemaining === 0 ? '#c00' : '#004AAD',
                     fontWeight: 600,
                   }}>
-                    {totalRemaining === 0
-                      ? '⚠ No generations left'
-                      : `✓ ${totalRemaining} generation${totalRemaining !== 1 ? 's' : ''} available`}
-                    {(freeBanked > 0 || paidCredits > 0) && (
+                    {totalRemaining} / {maxGenerations} generations available
+                    {paidCredits > 0 && (
                       <div style={{ fontWeight: 400, fontSize: '0.72rem', opacity: 0.65, marginTop: '0.2rem' }}>
-                        {freeBanked > 0 && `${freeBanked} free banked`}
-                        {freeBanked > 0 && paidCredits > 0 && ' · '}
-                        {paidCredits > 0 && `${paidCredits} paid`}
+                        includes {paidCredits} paid credit{paidCredits !== 1 ? 's' : ''}
                       </div>
                     )}
                   </div>
@@ -309,12 +300,6 @@ export default function Dashboard() {
                     ].map(line => (
                       <div key={line} style={{ fontSize: '0.78rem', opacity: 0.6 }}>{line}</div>
                     ))}
-                  </div>
-
-                  <div style={{ marginTop: '1rem' }}>
-                    <Link href="/" style={{ fontSize: '0.78rem', color: '#004AAD', fontWeight: 700, textDecoration: 'none' }}>
-                      ⚡ Create flashcards →
-                    </Link>
                   </div>
                 </div>
 
@@ -386,7 +371,7 @@ export default function Dashboard() {
                       <span style={{ fontSize: '1.5rem', fontWeight: 800 }}>£4.99</span>
                       <span style={{ opacity: 0.7, fontSize: '0.82rem' }}>/month</span>
                     </div>
-                    <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>or £50/year <span style={{ opacity: 0.8 }}>— save 2 months</span></div>
+                    <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>or £39/year — £3.25/mo — save 35%</div>
                   </div>
 
                   <button disabled style={{ width: '100%', background: '#F5C518', border: 'none', borderRadius: 7, padding: '0.6rem', fontSize: '0.82rem', fontFamily: 'inherit', fontWeight: 800, cursor: 'not-allowed', color: '#004AAD' }}>

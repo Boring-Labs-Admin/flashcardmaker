@@ -15,11 +15,13 @@ import LimitModal from './LimitModal';
 interface FlashcardGeneratorProps {
   onOpenModal?: () => void;
   topic?: string;
+  hideFeatures?: boolean;
+  onDeckSaved?: (deck: Deck) => void;
 }
 
 type LimitReason = 'daily' | 'generations' | 'chars';
 
-export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGeneratorProps) {
+export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, onDeckSaved }: FlashcardGeneratorProps) {
   const { user, signInWithGoogle } = useAuth();
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -142,7 +144,7 @@ export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGene
           onClose={() => setIsSaveModalOpen(false)}
           flashcards={flashcards}
           topic={topic}
-          onSaved={(deck) => setSavedDeck(deck)}
+          onSaved={(deck) => { setSavedDeck(deck); onDeckSaved?.(deck); }}
         />
       </>
     );
@@ -155,7 +157,7 @@ export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGene
 
       <InputSection onSubmit={handleSubmit} isLoading={isLoading} />
 
-      <div className="features">
+      {!hideFeatures && <div className="features">
         <div className="feature">
           <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>📚</div>
           <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.5rem' }}>Works With Anything</div>
@@ -171,7 +173,7 @@ export default function FlashcardGenerator({ topic, onOpenModal }: FlashcardGene
           <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.5rem' }}>100% Free</div>
           <div style={{ fontSize: '0.9rem', opacity: 0.8 }}>One free deck per day, no account needed</div>
         </div>
-      </div>
+      </div>}
 
       <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
 

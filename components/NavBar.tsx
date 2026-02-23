@@ -25,7 +25,7 @@ export default function NavBar({ onLoginClick }: NavBarProps) {
                 {user.user_metadata?.full_name || user.email}
               </span>
               <Link href="/dashboard" className="nav-login-btn">
-                My Decks
+                My Flashboard
               </Link>
             </>
           )}

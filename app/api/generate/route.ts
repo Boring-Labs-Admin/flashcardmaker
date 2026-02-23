@@ -245,8 +245,12 @@ Rules:
         answer: card.answer,
       }));
 
-    // Deduct credit and record generation only after success
-    if (deductCredit) await deductCredit();
+    // Deduct credit — log failure but don't block returning flashcards to the user
+    try {
+      if (deductCredit) await deductCredit();
+    } catch (deductErr) {
+      console.error('Failed to deduct credit after successful generation:', deductErr);
+    }
     if (isAnonymous) await recordGeneration(identifier);
 
     return NextResponse.json({ flashcards: validFlashcards });

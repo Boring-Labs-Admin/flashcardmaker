@@ -47,6 +47,7 @@ export default function Dashboard() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [viewMode, setViewMode] = useState<ViewMode>('single');
   const [planData, setPlanData] = useState<UserPlanData | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) router.push('/');
@@ -70,8 +71,13 @@ export default function Dashboard() {
   }, [user]);
 
   const handleDelete = async (id: string) => {
+    setDeleteError(null);
     const res = await fetch(`/api/decks?id=${id}`, { method: 'DELETE' });
-    if (res.ok) setDecks(prev => prev.filter(d => d.id !== id));
+    if (res.ok) {
+      setDecks(prev => prev.filter(d => d.id !== id));
+    } else {
+      setDeleteError('Failed to delete deck. Please try again.');
+    }
   };
 
   const handleStudy = (deck: Deck) => {
@@ -149,6 +155,7 @@ export default function Dashboard() {
       <div className="container">
 
         {/* ── DECK LIBRARY (PRIMARY) ── */}
+        {deleteError && <div className="error-message">{deleteError}</div>}
         {fetching ? (
           <div className="loading">
             <div className="spinner">⚡</div>

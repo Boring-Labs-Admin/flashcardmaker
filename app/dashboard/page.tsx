@@ -57,7 +57,9 @@ export default function Dashboard() {
     if (!user) return;
 
     // Show cached decks instantly if available, then refresh silently in background
-    const cached = sessionStorage.getItem('decks_cache');
+    // Cache is keyed by user ID so switching accounts never leaks one user's decks to another
+    const cacheKey = `decks_cache_${user.id}`;
+    const cached = sessionStorage.getItem(cacheKey);
     if (cached) {
       try {
         setDecks(JSON.parse(cached));
@@ -72,7 +74,7 @@ export default function Dashboard() {
       .then(data => {
         const fresh = data.decks || [];
         setDecks(fresh);
-        sessionStorage.setItem('decks_cache', JSON.stringify(fresh));
+        sessionStorage.setItem(cacheKey, JSON.stringify(fresh));
       })
       .catch(() => {})
       .finally(() => setFetching(false));
@@ -91,7 +93,7 @@ export default function Dashboard() {
     if (res.ok) {
       setDecks(prev => {
         const updated = prev.filter(d => d.id !== id);
-        sessionStorage.setItem('decks_cache', JSON.stringify(updated));
+        if (user) sessionStorage.setItem(`decks_cache_${user.id}`, JSON.stringify(updated));
         return updated;
       });
     } else {
@@ -108,7 +110,7 @@ export default function Dashboard() {
   const handleDeckSaved = (deck: Deck) => {
     setDecks(prev => {
       const updated = [deck, ...prev];
-      sessionStorage.setItem('decks_cache', JSON.stringify(updated));
+      if (user) sessionStorage.setItem(`decks_cache_${user.id}`, JSON.stringify(updated));
       return updated;
     });
   };
@@ -123,7 +125,7 @@ export default function Dashboard() {
       const { deck } = await res.json();
       setDecks(prev => {
         const updated = prev.map(d => d.id === id ? deck : d);
-        sessionStorage.setItem('decks_cache', JSON.stringify(updated));
+        if (user) sessionStorage.setItem(`decks_cache_${user.id}`, JSON.stringify(updated));
         return updated;
       });
     }

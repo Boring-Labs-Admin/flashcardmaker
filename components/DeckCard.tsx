@@ -22,6 +22,7 @@ export default function DeckCard({ deck, onDelete, onStudy, onUpdate }: DeckCard
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(deck.title);
   const [showColors, setShowColors] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const date = new Date(deck.created_at).toLocaleDateString('en-GB', {
@@ -62,9 +63,9 @@ export default function DeckCard({ deck, onDelete, onStudy, onUpdate }: DeckCard
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm(`Delete "${deck.title}"? This cannot be undone.`)) {
-      onDelete(deck.id);
-    }
+    setConfirmDelete(true);
+    setShowColors(false);
+    setIsEditing(false);
   };
 
   return (
@@ -89,6 +90,20 @@ export default function DeckCard({ deck, onDelete, onStudy, onUpdate }: DeckCard
           >🗑️</button>
         </div>
       </div>
+
+      {confirmDelete && (
+        <div className="deck-confirm-delete">
+          <span>Delete this deck?</span>
+          <button
+            className="deck-confirm-yes"
+            onClick={(e) => { e.stopPropagation(); onDelete(deck.id); }}
+          >Delete</button>
+          <button
+            className="deck-confirm-no"
+            onClick={(e) => { e.stopPropagation(); setConfirmDelete(false); }}
+          >Cancel</button>
+        </div>
+      )}
 
       {showColors && (
         <div className="deck-color-picker">

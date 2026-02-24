@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
   let fileLimit: number = PLANS.free.fileLimit;
   let isAnonymous = false;
 
-  // Deferred credit deduction — only called after successful generation
-  let deductCredit: (() => Promise<void>) | null = null;
+  // User ID to deduct from — set for free-plan users, null for admin/plus/anonymous
+  let creditUserId: string | null = null;
 
   if (isAdmin) {
     cardLimit = PLANS.plus.cardLimit;
@@ -84,22 +84,10 @@ export async function POST(request: NextRequest) {
           .eq('user_id', userId);
       }
 
-      // Check quota — defer actual deduction until after successful generation
-      if (currentBanked > 0) {
-        deductCredit = async () => {
-          await supabaseAdmin
-            .from('user_plans')
-            .update({ free_banked: currentBanked - 1, updated_at: new Date().toISOString() })
-            .eq('user_id', userId);
-        };
-      } else if (planData.paid_credits > 0) {
-        const paidCredits = planData.paid_credits;
-        deductCredit = async () => {
-          await supabaseAdmin
-            .from('user_plans')
-            .update({ paid_credits: paidCredits - 1, updated_at: new Date().toISOString() })
-            .eq('user_id', userId);
-        };
+      // Early quota check — fast-fail before calling Gemini if definitely out of credits
+      // Authoritative deduction happens atomically via DB function after successful generation
+      if (currentBanked > 0 || planData.paid_credits > 0) {
+        creditUserId = userId;
       } else {
         return NextResponse.json(
           { error: 'You have no generations remaining.', upgradeRequired: true },
@@ -262,9 +250,11 @@ Rules:
         answer: card.answer,
       }));
 
-    // Deduct credit — log failure but don't block returning flashcards to the user
+    // Atomic credit deduction via DB function — prevents race conditions from parallel requests
     try {
-      if (deductCredit) await deductCredit();
+      if (creditUserId) {
+        await supabaseAdmin.rpc('deduct_generation_credit', { p_user_id: creditUserId });
+      }
     } catch (deductErr) {
       console.error('Failed to deduct credit after successful generation:', deductErr);
     }

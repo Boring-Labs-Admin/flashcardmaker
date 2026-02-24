@@ -7,12 +7,21 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 import { PLANS } from '@/lib/plans';
 
 const ADMIN_EMAIL = 'admin@boringlabs.co.uk';
+const PLUS_REQUESTS_PER_MINUTE = 10;
+const MAX_FILE_BYTES = 20 * 1024 * 1024; // 20MB total base64 payload
 
 export async function POST(request: NextRequest) {
-  // 1. Check API key
+  // 1. Check API key / emergency shutoff
   if (!process.env.GEMINI_API_KEY) {
     return NextResponse.json(
       { error: 'Flashcard creation is not configured yet. Please add your GEMINI_API_KEY to the .env.local file.' },
+      { status: 503 }
+    );
+  }
+
+  if (process.env.DISABLE_GENERATION === 'true') {
+    return NextResponse.json(
+      { error: 'Flashcard generation is temporarily unavailable. Please try again later.' },
       { status: 503 }
     );
   }
@@ -35,6 +44,8 @@ export async function POST(request: NextRequest) {
 
   // User ID to deduct from — set for free-plan users, null for admin/plus/anonymous
   let creditUserId: string | null = null;
+  // User ID for generation logging and rate limiting — set for all logged-in users
+  let loggedInUserId: string | null = null;
 
   if (isAdmin) {
     cardLimit = PLANS.plus.cardLimit;
@@ -43,6 +54,7 @@ export async function POST(request: NextRequest) {
   } else if (session?.user) {
     // Logged-in user — use user_plans
     const userId = session.user.id;
+    loggedInUserId = userId;
 
     let { data: planData } = await supabaseAdmin
       .from('user_plans')
@@ -68,6 +80,20 @@ export async function POST(request: NextRequest) {
       cardLimit = PLANS.plus.cardLimit;
       charLimit = PLANS.plus.charLimit;
       fileLimit = PLANS.plus.fileLimit;
+
+      // Per-minute rate limit for Plus users — prevents automated flooding
+      const { count: recentCount } = await supabaseAdmin
+        .from('generation_log')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .gte('created_at', new Date(Date.now() - 60_000).toISOString());
+
+      if ((recentCount ?? 0) >= PLUS_REQUESTS_PER_MINUTE) {
+        return NextResponse.json(
+          { error: 'Too many requests. Please wait a moment before generating again.' },
+          { status: 429 }
+        );
+      }
     } else {
       // Lazy free generation grant: credit days elapsed since last grant, cap at 5
       const today = new Date().toISOString().split('T')[0];
@@ -161,6 +187,17 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Check total file payload size — prevents large files inflating token cost
+  const totalFileBytes = contents
+    .filter((c) => typeof c === 'string' && c.startsWith('data:'))
+    .reduce((sum, c) => sum + c.length, 0);
+  if (totalFileBytes > MAX_FILE_BYTES) {
+    return NextResponse.json(
+      { error: 'Total file size is too large. Please reduce the number or size of uploaded files.' },
+      { status: 400 }
+    );
+  }
+
   // 5. Build the Gemini request
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -213,6 +250,7 @@ Rules:
       config: {
         systemInstruction: systemPrompt,
         responseMimeType: 'application/json',
+        maxOutputTokens: 2000,
       },
     });
 
@@ -259,6 +297,17 @@ Rules:
       console.error('Failed to deduct credit after successful generation:', deductErr);
     }
     if (isAnonymous) await recordGeneration(identifier);
+
+    // Log generation for rate limiting and cost visibility (fire-and-forget)
+    supabaseAdmin
+      .from('generation_log')
+      .insert({
+        user_id: loggedInUserId,
+        identifier_hash: isAnonymous ? identifier : null,
+        input_chars: totalTextLength,
+        file_count: fileCount,
+      })
+      .then(({ error }) => { if (error) console.error('Failed to log generation:', error.message); });
 
     return NextResponse.json({ flashcards: validFlashcards });
   } catch (err) {

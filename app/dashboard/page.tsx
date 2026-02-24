@@ -55,11 +55,26 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!user) return;
-    setFetching(true);
+
+    // Show cached decks instantly if available, then refresh silently in background
+    const cached = sessionStorage.getItem('decks_cache');
+    if (cached) {
+      try {
+        setDecks(JSON.parse(cached));
+        setFetching(false);
+      } catch { /* ignore corrupt cache */ }
+    } else {
+      setFetching(true);
+    }
+
     fetch('/api/decks')
       .then(r => r.json())
-      .then(data => setDecks(data.decks || []))
-      .catch(() => setDecks([]))
+      .then(data => {
+        const fresh = data.decks || [];
+        setDecks(fresh);
+        sessionStorage.setItem('decks_cache', JSON.stringify(fresh));
+      })
+      .catch(() => {})
       .finally(() => setFetching(false));
 
     if (user.email !== ADMIN_EMAIL) {
@@ -74,7 +89,11 @@ export default function Dashboard() {
     setDeleteError(null);
     const res = await fetch(`/api/decks?id=${id}`, { method: 'DELETE' });
     if (res.ok) {
-      setDecks(prev => prev.filter(d => d.id !== id));
+      setDecks(prev => {
+        const updated = prev.filter(d => d.id !== id);
+        sessionStorage.setItem('decks_cache', JSON.stringify(updated));
+        return updated;
+      });
     } else {
       setDeleteError('Failed to delete deck. Please try again.');
     }
@@ -87,7 +106,11 @@ export default function Dashboard() {
   };
 
   const handleDeckSaved = (deck: Deck) => {
-    setDecks(prev => [deck, ...prev]);
+    setDecks(prev => {
+      const updated = [deck, ...prev];
+      sessionStorage.setItem('decks_cache', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const handleDeckUpdate = async (id: string, updates: { title?: string; color?: string }) => {
@@ -98,7 +121,11 @@ export default function Dashboard() {
     });
     if (res.ok) {
       const { deck } = await res.json();
-      setDecks(prev => prev.map(d => d.id === id ? deck : d));
+      setDecks(prev => {
+        const updated = prev.map(d => d.id === id ? deck : d);
+        sessionStorage.setItem('decks_cache', JSON.stringify(updated));
+        return updated;
+      });
     }
   };
 

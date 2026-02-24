@@ -33,11 +33,14 @@ export async function GET() {
   // Calculate display free_banked (lazy grant preview — read-only, no DB write)
   const today = new Date().toISOString().split('T')[0];
   let displayBanked: number = planData.free_banked;
+  let grantAmount = 0;
   if (planData.plan === 'free' && planData.last_grant_date !== today) {
     const daysDiff = Math.floor(
       (new Date(today).getTime() - new Date(planData.last_grant_date).getTime()) / 86400000
     );
-    displayBanked = Math.min(planData.free_banked + daysDiff, 5);
+    const newBanked = Math.min(planData.free_banked + daysDiff, 5);
+    grantAmount = newBanked - planData.free_banked;
+    displayBanked = newBanked;
   }
 
   const totalRemaining =
@@ -48,5 +51,7 @@ export async function GET() {
     free_banked: displayBanked,
     paid_credits: planData.paid_credits,
     total_remaining: totalRemaining,
+    grant_applied: grantAmount > 0,
+    grant_amount: grantAmount > 0 ? grantAmount : undefined,
   } satisfies UserPlanData);
 }

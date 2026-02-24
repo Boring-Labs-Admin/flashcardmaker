@@ -308,6 +308,13 @@ export default function Dashboard() {
                     fontWeight: 600,
                   }}>
                     {totalRemaining} / {maxGenerations} generations available
+                    {planData?.grant_applied && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.35rem', fontSize: '0.72rem', fontWeight: 700, color: '#007a3d' }}>
+                        <span style={{ background: '#E6F4EC', borderRadius: 4, padding: '0.1rem 0.4rem' }}>
+                          +{planData.grant_amount} free generation{(planData.grant_amount ?? 1) !== 1 ? 's' : ''} credited today
+                        </span>
+                      </div>
+                    )}
                     {paidCredits > 0 && (
                       <div style={{ fontWeight: 400, fontSize: '0.72rem', opacity: 0.65, marginTop: '0.2rem' }}>
                         includes {paidCredits} paid credit{paidCredits !== 1 ? 's' : ''}

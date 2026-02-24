@@ -11,4 +11,6 @@ export interface UserPlanData {
   paid_credits: number;
   total_remaining: number | null; // null = unlimited (Plus)
   anonymous?: boolean;
+  grant_applied?: boolean;   // true if a daily credit was added on this load
+  grant_amount?: number;     // how many credits were granted
 }

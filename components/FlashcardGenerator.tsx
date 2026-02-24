@@ -59,6 +59,28 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
       }
       setFlashcards(data.flashcards);
       setCurrentIndex(0);
+
+      // Auto-save deck for logged-in users
+      if (user) {
+        const title = topic
+          ? topic.charAt(0).toUpperCase() + topic.slice(1) + ' Flashcards'
+          : 'My Deck';
+        try {
+          const saveRes = await fetch('/api/decks', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, topic, flashcards: data.flashcards }),
+          });
+          if (saveRes.ok) {
+            const saveData = await saveRes.json();
+            setSavedDeck(saveData.deck);
+            onDeckSaved?.(saveData.deck);
+          }
+        } catch {
+          // Auto-save failed silently — user can still see their cards
+          console.error('Auto-save failed');
+        }
+      }
     } catch {
       setError('Failed to connect. Please check your internet connection.');
     } finally {
@@ -110,11 +132,11 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
             <div className="tool-toolbar-right">
               {savedDeck ? (
                 <span className="saved-indicator">✓ Saved to Flashboard</span>
-              ) : (
+              ) : !user ? (
                 <button className="locked-btn" onClick={handleSaveClick}>
-                  💾 Save deck {!user && <span className="locked-icon">🔒</span>}
+                  💾 Save deck <span className="locked-icon">🔒</span>
                 </button>
-              )}
+              ) : null}
               <button className="locked-btn" onClick={openAuthModal}>
                 ⬇️ Download {!user && <span className="locked-icon">🔒</span>}
               </button>

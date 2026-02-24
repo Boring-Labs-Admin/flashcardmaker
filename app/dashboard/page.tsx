@@ -90,6 +90,18 @@ export default function Dashboard() {
     setDecks(prev => [deck, ...prev]);
   };
 
+  const handleDeckUpdate = async (id: string, updates: { title?: string; color?: string }) => {
+    const res = await fetch('/api/decks', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, ...updates }),
+    });
+    if (res.ok) {
+      const { deck } = await res.json();
+      setDecks(prev => prev.map(d => d.id === id ? deck : d));
+    }
+  };
+
   if (loading || (!user && !loading)) return null;
 
   const isAdmin = user?.email === ADMIN_EMAIL;
@@ -155,6 +167,11 @@ export default function Dashboard() {
       <div className="container">
 
         {/* ── DECK LIBRARY (PRIMARY) ── */}
+        {!fetching && (
+          <div style={{ ...mono, fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', opacity: 0.4, textTransform: 'uppercase', marginBottom: '1.25rem' }}>
+            Your Saved Decks
+          </div>
+        )}
         {deleteError && <div className="error-message">{deleteError}</div>}
         {fetching ? (
           <div className="loading">
@@ -170,7 +187,7 @@ export default function Dashboard() {
         ) : (
           <div className="deck-grid">
             {decks.map(deck => (
-              <DeckCard key={deck.id} deck={deck} onDelete={handleDelete} onStudy={handleStudy} />
+              <DeckCard key={deck.id} deck={deck} onDelete={handleDelete} onStudy={handleStudy} onUpdate={handleDeckUpdate} />
             ))}
           </div>
         )}

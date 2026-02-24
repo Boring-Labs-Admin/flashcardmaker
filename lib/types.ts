@@ -13,6 +13,7 @@ export interface Deck {
   topic?: string;
   flashcards: Flashcard[];
   created_at: string;
+  color?: string;
 }
 
 export interface GenerationResponse {

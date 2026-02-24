@@ -60,6 +60,52 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({ deck: data });
 }
 
+// PATCH /api/decks — update deck title or color
+export async function PATCH(request: NextRequest) {
+  const supabase = createRouteHandlerClient({ cookies });
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  let id: string, title: string | undefined, color: string | undefined;
+  try {
+    const body = await request.json();
+    id = body.id;
+    title = body.title;
+    color = body.color;
+  } catch {
+    return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
+  }
+
+  if (!id) {
+    return NextResponse.json({ error: 'id is required.' }, { status: 400 });
+  }
+
+  const updates: Record<string, string> = {};
+  if (title !== undefined) updates.title = title;
+  if (color !== undefined) updates.color = color;
+
+  if (Object.keys(updates).length === 0) {
+    return NextResponse.json({ error: 'No fields to update.' }, { status: 400 });
+  }
+
+  const { data, error } = await supabase
+    .from('decks')
+    .update(updates)
+    .eq('id', id)
+    .eq('user_id', session.user.id)
+    .select()
+    .single();
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ deck: data });
+}
+
 // DELETE /api/decks?id=<deckId> — delete a deck owned by the logged-in user
 export async function DELETE(request: NextRequest) {
   const supabase = createRouteHandlerClient({ cookies });

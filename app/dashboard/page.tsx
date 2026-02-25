@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { Deck } from '@/lib/types';
@@ -38,7 +38,7 @@ const SectionDivider = ({ label }: { label: string }) => (
   </div>
 );
 
-export default function Dashboard() {
+function DashboardContent() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -520,5 +520,13 @@ export default function Dashboard() {
 
       </div>
     </main>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <Suspense>
+      <DashboardContent />
+    </Suspense>
   );
 }

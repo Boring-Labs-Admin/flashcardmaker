@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { Deck } from '@/lib/types';
 import { UserPlanData, PLANS } from '@/lib/plans';
@@ -17,9 +17,9 @@ import { ViewMode } from '@/lib/types';
 const ADMIN_EMAIL = 'admin@boringlabs.co.uk';
 
 const CREDIT_PACKS = [
-  { label: '1 generation',   price: '£0.99', perUnit: '£0.99 each',  saving: null,         best: false },
-  { label: '5 generations',  price: '£3.49', perUnit: '£0.70 each',  saving: 'Save 29%',   best: false },
-  { label: '10 generations', price: '£5.99', perUnit: '£0.60 each',  saving: 'Best value', best: true  },
+  { label: '1 generation',   price: '£0.99', perUnit: '£0.99 each',  saving: null,         best: false, productKey: 'credits_1'  },
+  { label: '5 generations',  price: '£3.49', perUnit: '£0.70 each',  saving: 'Save 29%',   best: false, productKey: 'credits_5'  },
+  { label: '10 generations', price: '£5.99', perUnit: '£0.60 each',  saving: 'Best value', best: true,  productKey: 'credits_10' },
 ];
 
 const mono: React.CSSProperties = { fontFamily: '"IBM Plex Mono", monospace' };
@@ -41,6 +41,7 @@ const SectionDivider = ({ label }: { label: string }) => (
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [decks, setDecks] = useState<Deck[]>([]);
   const [fetching, setFetching] = useState(true);
   const [studyingDeck, setStudyingDeck] = useState<Deck | null>(null);
@@ -48,10 +49,26 @@ export default function Dashboard() {
   const [viewMode, setViewMode] = useState<ViewMode>('single');
   const [planData, setPlanData] = useState<UserPlanData | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) router.push('/');
   }, [user, loading, router]);
+
+  // Detect ?payment=success after returning from Stripe Checkout
+  useEffect(() => {
+    if (searchParams.get('payment') === 'success') {
+      setPaymentSuccess(true);
+      // Remove the query param without adding a history entry
+      router.replace('/dashboard');
+      // Refresh plan data so new plan/credits are reflected immediately
+      fetch('/api/user/plan')
+        .then(r => r.json())
+        .then(data => { if (!data.anonymous) setPlanData(data); })
+        .catch(() => {});
+    }
+  }, [searchParams, router]);
 
   useEffect(() => {
     if (!user) return;
@@ -113,6 +130,36 @@ export default function Dashboard() {
       if (user) sessionStorage.setItem(`decks_cache_${user.id}`, JSON.stringify(updated));
       return updated;
     });
+  };
+
+  const handleCheckout = async (productKey: string) => {
+    setCheckoutLoading(productKey);
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productKey }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch {
+      // silently reset — user can retry
+    } finally {
+      setCheckoutLoading(null);
+    }
+  };
+
+  const handlePortal = async () => {
+    setCheckoutLoading('portal');
+    try {
+      const res = await fetch('/api/stripe/portal', { method: 'POST' });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch {
+      // silently reset
+    } finally {
+      setCheckoutLoading(null);
+    }
   };
 
   const handleDeckUpdate = async (id: string, updates: { title?: string; color?: string }) => {
@@ -195,6 +242,24 @@ export default function Dashboard() {
 
       <div className="container">
 
+        {/* ── PAYMENT SUCCESS BANNER ── */}
+        {paymentSuccess && (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            background: '#E6F4EC', border: '1.5px solid #6FCF97', borderRadius: 10,
+            padding: '0.75rem 1.1rem', marginBottom: '1.5rem', gap: '1rem',
+            fontFamily: '"IBM Plex Mono", monospace',
+          }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#007a3d' }}>
+              ✓ Payment successful — your plan has been updated.
+            </span>
+            <button onClick={() => setPaymentSuccess(false)} style={{
+              background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem',
+              color: '#007a3d', lineHeight: 1, padding: 0,
+            }}>×</button>
+          </div>
+        )}
+
         {/* ── DECK LIBRARY (PRIMARY) ── */}
         {!fetching && (
           <div style={{ ...mono, fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', opacity: 0.4, textTransform: 'uppercase', marginBottom: '1.25rem' }}>
@@ -271,33 +336,22 @@ export default function Dashboard() {
                 </div>
 
                 <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                  <button disabled style={{
-                    background: 'rgba(255,255,255,0.15)',
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    borderRadius: 7,
-                    padding: '0.5rem 1rem',
-                    fontSize: '0.78rem',
-                    fontFamily: 'inherit',
-                    fontWeight: 700,
-                    cursor: 'not-allowed',
-                    color: 'white',
-                    opacity: 0.65,
-                  }}>
-                    Manage Subscription — coming soon
-                  </button>
-                  <button disabled style={{
-                    background: 'transparent',
-                    border: '1px solid rgba(255,255,255,0.25)',
-                    borderRadius: 7,
-                    padding: '0.5rem 1rem',
-                    fontSize: '0.78rem',
-                    fontFamily: 'inherit',
-                    fontWeight: 600,
-                    cursor: 'not-allowed',
-                    color: 'rgba(255,255,255,0.55)',
-                    opacity: 0.65,
-                  }}>
-                    Downgrade to Free
+                  <button
+                    onClick={handlePortal}
+                    disabled={checkoutLoading === 'portal'}
+                    style={{
+                      background: 'rgba(255,255,255,0.15)',
+                      border: '1px solid rgba(255,255,255,0.3)',
+                      borderRadius: 7,
+                      padding: '0.5rem 1rem',
+                      fontSize: '0.78rem',
+                      fontFamily: 'inherit',
+                      fontWeight: 700,
+                      cursor: checkoutLoading === 'portal' ? 'not-allowed' : 'pointer',
+                      color: 'white',
+                      opacity: checkoutLoading === 'portal' ? 0.65 : 1,
+                    }}>
+                    {checkoutLoading === 'portal' ? 'Opening…' : 'Manage Subscription'}
                   </button>
                 </div>
               </div>
@@ -371,19 +425,30 @@ export default function Dashboard() {
                     <div style={{ fontSize: '0.75rem', opacity: 0.55, marginTop: '0.2rem' }}>One-time · stack · never expire</div>
                   </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginBottom: '1rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', marginBottom: '0' }}>
                     {CREDIT_PACKS.map(pack => (
-                      <div key={pack.label} style={{
-                        border: pack.best ? '2px solid #004AAD' : '1.5px solid #E0E8F5',
-                        borderRadius: 8,
-                        padding: '0.55rem 0.75rem',
-                        background: pack.best ? '#EEF4FF' : 'white',
-                      }}>
+                      <button
+                        key={pack.label}
+                        onClick={() => handleCheckout(pack.productKey)}
+                        disabled={checkoutLoading === pack.productKey}
+                        style={{
+                          border: pack.best ? '2px solid #004AAD' : '1.5px solid #E0E8F5',
+                          borderRadius: 8,
+                          padding: '0.55rem 0.75rem',
+                          background: pack.best ? '#EEF4FF' : 'white',
+                          cursor: checkoutLoading === pack.productKey ? 'not-allowed' : 'pointer',
+                          textAlign: 'left',
+                          width: '100%',
+                          opacity: checkoutLoading === pack.productKey ? 0.65 : 1,
+                          fontFamily: 'inherit',
+                        }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.15rem' }}>
                           <span style={{ fontWeight: 700, fontSize: '0.82rem' }}>
                             {pack.best && '🏆 '}{pack.label}
                           </span>
-                          <span style={{ fontWeight: 800, color: '#004AAD', fontSize: '0.9rem' }}>{pack.price}</span>
+                          <span style={{ fontWeight: 800, color: '#004AAD', fontSize: '0.9rem' }}>
+                            {checkoutLoading === pack.productKey ? '…' : pack.price}
+                          </span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                           <span style={{ fontSize: '0.7rem', opacity: 0.5 }}>{pack.perUnit}</span>
@@ -393,13 +458,9 @@ export default function Dashboard() {
                             </span>
                           )}
                         </div>
-                      </div>
+                      </button>
                     ))}
                   </div>
-
-                  <button disabled style={{ width: '100%', background: '#E0E8F5', border: 'none', borderRadius: 7, padding: '0.55rem', fontSize: '0.78rem', fontFamily: 'inherit', fontWeight: 700, cursor: 'not-allowed', color: '#004AAD', opacity: 0.65 }}>
-                    Coming soon
-                  </button>
                 </div>
 
                 {/* COL 3: Plus Hero */}
@@ -426,17 +487,30 @@ export default function Dashboard() {
                     ))}
                   </ul>
 
-                  <div style={{ marginBottom: '1rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem' }}>
-                      <span style={{ fontSize: '1.5rem', fontWeight: 800 }}>£4.99</span>
-                      <span style={{ opacity: 0.7, fontSize: '0.82rem' }}>/month</span>
-                    </div>
-                    <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>or £39/year — £3.25/mo — save 35%</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <button
+                      onClick={() => handleCheckout('plus_monthly')}
+                      disabled={!!checkoutLoading}
+                      style={{
+                        width: '100%', background: '#F5C518', border: 'none', borderRadius: 7,
+                        padding: '0.6rem', fontSize: '0.82rem', fontFamily: 'inherit', fontWeight: 800,
+                        cursor: checkoutLoading ? 'not-allowed' : 'pointer', color: '#004AAD',
+                        opacity: checkoutLoading ? 0.7 : 1,
+                      }}>
+                      {checkoutLoading === 'plus_monthly' ? 'Opening…' : 'Get Plus — £4.99/month'}
+                    </button>
+                    <button
+                      onClick={() => handleCheckout('plus_yearly')}
+                      disabled={!!checkoutLoading}
+                      style={{
+                        width: '100%', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.4)',
+                        borderRadius: 7, padding: '0.5rem', fontSize: '0.78rem', fontFamily: 'inherit', fontWeight: 700,
+                        cursor: checkoutLoading ? 'not-allowed' : 'pointer', color: 'white',
+                        opacity: checkoutLoading ? 0.7 : 1,
+                      }}>
+                      {checkoutLoading === 'plus_yearly' ? 'Opening…' : '£39/year — save 35%'}
+                    </button>
                   </div>
-
-                  <button disabled style={{ width: '100%', background: '#F5C518', border: 'none', borderRadius: 7, padding: '0.6rem', fontSize: '0.82rem', fontFamily: 'inherit', fontWeight: 800, cursor: 'not-allowed', color: '#004AAD' }}>
-                    Coming soon
-                  </button>
                 </div>
 
               </div>

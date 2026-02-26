@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import 'katex/dist/katex.min.css';
+import { Suspense } from 'react';
 import { AuthProvider } from '@/lib/auth-context';
+import { PostHogProvider } from './providers';
+import { PostHogPageview } from './posthog-pageview';
 
 export const metadata: Metadata = {
   title: 'Flashcard Maker - Turn Documents Into Flashcards Instantly',
@@ -55,7 +58,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-mono bg-white text-gray-900 antialiased">
-        <AuthProvider>{children}</AuthProvider>
+        <PostHogProvider>
+          <AuthProvider>
+            <Suspense>
+              <PostHogPageview />
+            </Suspense>
+            {children}
+          </AuthProvider>
+        </PostHogProvider>
       </body>
     </html>
   );

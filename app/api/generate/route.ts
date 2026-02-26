@@ -100,10 +100,7 @@ export async function POST(request: NextRequest) {
       let currentBanked: number = planData.free_banked;
 
       if (planData.last_grant_date !== today) {
-        const daysDiff = Math.floor(
-          (new Date(today).getTime() - new Date(planData.last_grant_date).getTime()) / 86400000
-        );
-        currentBanked = Math.min(planData.free_banked + daysDiff, 5);
+        currentBanked = Math.min(planData.free_banked + 1, 5);
         await supabaseAdmin
           .from('user_plans')
           .update({ free_banked: currentBanked, last_grant_date: today, updated_at: new Date().toISOString() })

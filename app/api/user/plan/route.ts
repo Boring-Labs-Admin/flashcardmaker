@@ -35,10 +35,7 @@ export async function GET() {
   let displayBanked: number = planData.free_banked;
   let grantAmount = 0;
   if (planData.plan === 'free' && planData.last_grant_date !== today) {
-    const daysDiff = Math.floor(
-      (new Date(today).getTime() - new Date(planData.last_grant_date).getTime()) / 86400000
-    );
-    const newBanked = Math.min(planData.free_banked + daysDiff, 5);
+    const newBanked = Math.min(planData.free_banked + 1, 5);
     grantAmount = newBanked - planData.free_banked;
     displayBanked = newBanked;
   }

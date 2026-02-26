@@ -339,6 +339,7 @@ function DashboardContent() {
                   <button
                     onClick={handlePortal}
                     disabled={checkoutLoading === 'portal'}
+                    className="plan-ghost-btn"
                     style={{
                       background: 'rgba(255,255,255,0.15)',
                       border: '1px solid rgba(255,255,255,0.3)',
@@ -431,6 +432,7 @@ function DashboardContent() {
                         key={pack.label}
                         onClick={() => handleCheckout(pack.productKey)}
                         disabled={checkoutLoading === pack.productKey}
+                        className="plan-credit-btn"
                         style={{
                           border: pack.best ? '2px solid #004AAD' : '1.5px solid #E0E8F5',
                           borderRadius: 8,
@@ -491,6 +493,7 @@ function DashboardContent() {
                     <button
                       onClick={() => handleCheckout('plus_monthly')}
                       disabled={!!checkoutLoading}
+                      className="plan-plus-primary-btn"
                       style={{
                         width: '100%', background: '#F5C518', border: 'none', borderRadius: 7,
                         padding: '0.6rem', fontSize: '0.82rem', fontFamily: 'inherit', fontWeight: 800,
@@ -502,6 +505,7 @@ function DashboardContent() {
                     <button
                       onClick={() => handleCheckout('plus_yearly')}
                       disabled={!!checkoutLoading}
+                      className="plan-ghost-btn"
                       style={{
                         width: '100%', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.4)',
                         borderRadius: 7, padding: '0.5rem', fontSize: '0.78rem', fontFamily: 'inherit', fontWeight: 700,

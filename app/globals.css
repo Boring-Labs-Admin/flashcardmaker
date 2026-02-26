@@ -321,3 +321,30 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
   .features { grid-template-columns: 1fr; }
   .grid-view { grid-template-columns: 1fr; }
 }
+
+/* ── DASHBOARD PLAN BUTTON HOVERS ───────────────── */
+.plan-credit-btn {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.plan-credit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 16px rgba(0, 74, 173, 0.14);
+  border-color: #004AAD !important;
+}
+
+.plan-plus-primary-btn {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+.plan-plus-primary-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(245, 197, 24, 0.5);
+  filter: brightness(1.05);
+}
+
+.plan-ghost-btn {
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.plan-ghost-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.28) !important;
+}

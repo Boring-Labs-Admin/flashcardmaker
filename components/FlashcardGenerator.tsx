@@ -192,8 +192,8 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
         </div>
         <div className="feature">
           <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🎯</div>
-          <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.5rem' }}>100% Free</div>
-          <div style={{ fontSize: '0.9rem', opacity: 0.8 }}>One free deck per day, no account needed</div>
+          <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.5rem' }}>Start For Free</div>
+          <div style={{ fontSize: '0.9rem', opacity: 0.8 }}>Generate one free deck per day without an account. Or sign up for free and save your decks to your Flashboard.</div>
         </div>
       </div>}
 

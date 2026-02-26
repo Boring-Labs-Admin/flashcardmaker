@@ -392,10 +392,10 @@ function DashboardContent() {
                     fontWeight: 600,
                   }}>
                     {totalRemaining} / {maxGenerations} generations available
-                    {planData?.grant_applied && (
+                    {totalRemaining < maxGenerations && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.35rem', fontSize: '0.72rem', fontWeight: 700, color: '#007a3d' }}>
                         <span style={{ background: '#E6F4EC', borderRadius: 4, padding: '0.1rem 0.4rem' }}>
-                          +{planData.grant_amount} free generation{(planData.grant_amount ?? 1) !== 1 ? 's' : ''} credited today
+                          +1 free generation added daily
                         </span>
                       </div>
                     )}

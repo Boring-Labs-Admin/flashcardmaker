@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
-import NavBar from '@/components/NavBar';
-import Header from '@/components/Header';
-import FlashcardGenerator from '@/components/FlashcardGenerator';
+import SubjectContent from '@/components/SubjectContent';
 
 export const metadata: Metadata = {
   title: 'Law Flashcards - Create Study Cards Instantly | Flashcard Maker',
@@ -23,13 +21,10 @@ export const metadata: Metadata = {
 
 export default function LawFlashcards() {
   return (
-    <main className="min-h-screen bg-white">
-      <NavBar />
-      <Header
-        title="Law Flashcards"
-        subtitle="Turn your law notes into study cards instantly"
-      />
-      <FlashcardGenerator topic="law" />
-    </main>
+    <SubjectContent
+      title="Law Flashcards"
+      subtitle="Turn your law notes into study cards instantly"
+      topic="law"
+    />
   );
 }

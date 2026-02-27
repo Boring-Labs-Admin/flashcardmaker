@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
-import NavBar from '@/components/NavBar';
-import Header from '@/components/Header';
-import FlashcardGenerator from '@/components/FlashcardGenerator';
+import SubjectContent from '@/components/SubjectContent';
 
 export const metadata: Metadata = {
   title: 'Chemistry Flashcards - Create Study Cards Instantly | Flashcard Maker',
@@ -23,13 +21,10 @@ export const metadata: Metadata = {
 
 export default function ChemistryFlashcards() {
   return (
-    <main className="min-h-screen bg-white">
-      <NavBar />
-      <Header
-        title="Chemistry Flashcards"
-        subtitle="Turn your chemistry notes into study cards instantly"
-      />
-      <FlashcardGenerator topic="chemistry" />
-    </main>
+    <SubjectContent
+      title="Chemistry Flashcards"
+      subtitle="Turn your chemistry notes into study cards instantly"
+      topic="chemistry"
+    />
   );
 }

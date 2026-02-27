@@ -1,22 +1,28 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import NavBar from '@/components/NavBar';
 import Header from '@/components/Header';
 import FlashcardGenerator from '@/components/FlashcardGenerator';
 import FlashboardModal from '@/components/FlashboardModal';
-import Link from 'next/link';
 import { SUBJECTS } from '@/lib/subjects';
 
-export default function HomeContent() {
+interface SubjectContentProps {
+  title: string;
+  subtitle: string;
+  topic: string;
+}
+
+export default function SubjectContent({ title, subtitle, topic }: SubjectContentProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <main>
       <NavBar onLoginClick={() => setIsModalOpen(true)} />
-      <Header />
+      <Header title={title} subtitle={subtitle} />
       <div className="container">
-        <FlashcardGenerator onOpenModal={() => setIsModalOpen(true)} />
+        <FlashcardGenerator topic={topic} onOpenModal={() => setIsModalOpen(true)} />
         <div className="subject-section">
           <h2 className="section-title">Flashcards by Subject</h2>
           <p className="section-subtitle">Pick a subject and upload your notes — your deck is ready in seconds</p>

@@ -245,7 +245,7 @@ function DashboardContent() {
         {/* ── PAYMENT SUCCESS BANNER ── */}
         {paymentSuccess && (
           <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap',
             background: '#E6F4EC', border: '1.5px solid #6FCF97', borderRadius: 10,
             padding: '0.75rem 1.1rem', marginBottom: '1.5rem', gap: '1rem',
             fontFamily: '"IBM Plex Mono", monospace',
@@ -358,12 +358,7 @@ function DashboardContent() {
               </div>
             ) : (
               /* ── FREE USER VIEW — 3-column layout ── */
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr 1.25fr',
-                gap: '1rem',
-                alignItems: 'stretch',
-              }}>
+              <div className="plan-grid">
 
                 {/* COL 1: Current Plan */}
                 <div style={{ border: '1.5px solid #C7D9F5', borderRadius: 12, padding: '1.25rem', background: 'white' }}>

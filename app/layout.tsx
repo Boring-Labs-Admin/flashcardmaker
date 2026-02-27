@@ -9,7 +9,7 @@ import { PostHogPageview } from './posthog-pageview';
 export const metadata: Metadata = {
   title: 'Flashcard Maker - Turn Documents Into Flashcards Instantly',
   description:
-    'Upload your notes, textbooks, or documents and create study flashcards instantly. Free flashcard maker for science, maths, law, biology, chemistry, and physics.',
+    'Upload your notes, textbooks, or documents and create study flashcards instantly. Free AI flashcard maker for GCSE, A-Level, science, biology, chemistry, physics, maths, psychology, and more.',
   metadataBase: new URL('https://flashcardmaker.co.uk'),
   icons: {
     icon: '/favicon.svg',

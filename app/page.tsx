@@ -13,6 +13,11 @@ export const metadata: Metadata = {
     url: 'https://flashcardmaker.co.uk',
     type: 'website',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Free Flashcard Maker — Turn Notes & Documents Into Study Cards',
+    description: 'Upload your notes, textbooks, or photos and create study flashcards instantly with AI.',
+  },
 };
 
 const jsonLd = {

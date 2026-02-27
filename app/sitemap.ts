@@ -25,13 +25,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'daily',
       priority: 1,
     },
-    {
-      url: `${BASE}/pricing`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    ...subjectEntries,
+...subjectEntries,
     ...curriculumEntries,
   ];
 }

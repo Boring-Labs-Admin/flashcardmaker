@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   description:
     'Start free with 1 generation per day. Upgrade to Plus for unlimited generations, 60-card decks, and priority processing. From £4.99/month or £39/year.',
   alternates: { canonical: 'https://flashcardmaker.co.uk/pricing' },
+  robots: { index: false, follow: false },
   openGraph: {
     title: 'Pricing — Free & Plus Plans | Flashcard Maker',
     description:

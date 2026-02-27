@@ -28,6 +28,9 @@ textarea { font-family: "IBM Plex Mono", monospace; font-weight: 400; }
 
 /* ── NAV BAR ─────────────────────────────── */
 .nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   background: var(--cobalt-blue);
   padding: 0.75rem 1.5rem;
   display: flex;

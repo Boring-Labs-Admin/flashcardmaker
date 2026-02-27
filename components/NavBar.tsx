@@ -18,6 +18,9 @@ export default function NavBar({ onLoginClick }: NavBarProps) {
   return (
     <>
       <nav className="nav-bar">
+        <Link href="/" className="nav-logo">
+          Flashcard Maker
+        </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           {user && (
             <>

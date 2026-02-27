@@ -31,10 +31,18 @@ textarea { font-family: "IBM Plex Mono", monospace; font-weight: 400; }
   background: var(--cobalt-blue);
   padding: 0.75rem 1.5rem;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   border-bottom: 3px solid var(--yellow-bolt);
 }
+.nav-logo {
+  color: white;
+  font-weight: 800;
+  font-size: 1rem;
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+.nav-logo:hover { opacity: 0.8; }
 .nav-login-btn {
   background: var(--yellow-bolt);
   color: var(--cobalt-blue);

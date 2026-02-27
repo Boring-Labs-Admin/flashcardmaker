@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default function HistoryFlashcards() {
   return (
     <SubjectContent
-      title="History Flashcards"
+      title="Flashcard Maker - History Flashcards"
       subtitle="Turn your history notes into study cards instantly"
       topic="history"
     />

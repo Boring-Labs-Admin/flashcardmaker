@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default function ChemistryFlashcards() {
   return (
     <SubjectContent
-      title="Chemistry Flashcards"
+      title="Flashcard Maker - Chemistry Flashcards"
       subtitle="Turn your chemistry notes into study cards instantly"
       topic="chemistry"
     />

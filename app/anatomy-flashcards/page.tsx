@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default function AnatomyFlashcards() {
   return (
     <SubjectContent
-      title="Anatomy Flashcards"
+      title="Flashcard Maker - Anatomy Flashcards"
       subtitle="Turn your anatomy notes into study cards instantly"
       topic="anatomy"
     />

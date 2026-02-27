@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default function GeographyFlashcards() {
   return (
     <SubjectContent
-      title="Geography Flashcards"
+      title="Flashcard Maker - Geography Flashcards"
       subtitle="Turn your geography notes into study cards instantly"
       topic="geography"
     />

@@ -11,5 +11,10 @@ export const SUBJECTS = [
   { name: 'Business Flashcards',   icon: '💼', href: '/business-flashcards' },
   { name: 'History Flashcards',    icon: '📜', href: '/history-flashcards' },
   { name: 'Geography Flashcards',  icon: '🌍', href: '/geography-flashcards' },
-  { name: 'Law Flashcards',        icon: '⚖️', href: '/law-flashcards' },
+];
+
+export const CURRICULA = [
+  { name: 'GCSE Flashcards',    icon: '📚', href: '/gcse-flashcards' },
+  { name: 'A-Level Flashcards', icon: '🎓', href: '/a-level-flashcards' },
+  { name: 'AQA Flashcards',     icon: '📝', href: '/aqa-flashcards' },
 ];

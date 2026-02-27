@@ -177,6 +177,7 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
     <>
       {error && <div className="error-message">{error}</div>}
 
+      <h2 className="section-title">Generate Flashcards</h2>
       <InputSection onSubmit={handleSubmit} isLoading={isLoading} />
 
       {!hideFeatures && <div className="features">

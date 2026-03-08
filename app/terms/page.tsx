@@ -67,7 +67,7 @@ export default function TermsPage() {
 
       <section style={{ marginBottom: '2rem' }}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.75rem' }}>10. Contact</h2>
-        <p>For any questions about these terms, please email: <strong>[your contact email]</strong></p>
+        <p>For any questions about these terms, please email: <strong>support@flashcardmaker.co.uk</strong></p>
       </section>
     </main>
     </>

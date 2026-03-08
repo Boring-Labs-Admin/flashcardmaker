@@ -225,6 +225,9 @@ function DashboardContent() {
   }
 
   // ── DASHBOARD ─────────────────────────────────────────
+  const firstName = user?.user_metadata?.full_name?.split(' ')[0];
+  const titleName = firstName ? `${firstName}'s` : 'Your';
+
   return (
     <main>
       <NavBar />
@@ -233,7 +236,7 @@ function DashboardContent() {
       <div className="dashboard-header">
         <div className="dashboard-header-content">
           <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>⚡</div>
-          <h1 className="dashboard-title">Your Flashboard</h1>
+          <h1 className="dashboard-title">{titleName} Flashboard</h1>
           <p className="dashboard-subtitle">
             {fetching ? 'Loading your decks...' : `${decks.length} deck${decks.length !== 1 ? 's' : ''} saved`}
           </p>

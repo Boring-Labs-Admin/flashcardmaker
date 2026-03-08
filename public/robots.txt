@@ -4,5 +4,6 @@ Disallow: /api/
 Disallow: /dashboard/
 Disallow: /coming-soon/
 Disallow: /auth/
+Disallow: /opengraph-image
 
 Sitemap: https://flashcardmaker.co.uk/sitemap.xml

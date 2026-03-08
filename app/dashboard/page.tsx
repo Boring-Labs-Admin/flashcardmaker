@@ -39,7 +39,7 @@ const SectionDivider = ({ label }: { label: string }) => (
 );
 
 function DashboardContent() {
-  const { user, loading } = useAuth();
+  const { user, loading, signOut } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [decks, setDecks] = useState<Deck[]>([]);
@@ -51,6 +51,8 @@ function DashboardContent() {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) router.push('/');
@@ -159,6 +161,19 @@ function DashboardContent() {
       // silently reset
     } finally {
       setCheckoutLoading(null);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleteLoading(true);
+    const res = await fetch('/api/user/delete', { method: 'DELETE' });
+    if (res.ok) {
+      await signOut();
+      router.push('/');
+    } else {
+      setDeleteError('Failed to delete account. Please try again or contact support@flashcardmaker.co.uk');
+      setDeleteLoading(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -517,6 +532,51 @@ function DashboardContent() {
 
               </div>
             )}
+
+            {/* ── DELETE ACCOUNT ── */}
+            <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid #e5e7eb' }}>
+              {!showDeleteConfirm ? (
+                <button onClick={() => setShowDeleteConfirm(true)} style={{
+                  background: 'none', border: 'none', color: '#999', fontSize: '0.75rem',
+                  cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600, padding: 0,
+                  textDecoration: 'underline',
+                }}>
+                  Delete Account
+                </button>
+              ) : (
+                <div style={{
+                  background: '#FFF5F5', border: '1.5px solid #fca5a5',
+                  borderRadius: 8, padding: '1rem', maxWidth: 480,
+                }}>
+                  <p style={{ fontSize: '0.82rem', color: '#b91c1c', fontWeight: 700, marginBottom: '0.75rem', lineHeight: 1.5 }}>
+                    ⚠ This will permanently delete your account and all saved flashcard decks. This cannot be undone.
+                  </p>
+                  <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                    <button
+                      onClick={handleDeleteAccount}
+                      disabled={deleteLoading}
+                      style={{
+                        background: '#b91c1c', color: 'white', border: 'none', borderRadius: 6,
+                        padding: '0.45rem 1rem', fontSize: '0.78rem', fontFamily: 'inherit',
+                        fontWeight: 700, cursor: deleteLoading ? 'not-allowed' : 'pointer',
+                        opacity: deleteLoading ? 0.7 : 1,
+                      }}>
+                      {deleteLoading ? 'Deleting…' : 'Yes, delete my account'}
+                    </button>
+                    <button
+                      onClick={() => setShowDeleteConfirm(false)}
+                      style={{
+                        background: 'none', border: '1.5px solid #ccc', borderRadius: 6,
+                        padding: '0.45rem 1rem', fontSize: '0.78rem', fontFamily: 'inherit',
+                        fontWeight: 700, cursor: 'pointer', color: '#555',
+                      }}>
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
           </div>
         )}
 

@@ -59,6 +59,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-mono bg-white text-gray-900 antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'Flashcard Maker',
+              url: 'https://flashcardmaker.co.uk',
+            }),
+          }}
+        />
         <PostHogProvider>
           <AuthProvider>
             <Suspense>

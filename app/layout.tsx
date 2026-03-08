@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import { AuthProvider } from '@/lib/auth-context';
 import { PostHogProvider } from './providers';
 import { PostHogPageview } from './posthog-pageview';
+import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
   title: 'Flashcard Maker - Turn Documents Into Flashcards Instantly',
@@ -64,6 +65,7 @@ export default function RootLayout({
               <PostHogPageview />
             </Suspense>
             {children}
+            <Footer />
           </AuthProvider>
         </PostHogProvider>
       </body>

@@ -416,3 +416,19 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
   transform: translateY(-1px);
   background: rgba(255, 255, 255, 0.28) !important;
 }
+
+/* ── FOOTER ─────────────────────────────── */
+.site-footer {
+  background: var(--cobalt-blue);
+  border-top: 3px solid var(--yellow-bolt);
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.site-footer-copy { color: white; font-size: 0.8rem; opacity: 0.7; font-family: "IBM Plex Mono", monospace; }
+.site-footer-links { display: flex; gap: 1.5rem; }
+.site-footer-link { color: white; font-size: 0.8rem; opacity: 0.7; text-decoration: none; font-family: "IBM Plex Mono", monospace; }
+.site-footer-link:hover { opacity: 1; text-decoration: underline; }

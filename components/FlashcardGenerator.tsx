@@ -96,6 +96,63 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
     setSavedDeck(null);
   };
 
+  const handleDownloadCSV = () => {
+    const title = savedDeck?.title ?? (topic ? topic.charAt(0).toUpperCase() + topic.slice(1) + ' Flashcards' : 'My Deck');
+    const rows = [
+      ['Question', 'Answer'],
+      ...flashcards.map(f => [f.question, f.answer]),
+    ];
+    const csv = rows.map(r => r.map(c => `"${c.replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${title}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadPDF = async () => {
+    const { jsPDF } = await import('jspdf');
+    const title = savedDeck?.title ?? (topic ? topic.charAt(0).toUpperCase() + topic.slice(1) + ' Flashcards' : 'My Deck');
+    const doc = new jsPDF();
+
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(0, 74, 173);
+    doc.text(title, 14, 18);
+    doc.setDrawColor(0, 74, 173);
+    doc.line(14, 22, 196, 22);
+
+    let y = 30;
+    flashcards.forEach((card) => {
+      if (y > 255) { doc.addPage(); y = 20; }
+
+      const qLines = doc.splitTextToSize(`Q: ${card.question}`, 170);
+      const qHeight = Math.max(12, qLines.length * 5 + 6);
+      doc.setFillColor(238, 244, 255);
+      doc.setDrawColor(199, 217, 245);
+      doc.roundedRect(14, y, 182, qHeight, 2, 2, 'FD');
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(0, 74, 173);
+      doc.text(qLines, 18, y + 7);
+      y += qHeight + 2;
+
+      const aLines = doc.splitTextToSize(`A: ${card.answer}`, 170);
+      const aHeight = Math.max(12, aLines.length * 5 + 6);
+      doc.setFillColor(255, 255, 255);
+      doc.setDrawColor(199, 217, 245);
+      doc.roundedRect(14, y, 182, aHeight, 2, 2, 'FD');
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(30, 30, 50);
+      doc.text(aLines, 18, y + 7);
+      y += aHeight + 6;
+    });
+
+    doc.save(`${title}.pdf`);
+  };
+
   const handleSaveClick = () => {
     if (user) {
       setIsSaveModalOpen(true);
@@ -137,9 +194,16 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
                   💾 Save deck <span className="locked-icon">🔒</span>
                 </button>
               ) : null}
-              <button className="locked-btn" onClick={openAuthModal}>
-                ⬇️ Download {!user && <span className="locked-icon">🔒</span>}
-              </button>
+              {user ? (
+                <>
+                  <button className="locked-btn" onClick={handleDownloadCSV}>⬇ CSV</button>
+                  <button className="locked-btn" onClick={handleDownloadPDF}>⬇ PDF</button>
+                </>
+              ) : (
+                <button className="locked-btn" onClick={openAuthModal}>
+                  ⬇️ Download <span className="locked-icon">🔒</span>
+                </button>
+              )}
               <button className="reset-btn" onClick={handleReset}>
                 🗑️ New deck
               </button>

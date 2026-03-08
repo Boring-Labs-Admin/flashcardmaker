@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import NavBar from '@/components/NavBar';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy — Flashcard Maker',
@@ -7,7 +8,9 @@ export const metadata: Metadata = {
 
 export default function PrivacyPolicyPage() {
   return (
-    <main style={{ maxWidth: '800px', margin: '0 auto', padding: '3rem 1.5rem', fontFamily: 'sans-serif', lineHeight: 1.7, color: '#1a1a2e' }}>
+    <>
+      <NavBar />
+      <main style={{ maxWidth: '800px', margin: '0 auto', padding: '3rem 1.5rem', fontFamily: 'sans-serif', lineHeight: 1.7, color: '#1a1a2e' }}>
       <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem' }}>Privacy Policy</h1>
       <p style={{ opacity: 0.5, fontSize: '0.9rem', marginBottom: '2.5rem' }}>Last updated: March 2026</p>
 
@@ -67,5 +70,6 @@ export default function PrivacyPolicyPage() {
         <p>For any privacy-related questions, please email: <strong>[your contact email]</strong></p>
       </section>
     </main>
+    </>
   );
 }

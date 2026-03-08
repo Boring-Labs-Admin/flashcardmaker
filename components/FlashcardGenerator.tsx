@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Flashcard, ViewMode, Deck } from '@/lib/types';
 import { useAuth } from '@/lib/auth-context';
 import InputSection from './InputSection';
@@ -34,6 +34,18 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const openAuthModal = onOpenModal ?? (() => setIsModalOpen(true));
+
+  useEffect(() => {
+    if (flashcards.length === 0 || savedDeck) return;
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [flashcards.length, savedDeck]);
 
   const handleSubmit = async (content: string | string[]) => {
     setIsLoading(true);

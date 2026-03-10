@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+
+export const maxDuration = 60; // seconds — allows time for file processing + Gemini inference
 import { GoogleGenAI } from '@google/genai';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
@@ -244,15 +246,29 @@ Rules:
   }
 
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash-lite',
-      contents: [{ role: 'user', parts: contentParts }],
-      config: {
-        systemInstruction: systemPrompt,
-        responseMimeType: 'application/json',
-        maxOutputTokens: 2000,
-      },
-    });
+    let response;
+    let lastError: unknown;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        response = await ai.models.generateContent({
+          model: 'gemini-2.0-flash-lite',
+          contents: [{ role: 'user', parts: contentParts }],
+          config: {
+            systemInstruction: systemPrompt,
+            responseMimeType: 'application/json',
+            maxOutputTokens: 2000,
+          },
+        });
+        break; // success
+      } catch (err) {
+        lastError = err;
+        if (attempt === 0) {
+          await new Promise(r => setTimeout(r, 1500));
+        }
+      }
+    }
+
+    if (!response) throw lastError;
 
     const responseText = response.text;
 

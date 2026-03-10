@@ -15,8 +15,8 @@ export async function checkRateLimit(identifierHash: string): Promise<{ allowed:
 
   if (error) {
     console.error('Rate limit check failed:', error.message);
-    // Fail closed on error — do not allow unlimited free generations
-    return { allowed: false, count: 0 };
+    // Fail open on error — a DB blip shouldn't block a legitimate first generation
+    return { allowed: true, count: 0 };
   }
 
   return { allowed: (count ?? 0) < 1, count: count ?? 0 };

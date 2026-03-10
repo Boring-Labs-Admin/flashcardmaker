@@ -19,7 +19,7 @@ export async function checkRateLimit(identifierHash: string): Promise<{ allowed:
     return { allowed: true, count: 0 };
   }
 
-  return { allowed: (count ?? 0) < 1, count: count ?? 0 };
+  return { allowed: (count ?? 0) < 3, count: count ?? 0 };
 }
 
 export async function recordGeneration(identifierHash: string): Promise<void> {

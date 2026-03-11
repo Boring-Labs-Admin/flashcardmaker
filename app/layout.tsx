@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import './globals.css';
 import 'katex/dist/katex.min.css';
 import { Suspense } from 'react';
@@ -58,6 +59,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <GoogleAnalytics gaId="G-F10E8QHNE4" />
       <body className="font-mono bg-white text-gray-900 antialiased">
         <script
           type="application/ld+json"

@@ -2,20 +2,20 @@ import type { Metadata } from 'next';
 import HomeContent from '@/components/HomeContent';
 
 export const metadata: Metadata = {
-  title: 'Flashcard Maker: Flashcards, flashcards, and more flashcards',
+  title: 'Flashcard Maker - Generate flashcards and revise for free',
   description: 'Create flashcards in seconds from PDFs, notes or slides. Start free and generate your first revision deck instantly. Sign up to a free account to save them to your Flashboard.',
   alternates: {
     canonical: 'https://flashcardmaker.co.uk',
   },
   openGraph: {
-    title: 'Flashcard Maker: Flashcards, flashcards, and more flashcards',
+    title: 'Flashcard Maker - Generate flashcards and revise for free',
     description: 'Create flashcards in seconds from PDFs, notes or slides. Start free and generate your first revision deck instantly.',
     url: 'https://flashcardmaker.co.uk',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Flashcard Maker: Flashcards, flashcards, and more flashcards',
+    title: 'Flashcard Maker - Generate flashcards and revise for free',
     description: 'Create flashcards in seconds from PDFs, notes or slides. Start free and generate your first revision deck instantly.',
   },
 };

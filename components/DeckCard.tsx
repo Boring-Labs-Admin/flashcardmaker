@@ -15,10 +15,11 @@ interface DeckCardProps {
   deck: Deck;
   onDelete: (id: string) => void;
   onStudy: (deck: Deck) => void;
+  onTest: (deck: Deck) => void;
   onUpdate: (id: string, updates: { title?: string; color?: string }) => void;
 }
 
-export default function DeckCard({ deck, onDelete, onStudy, onUpdate }: DeckCardProps) {
+export default function DeckCard({ deck, onDelete, onStudy, onTest, onUpdate }: DeckCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(deck.title);
   const [showColors, setShowColors] = useState(false);
@@ -140,9 +141,10 @@ export default function DeckCard({ deck, onDelete, onStudy, onUpdate }: DeckCard
         <span>{deck.flashcards.length} cards</span>
         <span>{date}</span>
       </div>
-      <button className="btn deck-study-btn" onClick={() => onStudy(deck)}>
-        ⚡ Study
-      </button>
+      <div className="deck-btn-row">
+        <button className="btn deck-study-btn" onClick={() => onStudy(deck)}>⚡ Study</button>
+        <button className="btn deck-test-btn" onClick={() => onTest(deck)}>📝 Test</button>
+      </div>
     </div>
   );
 }

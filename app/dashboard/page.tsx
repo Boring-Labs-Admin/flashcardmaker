@@ -12,7 +12,8 @@ import ViewToggle from '@/components/ViewToggle';
 import SideBySideView from '@/components/SideBySideView';
 import GridView from '@/components/GridView';
 import FlashcardGenerator from '@/components/FlashcardGenerator';
-import { ViewMode } from '@/lib/types';
+import TestMode from '@/components/TestMode';
+import { ViewMode, TestOptions } from '@/lib/types';
 
 const ADMIN_EMAIL = 'admin@boringlabs.co.uk';
 
@@ -45,6 +46,7 @@ function DashboardContent() {
   const [decks, setDecks] = useState<Deck[]>([]);
   const [fetching, setFetching] = useState(true);
   const [studyingDeck, setStudyingDeck] = useState<Deck | null>(null);
+  const [testingDeck, setTestingDeck] = useState<Deck | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [viewMode, setViewMode] = useState<ViewMode>('single');
   const [planData, setPlanData] = useState<UserPlanData | null>(null);
@@ -124,6 +126,19 @@ function DashboardContent() {
     setStudyingDeck(deck);
     setCurrentIndex(0);
     setViewMode('single');
+  };
+
+  const handleTest = (deck: Deck) => {
+    setTestingDeck(deck);
+  };
+
+  const handleTestOptionsGenerated = (deckId: string, options: TestOptions) => {
+    setDecks(prev => {
+      const updated = prev.map(d => d.id === deckId ? { ...d, test_options: options } : d);
+      if (user) sessionStorage.setItem(`decks_cache_${user.id}`, JSON.stringify(updated));
+      return updated;
+    });
+    setTestingDeck(prev => prev?.id === deckId ? { ...prev, test_options: options } : prev);
   };
 
   const handleDeckSaved = (deck: Deck) => {
@@ -239,6 +254,35 @@ function DashboardContent() {
     );
   }
 
+  // ── TEST VIEW ─────────────────────────────────────────
+  if (testingDeck) {
+    return (
+      <main>
+        <NavBar />
+        <div className="container">
+          <div className="dashboard-study-header">
+            <button className="back-btn" onClick={() => setTestingDeck(null)}>← Back to Flashboard</button>
+            <h2 className="dashboard-study-title">{testingDeck.title}</h2>
+          </div>
+          <div className="tool-panel">
+            <div className="tool-toolbar">
+              <div className="tool-toolbar-left">
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, opacity: 0.5, letterSpacing: '0.06em' }}>TEST MODE</span>
+              </div>
+            </div>
+            <div className="tool-viewport">
+              <TestMode
+                deck={testingDeck}
+                onBack={() => setTestingDeck(null)}
+                onTestOptionsGenerated={handleTestOptionsGenerated}
+              />
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   // ── DASHBOARD ─────────────────────────────────────────
   const firstName = user?.user_metadata?.full_name?.split(' ')[0];
   const titleName = firstName ? `${firstName}'s` : 'Your';
@@ -299,7 +343,7 @@ function DashboardContent() {
         ) : (
           <div className="deck-grid">
             {decks.map(deck => (
-              <DeckCard key={deck.id} deck={deck} onDelete={handleDelete} onStudy={handleStudy} onUpdate={handleDeckUpdate} />
+              <DeckCard key={deck.id} deck={deck} onDelete={handleDelete} onStudy={handleStudy} onTest={handleTest} onUpdate={handleDeckUpdate} />
             ))}
           </div>
         )}

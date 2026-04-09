@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Deck, TestOptions, TestCard } from '@/lib/types';
 
 interface TestModeProps {
@@ -46,11 +46,21 @@ export default function TestMode({ deck, onBack, onTestOptionsGenerated }: TestM
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const cancelledRef = useRef(false);
 
   useEffect(() => {
-    if (deck.test_options) return; // already have options, skip fetch
+    // Skip fetch if options are already available (from DB cache or prior retry)
+    if (testOptions) {
+      setTestCards(buildTestCards(deck, testOptions));
+      setPhase('testing');
+      return;
+    }
 
-    let cancelled = false;
+    cancelledRef.current = false;
+    setPhase('loading');
+    setError(null);
+
     (async () => {
       try {
         const res = await fetch('/api/decks/test-options', {
@@ -58,11 +68,11 @@ export default function TestMode({ deck, onBack, onTestOptionsGenerated }: TestM
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ deckId: deck.id }),
         });
+        if (cancelledRef.current) return;
         const data = await res.json();
-        if (cancelled) return;
+        if (cancelledRef.current) return;
         if (!res.ok) {
           setError(data.error || 'Failed to generate test options. Please try again.');
-          setPhase('loading'); // stay on loading to show error
           return;
         }
         const options: TestOptions = data.test_options;
@@ -71,11 +81,19 @@ export default function TestMode({ deck, onBack, onTestOptionsGenerated }: TestM
         setTestCards(buildTestCards(deck, options));
         setPhase('testing');
       } catch {
-        if (!cancelled) setError('Failed to connect. Please try again.');
+        if (!cancelledRef.current) {
+          setError('Failed to connect. Please check your connection and try again.');
+        }
       }
     })();
-    return () => { cancelled = true; };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    return () => { cancelledRef.current = true; };
+  }, [retryCount]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleRetry = () => {
+    setError(null);
+    setRetryCount(c => c + 1);
+  };
 
   const handleOptionSelect = useCallback((option: string) => {
     if (selectedOption !== null) return;
@@ -103,16 +121,14 @@ export default function TestMode({ deck, onBack, onTestOptionsGenerated }: TestM
   };
 
   // ── LOADING / ERROR ──────────────────────────────────
-  if (phase === 'loading') {
+  if (phase === 'loading' || error) {
     return (
       <div className="test-mode-loading">
         {error ? (
           <>
             <div style={{ fontSize: '2rem' }}>⚠</div>
             <p style={{ fontWeight: 700, color: '#c00' }}>{error}</p>
-            <button className="btn" onClick={() => { setError(null); window.location.reload(); }}>
-              Try Again
-            </button>
+            <button className="btn" onClick={handleRetry}>Try Again</button>
           </>
         ) : (
           <>

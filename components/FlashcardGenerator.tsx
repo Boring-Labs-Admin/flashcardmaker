@@ -206,6 +206,11 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
                   💾 Save deck <span className="locked-icon">🔒</span>
                 </button>
               ) : null}
+              {!user && (
+                <button className="locked-btn" onClick={openAuthModal}>
+                  📝 Test <span className="locked-icon">🔒</span>
+                </button>
+              )}
               {user ? (
                 <>
                   <button className="locked-btn" onClick={handleDownloadCSV}>⬇ CSV</button>

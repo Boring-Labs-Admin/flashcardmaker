@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import { Deck, TestOptions, TestCard } from '@/lib/types';
 
 interface TestModeProps {
@@ -9,7 +9,7 @@ interface TestModeProps {
   onTestOptionsGenerated: (deckId: string, options: TestOptions) => void;
 }
 
-type TestPhase = 'loading' | 'testing' | 'complete';
+type TestPhase = 'testing' | 'complete';
 
 function shuffle<T>(arr: T[]): T[] {
   const copy = [...arr];
@@ -18,6 +18,24 @@ function shuffle<T>(arr: T[]): T[] {
     [copy[i], copy[j]] = [copy[j], copy[i]];
   }
   return copy;
+}
+
+/**
+ * Generate distractors from other cards' answers in the deck.
+ * For each card, pick 3 answers from other cards at random.
+ * Falls back to repeating answers if the deck is tiny (< 4 cards).
+ */
+function generateOptionsFromDeck(deck: Deck): TestOptions {
+  const result: TestOptions = {};
+  const allAnswers = deck.flashcards.map(c => c.answer);
+
+  for (const card of deck.flashcards) {
+    const others = shuffle(allAnswers.filter(a => a !== card.answer));
+    // Pad if fewer than 3 unique other answers (very small decks)
+    while (others.length < 3) others.push(others[others.length - 1] ?? 'N/A');
+    result[card.id] = [others[0], others[1], others[2]];
+  }
+  return result;
 }
 
 function buildTestCards(deck: Deck, options: TestOptions): TestCard[] {
@@ -36,64 +54,36 @@ function scoreMessage(score: number, total: number): string {
   return 'Keep practising!';
 }
 
+function initOptions(deck: Deck): TestOptions {
+  // Use cached DB options if available, otherwise generate from deck
+  if (deck.test_options && Object.keys(deck.test_options).length > 0) {
+    return deck.test_options;
+  }
+  return generateOptionsFromDeck(deck);
+}
+
 export default function TestMode({ deck, onBack, onTestOptionsGenerated }: TestModeProps) {
-  const [phase, setPhase] = useState<TestPhase>(deck.test_options ? 'testing' : 'loading');
-  const [testOptions, setTestOptions] = useState<TestOptions | null>(deck.test_options ?? null);
+  const [testOptions] = useState<TestOptions>(() => initOptions(deck));
   const [testCards, setTestCards] = useState<TestCard[]>(() =>
-    deck.test_options ? buildTestCards(deck, deck.test_options) : []
+    buildTestCards(deck, initOptions(deck))
   );
+  const [phase, setPhase] = useState<TestPhase>('testing');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [score, setScore] = useState(0);
-  const [error, setError] = useState<string | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
-  const cancelledRef = useRef(false);
 
-  useEffect(() => {
-    // Skip fetch if options are already available (from DB cache or prior retry)
-    if (testOptions) {
-      setTestCards(buildTestCards(deck, testOptions));
-      setPhase('testing');
-      return;
+  // Persist to DB in background on first generation (fire-and-forget)
+  useState(() => {
+    if (!deck.test_options || Object.keys(deck.test_options).length === 0) {
+      const options = generateOptionsFromDeck(deck);
+      onTestOptionsGenerated(deck.id, options);
+      fetch('/api/decks/test-options', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deckId: deck.id, testOptions: options }),
+      }).catch(() => {}); // fire-and-forget, failure is fine
     }
-
-    cancelledRef.current = false;
-    setPhase('loading');
-    setError(null);
-
-    (async () => {
-      try {
-        const res = await fetch('/api/decks/test-options', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ deckId: deck.id }),
-        });
-        if (cancelledRef.current) return;
-        const data = await res.json();
-        if (cancelledRef.current) return;
-        if (!res.ok) {
-          setError(data.error || 'Failed to generate test options. Please try again.');
-          return;
-        }
-        const options: TestOptions = data.test_options;
-        setTestOptions(options);
-        onTestOptionsGenerated(deck.id, options);
-        setTestCards(buildTestCards(deck, options));
-        setPhase('testing');
-      } catch {
-        if (!cancelledRef.current) {
-          setError('Failed to connect. Please check your connection and try again.');
-        }
-      }
-    })();
-
-    return () => { cancelledRef.current = true; };
-  }, [retryCount]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleRetry = () => {
-    setError(null);
-    setRetryCount(c => c + 1);
-  };
+  });
 
   const handleOptionSelect = useCallback((option: string) => {
     if (selectedOption !== null) return;
@@ -112,34 +102,13 @@ export default function TestMode({ deck, onBack, onTestOptionsGenerated }: TestM
   }, [selectedOption, testCards, currentIndex]);
 
   const handleTryAgain = () => {
-    if (!testOptions) return;
+    // Reshuffle card order and option order — no API call
     setTestCards(buildTestCards(deck, testOptions));
     setCurrentIndex(0);
     setSelectedOption(null);
     setScore(0);
     setPhase('testing');
   };
-
-  // ── LOADING / ERROR ──────────────────────────────────
-  if (phase === 'loading' || error) {
-    return (
-      <div className="test-mode-loading">
-        {error ? (
-          <>
-            <div style={{ fontSize: '2rem' }}>⚠</div>
-            <p style={{ fontWeight: 700, color: '#c00' }}>{error}</p>
-            <button className="btn" onClick={handleRetry}>Try Again</button>
-          </>
-        ) : (
-          <>
-            <div className="spinner" style={{ fontSize: '2rem' }}>⚡</div>
-            <p style={{ fontWeight: 700 }}>Generating test options…</p>
-            <p className="test-mode-loading-sub">This only happens once per deck</p>
-          </>
-        )}
-      </div>
-    );
-  }
 
   // ── COMPLETE ─────────────────────────────────────────
   if (phase === 'complete') {

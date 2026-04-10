@@ -56,10 +56,12 @@ function scoreMessage(score: number, total: number): string {
 }
 
 function initOptions(deck: Deck): TestOptions {
-  // Use cached DB options if available, otherwise generate from deck
-  if (deck.test_options && Object.keys(deck.test_options).length > 0) {
-    return deck.test_options;
+  // Only use cached options if every card in the deck has an entry
+  const cached = deck.test_options;
+  if (cached && deck.flashcards.every(c => Array.isArray(cached[c.id]) && cached[c.id].length === 3)) {
+    return cached;
   }
+  // Stale/partial/missing cache — regenerate from deck
   return generateOptionsFromDeck(deck);
 }
 

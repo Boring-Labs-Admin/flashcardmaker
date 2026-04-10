@@ -14,7 +14,7 @@ interface Segment {
 function parseSegments(text: string): Segment[] {
   const segments: Segment[] = [];
   // Match $$...$$ (block) or $...$ (inline)
-  const regex = /(\$\$[\s\S]+?\$\$|\$[^$\n]+?\$)/g;
+  const regex = /(\$\$[\s\S]+?\$\$|\$[^$]+?\$)/g;
   let lastIndex = 0;
   let match;
 

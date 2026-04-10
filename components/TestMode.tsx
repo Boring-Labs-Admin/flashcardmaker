@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { Deck, TestOptions, TestCard } from '@/lib/types';
+import LatexRenderer from '@/components/LatexRenderer';
 
 interface TestModeProps {
   deck: Deck;
@@ -136,7 +137,7 @@ export default function TestMode({ deck, onBack, onTestOptionsGenerated }: TestM
         Question {currentIndex + 1} / {testCards.length}
       </div>
 
-      <div className="test-question-text">{card.flashcard.question}</div>
+      <div className="test-question-text"><LatexRenderer text={card.flashcard.question} /></div>
 
       <div className="test-options-grid">
         {card.options.map((option, i) => {
@@ -153,7 +154,7 @@ export default function TestMode({ deck, onBack, onTestOptionsGenerated }: TestM
               onClick={() => handleOptionSelect(option)}
               disabled={selectedOption !== null}
             >
-              {option}
+              <LatexRenderer text={option} />
             </button>
           );
         })}
@@ -163,7 +164,7 @@ export default function TestMode({ deck, onBack, onTestOptionsGenerated }: TestM
         <div className="test-feedback">
           {selectedOption === card.correctAnswer
             ? '✓ Correct!'
-            : `✗ Correct answer: ${card.correctAnswer}`}
+            : <><span>✗ Correct answer: </span><LatexRenderer text={card.correctAnswer} /></>}
         </div>
       )}
     </div>

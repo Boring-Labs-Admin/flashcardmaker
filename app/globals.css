@@ -459,7 +459,8 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .site-footer-link:hover { opacity: 1; text-decoration: underline; }
 
 /* ── LIBRARY DIRECTORY (home page) ───────────────── */
-.library-directory { display: flex; flex-direction: column; gap: 2rem; max-width: 720px; margin: 0 auto; }
+.library-directory { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; max-width: 960px; margin: 0 auto; }
+@media (max-width: 600px) { .library-directory { grid-template-columns: 1fr; } }
 .library-subject-group { border: 1.5px solid #C7D9F5; border-radius: 12px; overflow: hidden; }
 .library-subject-heading { background: var(--cobalt-blue); color: white; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.6rem 1.25rem; }
 .library-directory-row { display: flex; align-items: center; gap: 1rem; padding: 0.9rem 1.25rem; text-decoration: none; color: inherit; border-top: 1px solid #E0E8F5; transition: background 0.15s; }

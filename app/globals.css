@@ -457,3 +457,33 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .site-footer-links { display: flex; gap: 1.5rem; }
 .site-footer-link { color: white; font-size: 0.8rem; opacity: 0.7; text-decoration: none; font-family: "IBM Plex Mono", monospace; }
 .site-footer-link:hover { opacity: 1; text-decoration: underline; }
+
+/* ── LIBRARY DIRECTORY (home page) ───────────────── */
+.library-directory { display: flex; flex-direction: column; gap: 2rem; max-width: 720px; margin: 0 auto; }
+.library-subject-group { border: 1.5px solid #C7D9F5; border-radius: 12px; overflow: hidden; }
+.library-subject-heading { background: var(--cobalt-blue); color: white; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.6rem 1.25rem; }
+.library-directory-row { display: flex; align-items: center; gap: 1rem; padding: 0.9rem 1.25rem; text-decoration: none; color: inherit; border-top: 1px solid #E0E8F5; transition: background 0.15s; }
+.library-directory-row:hover { background: var(--light-blue); }
+.library-row-title { flex: 1; font-weight: 600; font-size: 0.9rem; }
+.library-row-count { font-size: 0.75rem; opacity: 0.55; font-weight: 600; white-space: nowrap; }
+.library-row-arrow { color: var(--cobalt-blue); font-weight: 700; }
+
+/* ── LIBRARY DECK PAGE ───────────────────────────── */
+.library-deck-header { padding: 2rem 0 1.5rem; }
+.back-link { font-size: 0.85rem; font-weight: 600; color: var(--cobalt-blue); text-decoration: none; opacity: 0.6; display: inline-block; margin-bottom: 1rem; }
+.back-link:hover { opacity: 1; }
+.library-deck-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.4rem; }
+.library-deck-meta { font-size: 0.85rem; opacity: 0.55; font-weight: 600; }
+.library-card-list { display: flex; flex-direction: column; gap: 0.75rem; margin: 1.5rem 0; }
+.library-card { display: flex; align-items: center; gap: 1rem; border: 1.5px solid #C7D9F5; border-radius: 10px; padding: 1rem 1.25rem; cursor: pointer; transition: all 0.15s; background: white; }
+.library-card:hover { border-color: var(--cobalt-blue); background: var(--light-blue); }
+.library-card-num { font-size: 0.75rem; font-weight: 700; color: var(--cobalt-blue); opacity: 0.4; min-width: 1.5rem; }
+.library-card-content { flex: 1; }
+.library-card-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.4; display: block; margin-bottom: 0.25rem; }
+.library-card-flip { font-size: 0.75rem; font-weight: 700; color: var(--cobalt-blue); white-space: nowrap; opacity: 0.6; }
+
+/* ── LIBRARY GATE ────────────────────────────────── */
+.library-gate { position: relative; margin-top: -4rem; padding-top: 5rem; background: linear-gradient(to bottom, transparent, white 40%); text-align: center; }
+.library-gate-inner { background: white; border: 2px solid var(--cobalt-blue); border-radius: 16px; padding: 2.5rem; max-width: 440px; margin: 0 auto 3rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+.library-gate-inner h3 { font-size: 1.3rem; font-weight: 800; color: var(--cobalt-blue); }
+.library-gate-inner p { font-size: 0.9rem; opacity: 0.65; }

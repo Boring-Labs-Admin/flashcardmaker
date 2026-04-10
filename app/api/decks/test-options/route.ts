@@ -7,6 +7,11 @@ import { TestOptions } from '@/lib/types';
 
 export const maxDuration = 60;
 
+function isRateLimitError(err: unknown): boolean {
+  const msg = String(err).toLowerCase();
+  return msg.includes('429') || msg.includes('resource_exhausted') || msg.includes('too many requests') || msg.includes('quota');
+}
+
 export async function POST(request: NextRequest) {
   const supabase = createRouteHandlerClient({ cookies });
   const { data: { session } } = await supabase.auth.getSession();
@@ -35,7 +40,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Deck not found.' }, { status: 404 });
   }
 
-  // Cache hit — return stored options immediately
+  // Cache hit — return stored options immediately (no Gemini call)
   if (deck.test_options) {
     return NextResponse.json({ test_options: deck.test_options });
   }
@@ -50,26 +55,29 @@ export async function POST(request: NextRequest) {
 
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-  const systemInstruction = `You are a quiz question expert. For each flashcard provided, generate exactly 3 plausible but incorrect answer distractors that a student might confuse with the correct answer.
+  const cards = deck.flashcards as { id: string; question: string; answer: string }[];
+
+  const systemInstruction = `You are a quiz question expert. You will be given a list of flashcards, each with an ID, a question, and the correct answer. For each flashcard, generate exactly 3 plausible but incorrect answer distractors that a student studying this topic might confuse with the correct answer.
 
 Rules:
-- Each distractor must be clearly wrong but believable — not obviously ridiculous
+- Study the correct answer carefully — distractors must be wrong versions of that specific answer
 - Distractors should be similar in style, length, and format to the correct answer
-- Never repeat the correct answer as a distractor
+- Distractors must be plausible enough that a student who hasn't studied might pick them
+- Never include the correct answer as a distractor
 - Never repeat distractors within the same card
-- Return ONLY a valid JSON object where each key is the card ID and the value is an array of exactly 3 strings
-- No explanation text, no extra fields`;
+- Return ONLY a valid JSON object — no explanation text, no markdown, no extra fields
+- Every card ID in the input must have a corresponding key in the output`;
 
-  const userMessage = `Generate 3 wrong-answer distractors for each of these flashcards:\n${JSON.stringify(
-    deck.flashcards.map((c: { id: string; question: string; answer: string }) => ({
-      id: c.id,
-      question: c.question,
-      answer: c.answer,
-    }))
-  )}\n\nReturn format: { "<card_id>": ["wrong1", "wrong2", "wrong3"], ... }`;
+  // Build user message listing every card with its question and correct answer
+  const cardList = cards.map((c, i) =>
+    `Card ${i + 1}:\n  ID: ${c.id}\n  Question: ${c.question}\n  Correct answer: ${c.answer}`
+  ).join('\n\n');
+
+  const userMessage = `Here are the flashcards. Generate 3 wrong-answer distractors for each one:\n\n${cardList}\n\nReturn as JSON: { "<card_id>": ["distractor1", "distractor2", "distractor3"], ... }`;
 
   let response;
   let lastError: unknown;
+
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
       response = await ai.models.generateContent({
@@ -78,13 +86,21 @@ Rules:
         config: {
           systemInstruction,
           responseMimeType: 'application/json',
-          maxOutputTokens: 4000,
+          maxOutputTokens: 8000,
         },
       });
       break;
     } catch (err) {
+      // 429 rate limit — don't retry, fail fast with a clear message
+      if (isRateLimitError(err)) {
+        console.error('Gemini rate limit hit for test-options:', String(err));
+        return NextResponse.json(
+          { error: 'Too many requests to the AI. Please wait a minute and try again.' },
+          { status: 429 }
+        );
+      }
       lastError = err;
-      if (attempt === 0) await new Promise(r => setTimeout(r, 1500));
+      if (attempt === 0) await new Promise(r => setTimeout(r, 2000));
     }
   }
 
@@ -93,39 +109,57 @@ Rules:
     return NextResponse.json({ error: 'Failed to generate test options. Please try again.' }, { status: 500 });
   }
 
-  let parsed: TestOptions;
+  let parsed: Record<string, unknown>;
   try {
     const text = response.text;
     if (!text) throw new Error('Empty response');
     parsed = JSON.parse(text);
-  } catch {
-    return NextResponse.json({ error: 'Failed to process test options. Please try again.' }, { status: 500 });
+  } catch (parseErr) {
+    console.error('Failed to parse Gemini response:', String(parseErr));
+    return NextResponse.json({ error: 'Failed to process AI response. Please try again.' }, { status: 500 });
   }
 
-  // Validate all card IDs are present with exactly 3 non-empty strings
-  for (const card of deck.flashcards) {
+  // Build validated options — lenient: skip cards with bad output rather than failing entirely
+  const result: TestOptions = {};
+  const skipped: string[] = [];
+
+  for (const card of cards) {
     const wrongs = parsed[card.id];
     if (
-      !Array.isArray(wrongs) ||
-      wrongs.length !== 3 ||
-      wrongs.some((w: unknown) => typeof w !== 'string' || !w.trim())
+      Array.isArray(wrongs) &&
+      wrongs.length >= 3 &&
+      wrongs.slice(0, 3).every((w: unknown) => typeof w === 'string' && (w as string).trim())
     ) {
-      console.error('Invalid test options for card:', card.id, wrongs);
-      return NextResponse.json({ error: 'Generated options were incomplete. Please try again.' }, { status: 500 });
+      result[card.id] = [
+        (wrongs[0] as string).trim(),
+        (wrongs[1] as string).trim(),
+        (wrongs[2] as string).trim(),
+      ];
+    } else {
+      skipped.push(card.id);
     }
   }
 
-  // Store in DB
+  if (skipped.length > 0) {
+    console.error(`Test options missing for ${skipped.length} card(s):`, skipped);
+  }
+
+  // Fail only if we got nothing at all
+  if (Object.keys(result).length === 0) {
+    return NextResponse.json({ error: 'AI returned no usable options. Please try again.' }, { status: 500 });
+  }
+
+  // Store in DB (only cards we have options for)
   const { error: updateError } = await supabaseAdmin
     .from('decks')
-    .update({ test_options: parsed })
+    .update({ test_options: result })
     .eq('id', deckId)
     .eq('user_id', session.user.id);
 
   if (updateError) {
     console.error('Failed to store test options:', updateError.message);
-    // Still return the options so the user can test — just won't be cached
+    // Still return so the user can test — just won't be cached
   }
 
-  return NextResponse.json({ test_options: parsed });
+  return NextResponse.json({ test_options: result });
 }

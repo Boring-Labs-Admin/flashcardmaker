@@ -14,6 +14,38 @@ type TestPhase = 'testing' | 'complete';
 
 const LABELS = ['A', 'B', 'C', 'D'];
 
+const CORRECT_MESSAGES = [
+  'Nailed it! ⚡',
+  'Correct! Keep going!',
+  'That\'s the one!',
+  'Boom! Right answer.',
+  'You got it!',
+  'Spot on!',
+  'Brilliant!',
+  'Exactly right!',
+  'Yes! That\'s it!',
+  'Perfect!',
+  'On a roll!',
+  'Nice work!',
+];
+
+const INCORRECT_MESSAGES = [
+  'Not quite — check the answer.',
+  'Almost! Review and move on.',
+  'Don\'t worry, keep going!',
+  'Tricky one — you\'ll get it next time.',
+  'Take note of this one.',
+  'That\'s a tough one.',
+  'Close — remember this!',
+  'Everyone misses this sometimes.',
+  'Keep going, you\'ve got this!',
+  'Note it down and move on.',
+];
+
+function randomFrom(arr: string[]): string {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
 function shuffle<T>(arr: T[]): T[] {
   const copy = [...arr];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -64,6 +96,7 @@ export default function TestMode({ deck, onBack, onTestOptionsGenerated }: TestM
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [score, setScore] = useState(0);
+  const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
 
   useState(() => {
     if (!deck.test_options || Object.keys(deck.test_options).length === 0) {
@@ -81,10 +114,12 @@ export default function TestMode({ deck, onBack, onTestOptionsGenerated }: TestM
     if (selectedOption !== null) return;
     const isCorrect = option === testCards[currentIndex].correctAnswer;
     setSelectedOption(option);
+    setFeedbackMsg(isCorrect ? randomFrom(CORRECT_MESSAGES) : randomFrom(INCORRECT_MESSAGES));
     if (isCorrect) setScore(s => s + 1);
 
     setTimeout(() => {
       setSelectedOption(null);
+      setFeedbackMsg(null);
       if (currentIndex < testCards.length - 1) {
         setCurrentIndex(i => i + 1);
       } else {
@@ -157,6 +192,13 @@ export default function TestMode({ deck, onBack, onTestOptionsGenerated }: TestM
         <div className="test-question">
           <LatexRenderer text={card.flashcard.question} />
         </div>
+
+        {/* Feedback */}
+        {feedbackMsg && (
+          <div className={`test-feedback-msg ${selectedOption === card.correctAnswer ? 'test-feedback-correct' : 'test-feedback-incorrect'}`}>
+            {feedbackMsg}
+          </div>
+        )}
 
         {/* Options */}
         <div className="test-options-grid">

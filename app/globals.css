@@ -13,6 +13,11 @@
   --dark-blue: #00326b;
 }
 
+/* ── SCROLL REVEAL ───────────────────────────────── */
+.sr-hidden { opacity: 0; transform: translateY(24px); transition: opacity 0.55s ease, transform 0.55s ease; }
+.sr-visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { .sr-hidden { opacity: 1; transform: none; transition: none; } }
+
 /* ── RESET ─────────────────────────────── */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 

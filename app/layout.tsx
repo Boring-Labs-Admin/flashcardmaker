@@ -7,6 +7,7 @@ import { AuthProvider } from '@/lib/auth-context';
 import { PostHogProvider } from './providers';
 import { PostHogPageview } from './posthog-pageview';
 import Footer from '@/components/Footer';
+import ScrollRevealInit from '@/components/ScrollRevealInit';
 
 export const metadata: Metadata = {
   title: 'Flashcard Maker - Generate flashcards and revise for free',
@@ -77,6 +78,7 @@ export default function RootLayout({
             <Suspense>
               <PostHogPageview />
             </Suspense>
+            <ScrollRevealInit />
             {children}
             <Footer />
           </AuthProvider>

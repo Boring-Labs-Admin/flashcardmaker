@@ -14,6 +14,8 @@ import GridView from '@/components/GridView';
 import FlashcardGenerator from '@/components/FlashcardGenerator';
 import TestMode from '@/components/TestMode';
 import { ViewMode, TestOptions } from '@/lib/types';
+import { getDecksBySubject } from '@/lib/library';
+import Link from 'next/link';
 
 const ADMIN_EMAIL = 'admin@boringlabs.co.uk';
 
@@ -623,6 +625,28 @@ function DashboardContent() {
 
           </div>
         )}
+
+        {/* ── FREE FLASHCARD LIBRARY ── */}
+        <div style={{ marginTop: '3rem', ...mono }}>
+          <SectionDivider label="Free Flashcard Library" />
+          <p style={{ fontSize: '0.8rem', opacity: 0.55, marginBottom: '1.5rem' }}>
+            Browse pre-made sets — click any deck to study it, or save it to your Flashboard.
+          </p>
+          <div className="dashboard-library-grid">
+            {Object.entries(getDecksBySubject()).map(([subject, decks]) => (
+              <div key={subject} className="library-subject-group">
+                <div className="library-subject-heading">{subject}</div>
+                {decks.map(deck => (
+                  <Link key={deck.slug} href={`/library/${deck.slug}`} className="library-directory-row">
+                    <span className="library-row-title">{deck.title}</span>
+                    <span className="library-row-count">{deck.cards.length} cards</span>
+                    <span className="library-row-arrow">→</span>
+                  </Link>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
 
       </div>
     </main>

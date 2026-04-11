@@ -284,6 +284,17 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .subject-card:hover { background: var(--cobalt-blue); color: white; }
 .subject-icon { font-size: 3rem; margin-bottom: 1rem; }
 
+/* ── SUBJECT PAGE FREE DECK LIST ─────────────────── */
+.subject-deck-list { display: flex; flex-direction: column; border: 1.5px solid #C7D9F5; border-radius: 12px; overflow: hidden; }
+.subject-deck-row { display: flex; align-items: center; gap: 1rem; padding: 0.9rem 1.25rem; text-decoration: none; color: inherit; border-top: 1px solid #E0E8F5; transition: background 0.15s; }
+.subject-deck-row:first-child { border-top: none; }
+.subject-deck-row:hover { background: var(--light-blue); }
+.subject-deck-info { display: flex; flex-direction: column; gap: 0.15rem; flex: 1; }
+.subject-deck-title { font-weight: 600; font-size: 0.9rem; }
+.subject-deck-subject { font-size: 0.72rem; opacity: 0.45; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+.subject-deck-count { font-size: 0.75rem; opacity: 0.55; font-weight: 600; white-space: nowrap; }
+.subject-deck-arrow { color: var(--cobalt-blue); font-weight: 700; }
+
 /* ── MODAL ─────────────────────────────── */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
 .modal-overlay.active { display: flex; }

@@ -7,6 +7,22 @@ import Header from '@/components/Header';
 import FlashcardGenerator from '@/components/FlashcardGenerator';
 import FlashboardModal from '@/components/FlashboardModal';
 import { SUBJECTS, CURRICULA } from '@/lib/subjects';
+import { LIBRARY_DECKS } from '@/lib/library';
+
+const TOPIC_TO_SUBJECTS: Record<string, string[]> = {
+  biology:   ['Biology'],
+  chemistry: ['Chemistry'],
+  physics:   ['Physics'],
+  maths:     ['Maths'],
+  history:   ['History'],
+  geography: ['Geography'],
+  psychology:['Psychology'],
+  science:   ['Biology', 'Chemistry', 'Physics'],
+  business:  ['Economics'],
+  gcse:      ['Biology', 'Chemistry', 'Physics', 'Maths', 'History', 'Geography', 'Psychology', 'Computer Science', 'English Literature', 'Economics'],
+  'a-level': ['Biology', 'Chemistry', 'Physics', 'Maths', 'History', 'Psychology', 'Economics', 'English Literature'],
+  aqa:       ['Biology', 'Chemistry', 'Physics', 'Maths', 'History', 'Psychology'],
+};
 
 interface SubjectContentProps {
   title: string;
@@ -17,12 +33,35 @@ interface SubjectContentProps {
 export default function SubjectContent({ title, subtitle, topic }: SubjectContentProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const subjects = TOPIC_TO_SUBJECTS[topic] ?? [];
+  const relatedDecks = LIBRARY_DECKS.filter(d => subjects.includes(d.subject));
+
   return (
     <main>
       <NavBar onLoginClick={() => setIsModalOpen(true)} />
       <Header title={title} subtitle={subtitle} />
       <div className="container">
         <FlashcardGenerator topic={topic} onOpenModal={() => setIsModalOpen(true)} />
+
+        {relatedDecks.length > 0 && (
+          <div className="subject-section">
+            <h2 className="section-title">Free Flashcard Sets</h2>
+            <p className="section-subtitle">Browse pre-made sets — no account needed to get started</p>
+            <div className="subject-deck-list">
+              {relatedDecks.map(deck => (
+                <Link key={deck.slug} href={`/library/${deck.slug}`} className="subject-deck-row">
+                  <div className="subject-deck-info">
+                    <span className="subject-deck-title">{deck.title}</span>
+                    <span className="subject-deck-subject">{deck.subject}</span>
+                  </div>
+                  <span className="subject-deck-count">{deck.cards.length} cards</span>
+                  <span className="subject-deck-arrow">→</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="subject-section">
           <h2 className="section-title">Flashcards by Subject</h2>
           <p className="section-subtitle">Pick a subject and upload your notes — your deck is ready in seconds</p>

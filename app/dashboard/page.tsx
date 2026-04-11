@@ -261,26 +261,11 @@ function DashboardContent() {
     return (
       <main>
         <NavBar />
-        <div className="container">
-          <div className="dashboard-study-header">
-            <button className="back-btn" onClick={() => setTestingDeck(null)}>← Back to Flashboard</button>
-            <h2 className="dashboard-study-title">{testingDeck.title}</h2>
-          </div>
-          <div className="tool-panel">
-            <div className="tool-toolbar">
-              <div className="tool-toolbar-left">
-                <span style={{ fontSize: '0.8rem', fontWeight: 700, opacity: 0.5, letterSpacing: '0.06em' }}>TEST MODE</span>
-              </div>
-            </div>
-            <div className="tool-viewport">
-              <TestMode
-                deck={testingDeck}
-                onBack={() => setTestingDeck(null)}
-                onTestOptionsGenerated={handleTestOptionsGenerated}
-              />
-            </div>
-          </div>
-        </div>
+        <TestMode
+          deck={testingDeck}
+          onBack={() => setTestingDeck(null)}
+          onTestOptionsGenerated={handleTestOptionsGenerated}
+        />
       </main>
     );
   }

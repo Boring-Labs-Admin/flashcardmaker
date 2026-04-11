@@ -312,6 +312,35 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
     ]
   ),
   deck(
+    'chemistry-stp',
+    'Chemistry: Standard Temperature & Pressure (STP)',
+    'Chemistry',
+    'STP',
+    [
+      { question: 'What does STP stand for?', answer: 'Standard Temperature and Pressure — a set of standard conditions used in chemistry to allow fair comparisons between experimental measurements.' },
+      { question: 'What is the current IUPAC definition of STP (since 1982)?', answer: 'A temperature of 273.15 K (0 °C) and an absolute pressure of exactly 1 bar (100,000 Pa).' },
+      { question: 'What was the original IUPAC definition of STP before 1982?', answer: 'A temperature of 273.15 K (0 °C) and an absolute pressure of exactly 1 atm (101.325 kPa).' },
+      { question: 'Why did IUPAC change the definition of STP in 1982?', answer: 'It switched from 1 atm to 1 bar to align with the metric system — the Pascal (bar) is a metric unit, whereas the atmosphere is not.' },
+      { question: 'What is SATP and how does it differ from STP?', answer: 'Standard Ambient Temperature and Pressure — defined by IUPAC as 298.15 K (25 °C) and 1 atm (101.325 kPa). It uses a higher, more "room-like" temperature than STP.' },
+      { question: 'What conditions does NIST use as its standard (NTP)?', answer: 'Normal Temperature and Pressure (NTP): 20 °C (293.15 K) and 1 atm (101.325 kPa).' },
+      { question: 'What is the molar volume of an ideal gas at STP (IUPAC, since 1982)?', answer: '22.711 dm³/mol — calculated using the ideal gas law at 0 °C and 100 kPa.' },
+      { question: 'What is the molar volume of an ideal gas at the old STP (0 °C, 101.325 kPa)?', answer: '22.414 dm³/mol — this is the value still commonly quoted in many textbooks.' },
+      { question: 'What is the molar volume of an ideal gas at SATP (25 °C, 100 kPa)?', answer: '24.790 dm³/mol.' },
+      { question: 'What is the ideal gas law formula used to calculate molar volume?', answer: 'Vm = RT/P, where R = 8.3145 J/(mol·K), T is temperature in Kelvin, and P is pressure in Pascals.' },
+      { question: 'Why are standard conditions necessary when reporting gas volumes?', answer: 'Gas volumes vary significantly with temperature and pressure. Standard conditions allow meaningful comparisons between different experiments and data sets.' },
+      { question: 'What is 1 bar in Pascals?', answer: '100,000 Pa (100 kPa). It is slightly less than 1 atm (101.325 kPa).' },
+      { question: 'What is 1 atm in kilopascals?', answer: '101.325 kPa. It is the older pressure standard still used by NIST, SATP, and many industries.' },
+      { question: 'What standard does the International Civil Aviation Organization (ICAO) use?', answer: '15 °C and 101.325 kPa — also used by ISO 13443 for natural gas and the European Environment Agency.' },
+      { question: 'What standard conditions does the EPA use?', answer: '20 °C (293.15 K) and 101.325 kPa — the same as the NIST NTP definition.' },
+      { question: 'What is the International Standard Atmosphere (ISA) used in aeronautics?', answer: 'At sea level: 15 °C, 101,325 Pa (1 atm), and air density of 1.2250 kg/m³. It also specifies a temperature lapse rate of −6.5 °C per km altitude.' },
+      { question: 'What is the difference between STP and standard laboratory conditions?', answer: 'STP is a defined standard (0 °C, 1 bar). "Standard laboratory conditions" is an informal term referring to typical room conditions (~25 °C, 1 atm) which vary by geography and institution.' },
+      { question: 'What is the relationship between the ideal gas constant R and the specific gas constant Rs?', answer: 'Rs = R / m, where m is the molar mass of the gas. R = 8.3145 J/(mol·K) applies to all ideal gases; Rs varies by gas.' },
+      { question: 'If a question uses the old STP definition, what molar volume should you use?', answer: '22.414 dm³/mol (at 0 °C and 101.325 kPa). Many school-level textbooks and exams still use this value.' },
+      { question: 'Why might "standard conditions" cause confusion in technical literature?', answer: 'Many publications state "standard conditions" without specifying which definition they use. Different organisations (IUPAC, NIST, ISO, EPA) each have their own standards, sometimes more than one.' },
+    ]
+  ),
+
+  deck(
     'chemistry-periodic-table',
     'Chemistry: The Periodic Table',
     'Chemistry',

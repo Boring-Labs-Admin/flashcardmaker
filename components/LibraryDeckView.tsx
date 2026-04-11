@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import LatexRenderer from '@/components/LatexRenderer';
 import FlashboardModal from '@/components/FlashboardModal';
@@ -11,6 +12,10 @@ const FREE_LIMIT = 10;
 
 export default function LibraryDeckView({ deck }: { deck: LibraryDeck }) {
   const { user } = useAuth();
+  const searchParams = useSearchParams();
+  const fromDashboard = searchParams.get('from') === 'dashboard';
+  const backHref = fromDashboard ? '/dashboard' : '/';
+  const backLabel = fromDashboard ? '← Flashboard' : '← Home';
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [flipped, setFlipped] = useState<Record<number, boolean>>({});
   const [saving, setSaving] = useState(false);
@@ -45,7 +50,7 @@ export default function LibraryDeckView({ deck }: { deck: LibraryDeck }) {
   return (
     <div className="container">
       <div className="library-deck-header">
-        <Link href="/" className="back-link">← Home</Link>
+        <Link href={backHref} className="back-link">{backLabel}</Link>
         <h1 className="library-deck-title">{deck.title}</h1>
         <p className="library-deck-meta">{deck.cards.length} cards · {deck.subject}</p>
         {user && (

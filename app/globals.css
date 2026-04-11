@@ -376,7 +376,7 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 
 /* Options */
 .test-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.test-option-btn { display: flex; align-items: flex-start; gap: 1rem; background: white; border: 2px solid #D0DFF5; border-radius: 12px; padding: 1.1rem 1.25rem; font-family: "IBM Plex Mono", monospace; font-size: 0.9rem; font-weight: 500; color: #1a1a1a; cursor: pointer; text-align: left; line-height: 1.5; transition: all 0.15s; }
+.test-option-btn { display: flex; align-items: flex-start; gap: 1rem; background: white; border: 2px solid #D0DFF5; border-radius: 12px; padding: 1.4rem 1.5rem; min-height: 90px; font-family: "IBM Plex Mono", monospace; font-size: 0.9rem; font-weight: 500; color: #1a1a1a; cursor: pointer; text-align: left; line-height: 1.6; transition: all 0.15s; }
 .test-option-btn:hover:not(:disabled) { border-color: var(--cobalt-blue); background: var(--light-blue); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,74,173,0.1); }
 .test-option-btn:disabled { cursor: default; }
 .test-option-label { flex-shrink: 0; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: #EEF4FF; color: var(--cobalt-blue); font-size: 0.72rem; font-weight: 800; display: flex; align-items: center; justify-content: center; letter-spacing: 0; margin-top: 0.05rem; }

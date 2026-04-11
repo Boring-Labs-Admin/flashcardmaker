@@ -142,10 +142,15 @@ export default function TestMode({ deck, onBack, onTestOptionsGenerated }: TestM
       </div>
 
       <div className="test-body">
-        {/* Counter */}
-        <div className="test-counter">
-          <span className="test-counter-label">Question</span>
-          <span className="test-counter-num">{currentIndex + 1} <span style={{ opacity: 0.35 }}>/ {total}</span></span>
+        {/* Counter + Exit */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div className="test-counter">
+            <span className="test-counter-label">Question</span>
+            <span className="test-counter-num">{currentIndex + 1} <span style={{ opacity: 0.35 }}>/ {total}</span></span>
+          </div>
+          <button className="btn-outline" onClick={onBack} style={{ fontSize: '0.78rem', padding: '0.4rem 0.9rem' }}>
+            Exit
+          </button>
         </div>
 
         {/* Question */}

@@ -17,14 +17,14 @@ export async function generateMetadata({
   const deck = LIBRARY_DECKS.find(d => d.slug === params.slug);
   if (!deck) return {};
   return {
-    title: `${deck.title} Flashcards | Flashcard Maker`,
-    description: `Free ${deck.title} flashcards. Study ${deck.cards.length} key cards covering essential ${deck.topic} topics. No account needed to get started.`,
+    title: `Free flashcards for ${deck.title} | Flashcard Maker`,
+    description: `Study ${deck.title} flashcards for free with Flashcard Maker`,
     alternates: {
       canonical: `https://flashcardmaker.co.uk/library/${deck.slug}`,
     },
     openGraph: {
-      title: `${deck.title} Flashcards`,
-      description: `${deck.cards.length} free flashcards on ${deck.topic}.`,
+      title: `Free flashcards for ${deck.title} | Flashcard Maker`,
+      description: `Study ${deck.title} flashcards for free with Flashcard Maker`,
       url: `https://flashcardmaker.co.uk/library/${deck.slug}`,
     },
   };

@@ -4,26 +4,29 @@ import { LIBRARY_DECKS } from '@/lib/library';
 
 const BASE = 'https://flashcardmaker.co.uk';
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
+const LIBRARY_UPDATED = new Date('2026-04-13');
+const SUBJECTS_UPDATED = new Date('2026-04-13');
+const HOME_UPDATED = new Date('2026-04-13');
+const STATIC_UPDATED = new Date('2025-01-01');
 
+export default function sitemap(): MetadataRoute.Sitemap {
   const subjectEntries = SUBJECTS.map((s) => ({
     url: `${BASE}${s.href}`,
-    lastModified: now,
+    lastModified: SUBJECTS_UPDATED,
     changeFrequency: 'weekly' as const,
     priority: 0.6,
   }));
 
   const curriculumEntries = CURRICULA.map((c) => ({
     url: `${BASE}${c.href}`,
-    lastModified: now,
+    lastModified: SUBJECTS_UPDATED,
     changeFrequency: 'weekly' as const,
     priority: 0.6,
   }));
 
   const libraryEntries = LIBRARY_DECKS.map((d) => ({
     url: `${BASE}/library/${d.slug}`,
-    lastModified: now,
+    lastModified: LIBRARY_UPDATED,
     changeFrequency: 'monthly' as const,
     priority: 0.75,
   }));
@@ -31,19 +34,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
       url: BASE,
-      lastModified: now,
+      lastModified: HOME_UPDATED,
       changeFrequency: 'daily' as const,
       priority: 1,
     },
     {
       url: `${BASE}/privacy-policy`,
-      lastModified: now,
+      lastModified: STATIC_UPDATED,
       changeFrequency: 'yearly' as const,
       priority: 0.3,
     },
     {
       url: `${BASE}/terms`,
-      lastModified: now,
+      lastModified: STATIC_UPDATED,
       changeFrequency: 'yearly' as const,
       priority: 0.3,
     },

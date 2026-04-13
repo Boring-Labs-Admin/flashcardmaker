@@ -23,7 +23,7 @@ function deck(
 
 export const LIBRARY_DECKS: LibraryDeck[] = [
   deck(
-    'gcse-biology-cell-biology',
+    'free-flashcards-for-gcse-biology-cell-biology',
     'GCSE Biology: Cell Biology',
     'Biology',
     'Cell Biology',
@@ -52,7 +52,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'gcse-biology-photosynthesis',
+    'free-flashcards-for-gcse-biology-photosynthesis',
     'GCSE Biology: Photosynthesis',
     'Biology',
     'Photosynthesis',
@@ -81,7 +81,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'a-level-biology-dna-protein-synthesis',
+    'free-flashcards-for-a-level-biology-dna-protein-synthesis',
     'A-Level Biology: DNA & Protein Synthesis',
     'Biology',
     'DNA & Protein Synthesis',
@@ -110,7 +110,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'gcse-chemistry-atomic-structure',
+    'free-flashcards-for-gcse-chemistry-atomic-structure',
     'GCSE Chemistry: Atomic Structure',
     'Chemistry',
     'Atomic Structure',
@@ -139,7 +139,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'gcse-chemistry-chemical-bonding',
+    'free-flashcards-for-gcse-chemistry-chemical-bonding',
     'GCSE Chemistry: Chemical Bonding',
     'Chemistry',
     'Chemical Bonding',
@@ -168,7 +168,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'gcse-physics-forces-motion',
+    'free-flashcards-for-gcse-physics-forces-motion',
     'GCSE Physics: Forces & Motion',
     'Physics',
     'Forces & Motion',
@@ -197,7 +197,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'gcse-maths-algebra',
+    'free-flashcards-for-gcse-maths-algebra',
     'GCSE Maths: Algebra Fundamentals',
     'Maths',
     'Algebra',
@@ -226,7 +226,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'a-level-psychology-memory',
+    'free-flashcards-for-a-level-psychology-memory',
     'A-Level Psychology: Memory',
     'Psychology',
     'Memory',
@@ -255,7 +255,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'gcse-geography-climate-change',
+    'free-flashcards-for-gcse-geography-climate-change',
     'GCSE Geography: Climate Change',
     'Geography',
     'Climate Change',
@@ -284,7 +284,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'gcse-history-ww2-causes',
+    'free-flashcards-for-gcse-history-ww2-causes',
     'GCSE History: Causes of World War II',
     'History',
     'Causes of World War II',
@@ -312,7 +312,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
     ]
   ),
   deck(
-    'chemistry-stp',
+    'free-flashcards-for-chemistry-stp',
     'Chemistry: Standard Temperature & Pressure (STP)',
     'Chemistry',
     'STP',
@@ -341,7 +341,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'chemistry-periodic-table',
+    'free-flashcards-for-chemistry-periodic-table',
     'Chemistry: The Periodic Table',
     'Chemistry',
     'The Periodic Table',
@@ -395,7 +395,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'biology-genetics-evolution',
+    'free-flashcards-for-biology-genetics-evolution',
     'Biology: Genetics & Evolution',
     'Biology',
     'Genetics & Evolution',
@@ -434,7 +434,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'history-world-war-2',
+    'free-flashcards-for-history-world-war-2',
     'History: World War II — Causes & Key Events',
     'History',
     'World War II',
@@ -473,7 +473,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'english-literature-macbeth',
+    'free-flashcards-for-english-literature-macbeth',
     'English Literature: Macbeth',
     'English Literature',
     'Macbeth',
@@ -510,7 +510,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'biology-nervous-system',
+    'free-flashcards-for-biology-nervous-system',
     'Biology: The Human Nervous System',
     'Biology',
     'The Nervous System',
@@ -544,7 +544,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'psychology-social-influence',
+    'free-flashcards-for-psychology-social-influence',
     'Psychology: Social Influence & Conformity',
     'Psychology',
     'Social Influence',
@@ -575,7 +575,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'computer-science-data-representation',
+    'free-flashcards-for-computer-science-data-representation',
     'Computer Science: Data Representation',
     'Computer Science',
     'Data Representation',
@@ -606,7 +606,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'maths-trigonometry',
+    'free-flashcards-for-maths-trigonometry',
     'Maths: Trigonometry',
     'Maths',
     'Trigonometry',
@@ -635,7 +635,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'physics-electricity-circuits',
+    'free-flashcards-for-physics-electricity-circuits',
     'Physics: Electricity & Circuits',
     'Physics',
     'Electricity & Circuits',
@@ -664,7 +664,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'economics-supply-demand',
+    'free-flashcards-for-economics-supply-demand',
     'Economics: Supply, Demand & Market Equilibrium',
     'Economics',
     'Supply & Demand',
@@ -692,7 +692,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
     ]
   ),
   deck(
-    'anatomy-musculoskeletal-system',
+    'free-flashcards-for-anatomy-musculoskeletal-system',
     'Anatomy: The Musculoskeletal System',
     'Anatomy',
     'Musculoskeletal System',
@@ -726,7 +726,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'anatomy-cardiovascular-system',
+    'free-flashcards-for-anatomy-cardiovascular-system',
     'Anatomy: The Cardiovascular System',
     'Anatomy',
     'Cardiovascular System',
@@ -760,7 +760,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'nursing-pharmacology-essentials',
+    'free-flashcards-for-nursing-pharmacology-essentials',
     'Nursing: Pharmacology Essentials',
     'Nursing',
     'Pharmacology',
@@ -794,7 +794,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'nursing-patient-assessment',
+    'free-flashcards-for-nursing-patient-assessment',
     'Nursing: Patient Assessment & Care',
     'Nursing',
     'Patient Assessment',
@@ -823,7 +823,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'medicine-immune-system',
+    'free-flashcards-for-medicine-immune-system',
     'Medicine: The Immune System',
     'Medicine',
     'The Immune System',
@@ -857,7 +857,7 @@ export const LIBRARY_DECKS: LibraryDeck[] = [
   ),
 
   deck(
-    'medicine-common-diseases',
+    'free-flashcards-for-medicine-common-diseases',
     'Medicine: Common Diseases & Conditions',
     'Medicine',
     'Common Diseases',

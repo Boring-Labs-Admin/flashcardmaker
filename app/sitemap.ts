@@ -4,7 +4,7 @@ import { LIBRARY_DECKS } from '@/lib/library';
 
 const BASE = 'https://flashcardmaker.co.uk';
 
-const LIBRARY_UPDATED = new Date('2026-04-13');
+const LIBRARY_UPDATED = new Date('2026-04-14');
 const SUBJECTS_UPDATED = new Date('2026-04-13');
 const HOME_UPDATED = new Date('2026-04-13');
 const STATIC_UPDATED = new Date('2025-01-01');

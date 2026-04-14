@@ -18,13 +18,13 @@ const TOPIC_TO_SUBJECTS: Record<string, string[]> = {
   geography: ['Geography'],
   psychology:['Psychology'],
   science:   ['Biology', 'Chemistry', 'Physics'],
-  business:  ['Economics'],
+  business:  ['Economics', 'Business Studies'],
   anatomy:   ['Anatomy'],
   nursing:   ['Nursing'],
   medicine:  ['Medicine'],
-  gcse:      ['Biology', 'Chemistry', 'Physics', 'Maths', 'History', 'Geography', 'Psychology', 'Computer Science', 'English Literature', 'Economics'],
-  'a-level': ['Biology', 'Chemistry', 'Physics', 'Maths', 'History', 'Psychology', 'Economics', 'English Literature'],
-  aqa:       ['Biology', 'Chemistry', 'Physics', 'Maths', 'History', 'Psychology'],
+  gcse:      ['Biology', 'Chemistry', 'Physics', 'Maths', 'History', 'Geography', 'Psychology', 'Computer Science', 'English Literature', 'Economics', 'Business Studies', 'Sociology'],
+  'a-level': ['Biology', 'Chemistry', 'Physics', 'Maths', 'History', 'Psychology', 'Economics', 'English Literature', 'Computer Science', 'Business Studies', 'Law', 'Philosophy', 'Sociology'],
+  aqa:       ['Biology', 'Chemistry', 'Physics', 'Maths', 'History', 'Psychology', 'Computer Science'],
 };
 
 interface SubjectContentProps {

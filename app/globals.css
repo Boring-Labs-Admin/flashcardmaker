@@ -523,12 +523,14 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .library-card { perspective: 900px; height: 240px; cursor: pointer; }
 .library-card-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.45s cubic-bezier(0.4,0.2,0.2,1); }
 .library-card.flipped .library-card-inner { transform: rotateY(180deg); }
-.library-card-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border: 1.5px solid #C7D9F5; border-radius: 12px; padding: 1rem 1.1rem 0.75rem; background: white; display: flex; flex-direction: column; justify-content: space-between; }
-.library-card:hover .library-card-face { border-color: var(--cobalt-blue); }
-.library-card-back { transform: rotateY(180deg); background: var(--light-blue); }
-.library-card-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.4; }
+.library-card-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border: 1.5px solid transparent; border-radius: 12px; padding: 1rem 1.1rem 0.75rem; display: flex; flex-direction: column; justify-content: space-between; }
+.library-card-front { background: var(--cobalt-blue); color: white; }
+.library-card:hover .library-card-front { border-color: var(--yellow-bolt); }
+.library-card-back { transform: rotateY(180deg); background: var(--yellow-bolt); color: var(--cobalt-blue); }
+.library-card:hover .library-card-back { border-color: var(--cobalt-blue); }
+.library-card-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.5; }
 .library-card-text { flex: 1; display: flex; align-items: center; font-size: 0.9rem; font-weight: 500; line-height: 1.5; padding: 0.4rem 0; overflow: auto; }
-.library-card-hint { font-size: 0.65rem; font-weight: 600; color: var(--cobalt-blue); opacity: 0.45; text-align: right; }
+.library-card-hint { font-size: 0.65rem; font-weight: 600; opacity: 0.45; text-align: right; }
 
 /* ── LIBRARY GATE ────────────────────────────────── */
 .library-gate { position: relative; margin-top: -4rem; padding-top: 5rem; background: linear-gradient(to bottom, transparent, white 40%); text-align: center; }

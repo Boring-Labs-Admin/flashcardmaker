@@ -44,7 +44,7 @@ export default function HomeContent() {
             ))}
           </div>
         </div>
-        <div className="subject-section" id="library">
+        <div className="subject-section" id="free-flashcards">
           <h2 className="section-title">Free Flashcard Library</h2>
           <p className="section-subtitle">Browse pre-made flashcard sets — no account needed to get started</p>
           <div className="library-directory">

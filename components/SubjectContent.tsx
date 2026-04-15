@@ -47,7 +47,7 @@ export default function SubjectContent({ title, subtitle, topic }: SubjectConten
         <FlashcardGenerator topic={topic} onOpenModal={() => setIsModalOpen(true)} />
 
         {relatedDecks.length > 0 && (
-          <div className="subject-section">
+          <div className="subject-section" id="free-flashcards">
             <h2 className="section-title">Free Flashcard Sets</h2>
             <p className="section-subtitle">Browse pre-made sets — no account needed to get started</p>
             <div className="subject-deck-list">

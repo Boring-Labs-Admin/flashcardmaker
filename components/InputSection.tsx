@@ -1,9 +1,14 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, forwardRef, useImperativeHandle } from 'react';
 
 interface InputSectionProps {
   onSubmit: (content: string | string[]) => void;
   isLoading: boolean;
+  charLimit?: number;
+}
+
+export interface InputSectionHandle {
+  trimToLimit: () => void;
 }
 
 interface UploadedFile {
@@ -25,12 +30,19 @@ function readFile(file: File): Promise<UploadedFile> {
   });
 }
 
-export default function InputSection({ onSubmit, isLoading }: InputSectionProps) {
+const InputSection = forwardRef<InputSectionHandle, InputSectionProps>(
+function InputSection({ onSubmit, isLoading, charLimit }, ref) {
   const [text, setText] = useState('');
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [fileError, setFileError] = useState('');
   const [isDragOver, setIsDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    trimToLimit: () => {
+      if (charLimit) setText(t => t.slice(0, charLimit));
+    },
+  }));
 
   const handleFiles = async (fileList: FileList) => {
     setFileError('');
@@ -120,8 +132,14 @@ export default function InputSection({ onSubmit, isLoading }: InputSectionProps)
           disabled={isLoading}
         />
         {text.length > 0 && (
-          <div style={{ fontSize: '0.75rem', opacity: 0.5, textAlign: 'right', marginTop: '0.25rem' }}>
-            {text.length.toLocaleString()} characters
+          <div style={{
+            fontSize: '0.75rem',
+            textAlign: 'right',
+            marginTop: '0.25rem',
+            color: charLimit && text.length > charLimit ? '#c00' : charLimit && text.length > charLimit * 0.8 ? '#e07b00' : undefined,
+            opacity: charLimit && text.length > charLimit ? 1 : 0.5,
+          }}>
+            {text.length.toLocaleString()}{charLimit ? ` / ${charLimit.toLocaleString()}` : ''} characters
           </div>
         )}
         <button className="btn" onClick={() => onSubmit(text)} disabled={!text.trim() || isLoading}>
@@ -130,4 +148,7 @@ export default function InputSection({ onSubmit, isLoading }: InputSectionProps)
       </div>
     </div>
   );
-}
+});
+
+InputSection.displayName = 'InputSection';
+export default InputSection;

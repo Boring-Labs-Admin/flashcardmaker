@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Flashcard, ViewMode, Deck } from '@/lib/types';
 import { useAuth } from '@/lib/auth-context';
-import InputSection from './InputSection';
+import { PLANS, UserPlanData } from '@/lib/plans';
+import InputSection, { InputSectionHandle } from './InputSection';
 import ViewToggle from './ViewToggle';
 import SingleView from './SingleView';
 import SideBySideView from './SideBySideView';
@@ -27,6 +28,9 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [limitHit, setLimitHit] = useState<LimitReason | null>(null);
+  const [charsOver, setCharsOver] = useState<number>(0);
+  const [charLimit, setCharLimit] = useState<number>(PLANS.free.charLimit);
+  const inputRef = useRef<InputSectionHandle>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('single');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
@@ -34,6 +38,16 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const openAuthModal = onOpenModal ?? (() => setIsModalOpen(true));
+
+  useEffect(() => {
+    fetch('/api/user/plan')
+      .then(r => r.json())
+      .then((data: UserPlanData) => {
+        const plan = data.anonymous ? 'free' : data.plan;
+        setCharLimit(PLANS[plan].charLimit);
+      })
+      .catch(() => {}); // silently fail — default free limit already set
+  }, []);
 
   useEffect(() => {
     if (flashcards.length === 0 || savedDeck) return;
@@ -51,6 +65,7 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
     setIsLoading(true);
     setError(null);
     setLimitHit(null);
+    setCharsOver(0);
     setSavedDeck(null);
     try {
       const response = await fetch('/api/generate', {
@@ -63,6 +78,7 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
         if (response.status === 429) {
           setLimitHit(data.anonymous ? 'daily' : 'generations');
         } else if (response.status === 400 && data.error && /too long|characters/i.test(data.error)) {
+          setCharsOver(data.charsOver ?? 0);
           setLimitHit('chars');
         } else {
           setError(data.error || 'Something went wrong. Please try again.');
@@ -259,7 +275,7 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
       {error && <div className="error-message">{error}</div>}
 
       <h2 className="section-title">Generate Flashcards</h2>
-      <InputSection onSubmit={handleSubmit} isLoading={isLoading} />
+      <InputSection ref={inputRef} onSubmit={handleSubmit} isLoading={isLoading} charLimit={charLimit} />
 
       {!hideFeatures && <div className="features">
         <div className="feature">
@@ -286,6 +302,11 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
         onClose={() => setLimitHit(null)}
         reason={limitHit ?? 'daily'}
         onSignIn={signInWithGoogle}
+        charsOver={charsOver}
+        onTrimText={limitHit === 'chars' ? () => {
+          inputRef.current?.trimToLimit();
+          setLimitHit(null);
+        } : undefined}
       />
     </>
   );

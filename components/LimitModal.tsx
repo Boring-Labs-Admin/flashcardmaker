@@ -9,6 +9,8 @@ interface LimitModalProps {
   onClose: () => void;
   reason: LimitReason;
   onSignIn?: () => void;
+  charsOver?: number;
+  onTrimText?: () => void;
 }
 
 const CONTENT: Record<LimitReason, { title: string; body: string; cta: string }> = {
@@ -23,16 +25,19 @@ const CONTENT: Record<LimitReason, { title: string; body: string; cta: string }>
     cta: 'Go to your Flashboard',
   },
   chars: {
-    title: 'Text too long for Free plan',
-    body: 'The Free plan supports up to 5,000 characters. Flashcard Maker Plus allows up to 20,000 characters — paste entire chapters and full documents.',
+    title: 'Text too long',
+    body: 'The Free plan supports up to 20,000 characters (~10 pages). Upgrade to Plus for up to 100,000 characters — paste entire chapters and full documents.',
     cta: 'Go to your Flashboard',
   },
 };
 
-export default function LimitModal({ isOpen, onClose, reason, onSignIn }: LimitModalProps) {
+export default function LimitModal({ isOpen, onClose, reason, onSignIn, charsOver, onTrimText }: LimitModalProps) {
   if (!isOpen) return null;
 
   const { title, body, cta } = CONTENT[reason];
+  const overText = charsOver && charsOver > 0
+    ? ` Your text is ${charsOver.toLocaleString()} characters over the limit.`
+    : '';
 
   return (
     <div
@@ -72,11 +77,30 @@ export default function LimitModal({ isOpen, onClose, reason, onSignIn }: LimitM
 
         {/* Body */}
         <p style={{ fontSize: '0.85rem', opacity: 0.7, marginBottom: '1.5rem', lineHeight: 1.6 }}>
-          {body}
+          {body}{overText}
         </p>
 
         {/* CTAs */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+          {reason === 'chars' && onTrimText && (
+            <button
+              onClick={onTrimText}
+              style={{
+                background: '#004AAD',
+                color: 'white',
+                border: 'none',
+                borderRadius: 8,
+                padding: '0.7rem 1.25rem',
+                fontSize: '0.88rem',
+                fontFamily: 'inherit',
+                fontWeight: 700,
+                cursor: 'pointer',
+                width: '100%',
+              }}
+            >
+              ✂️ Trim text and try again
+            </button>
+          )}
           {reason === 'daily' && onSignIn ? (
             <button
               onClick={() => { onSignIn(); onClose(); }}
@@ -102,13 +126,15 @@ export default function LimitModal({ isOpen, onClose, reason, onSignIn }: LimitM
               style={{
                 display: 'block',
                 textAlign: 'center',
-                background: '#004AAD',
-                color: 'white',
+                background: onTrimText ? 'transparent' : '#004AAD',
+                color: onTrimText ? '#004AAD' : 'white',
+                border: onTrimText ? '1.5px solid #E0E8F5' : 'none',
                 borderRadius: 8,
                 padding: '0.7rem 1.25rem',
                 fontSize: '0.88rem',
                 fontWeight: 700,
                 textDecoration: 'none',
+                opacity: onTrimText ? 0.75 : 1,
               }}
             >
               {cta} →

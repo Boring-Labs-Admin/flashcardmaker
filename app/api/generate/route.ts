@@ -171,6 +171,7 @@ export async function POST(request: NextRequest) {
         error: `Your text is too long. The limit is ${charLimit.toLocaleString()} characters${
           charLimit === PLANS.free.charLimit ? ' — upgrade to Plus for a higher limit.' : '.'
         }`,
+        charsOver: totalTextLength - charLimit,
       },
       { status: 400 }
     );
@@ -256,7 +257,7 @@ Rules:
           config: {
             systemInstruction: systemPrompt,
             responseMimeType: 'application/json',
-            maxOutputTokens: 2000,
+            maxOutputTokens: 8192,
           },
         });
         break; // success

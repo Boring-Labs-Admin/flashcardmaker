@@ -16,15 +16,16 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const deck = LIBRARY_DECKS.find(d => d.slug === params.slug);
   if (!deck) return {};
+  const description = `Study ${deck.cards.length} free ${deck.topic} flashcards for ${deck.subject}. Covers key concepts and exam topics — flip through questions and answers instantly, no signup needed.`;
   return {
-    title: `Free flashcards for ${deck.title} | Flashcard Maker`,
-    description: `Study ${deck.title} flashcards for free with Flashcard Maker`,
+    title: `${deck.topic} Flashcards — ${deck.cards.length} Free ${deck.subject} Cards | Flashcard Maker`,
+    description,
     alternates: {
       canonical: `https://flashcardmaker.co.uk/library/${deck.slug}`,
     },
     openGraph: {
-      title: `Free flashcards for ${deck.title} | Flashcard Maker`,
-      description: `Study ${deck.title} flashcards for free with Flashcard Maker`,
+      title: `${deck.topic} Flashcards — ${deck.cards.length} Free ${deck.subject} Cards | Flashcard Maker`,
+      description,
       url: `https://flashcardmaker.co.uk/library/${deck.slug}`,
     },
   };

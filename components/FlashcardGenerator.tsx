@@ -12,6 +12,7 @@ import GridView from './GridView';
 import FlashboardModal from './FlashboardModal';
 import SaveDeckModal from './SaveDeckModal';
 import LimitModal from './LimitModal';
+import DownloadModal from './DownloadModal';
 
 interface FlashcardGeneratorProps {
   onOpenModal?: () => void;
@@ -34,6 +35,7 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
   const [viewMode, setViewMode] = useState<ViewMode>('single');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
+  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [savedDeck, setSavedDeck] = useState<Deck | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -145,37 +147,60 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
     const title = savedDeck?.title ?? (topic ? topic.charAt(0).toUpperCase() + topic.slice(1) + ' Flashcards' : 'My Deck');
     const doc = new jsPDF();
 
+    const MARGIN = 14;
+    const GAP = 8;
+    const COL_W = (210 - MARGIN * 2 - GAP) / 2; // ~87mm each
+    const Q_X = MARGIN;
+    const A_X = MARGIN + COL_W + GAP;
+    const LINE_H = 5;
+    const CELL_PAD = 5;
+
+    // Title
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(0, 74, 173);
-    doc.text(title, 14, 18);
+    doc.text(title, MARGIN, 18);
     doc.setDrawColor(0, 74, 173);
-    doc.line(14, 22, 196, 22);
+    doc.line(MARGIN, 22, 210 - MARGIN, 22);
 
+    // Column headers
     let y = 30;
-    flashcards.forEach((card) => {
-      if (y > 255) { doc.addPage(); y = 20; }
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(0, 74, 173);
+    doc.setFillColor(220, 234, 255);
+    doc.setDrawColor(199, 217, 245);
+    doc.roundedRect(Q_X, y, COL_W, 8, 1, 1, 'FD');
+    doc.roundedRect(A_X, y, COL_W, 8, 1, 1, 'FD');
+    doc.text('QUESTION', Q_X + CELL_PAD, y + 5.5);
+    doc.text('ANSWER', A_X + CELL_PAD, y + 5.5);
+    y += 11;
 
-      const qLines = doc.splitTextToSize(`Q: ${card.question}`, 170);
-      const qHeight = Math.max(12, qLines.length * 5 + 6);
-      doc.setFillColor(238, 244, 255);
-      doc.setDrawColor(199, 217, 245);
-      doc.roundedRect(14, y, 182, qHeight, 2, 2, 'FD');
-      doc.setFontSize(9);
+    // Rows
+    doc.setFontSize(9);
+    flashcards.forEach((card, i) => {
+      const qLines = doc.splitTextToSize(card.question, COL_W - CELL_PAD * 2);
+      const aLines = doc.splitTextToSize(card.answer, COL_W - CELL_PAD * 2);
+      const rowH = Math.max(qLines.length, aLines.length) * LINE_H + CELL_PAD * 2;
+
+      if (y + rowH > 282) { doc.addPage(); y = 20; }
+
+      const rowBg = i % 2 === 0 ? [248, 250, 255] : [255, 255, 255];
+      doc.setFillColor(rowBg[0], rowBg[1], rowBg[2]);
+      doc.setDrawColor(220, 228, 242);
+      doc.roundedRect(Q_X, y, COL_W, rowH, 1, 1, 'FD');
+      doc.setFillColor(rowBg[0], rowBg[1], rowBg[2]);
+      doc.roundedRect(A_X, y, COL_W, rowH, 1, 1, 'FD');
+
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(0, 74, 173);
-      doc.text(qLines, 18, y + 7);
-      y += qHeight + 2;
+      doc.setTextColor(20, 20, 40);
+      doc.text(qLines, Q_X + CELL_PAD, y + CELL_PAD + LINE_H - 1);
 
-      const aLines = doc.splitTextToSize(`A: ${card.answer}`, 170);
-      const aHeight = Math.max(12, aLines.length * 5 + 6);
-      doc.setFillColor(255, 255, 255);
-      doc.setDrawColor(199, 217, 245);
-      doc.roundedRect(14, y, 182, aHeight, 2, 2, 'FD');
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(30, 30, 50);
-      doc.text(aLines, 18, y + 7);
-      y += aHeight + 6;
+      doc.setTextColor(50, 50, 70);
+      doc.text(aLines, A_X + CELL_PAD, y + CELL_PAD + LINE_H - 1);
+
+      y += rowH + 2;
     });
 
     doc.save(`${title}.pdf`);
@@ -227,16 +252,7 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
                   📝 Test <span className="locked-icon">🔒</span>
                 </button>
               )}
-              {user ? (
-                <>
-                  <button className="locked-btn" onClick={handleDownloadCSV}>⬇ CSV</button>
-                  <button className="locked-btn" onClick={handleDownloadPDF}>⬇ PDF</button>
-                </>
-              ) : (
-                <button className="locked-btn" onClick={openAuthModal}>
-                  ⬇️ Download <span className="locked-icon">🔒</span>
-                </button>
-              )}
+              <button className="locked-btn" onClick={() => setIsDownloadModalOpen(true)}>⬇ Download</button>
               <button className="reset-btn" onClick={handleReset}>
                 🗑️ New deck
               </button>
@@ -258,6 +274,14 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
         </div>
 
         <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        <DownloadModal
+          isOpen={isDownloadModalOpen}
+          onClose={() => setIsDownloadModalOpen(false)}
+          onDownloadPDF={handleDownloadPDF}
+          onDownloadCSV={handleDownloadCSV}
+          isLoggedIn={!!user}
+          onSignIn={() => { setIsDownloadModalOpen(false); openAuthModal(); }}
+        />
         <SaveDeckModal
           isOpen={isSaveModalOpen}
           onClose={() => setIsSaveModalOpen(false)}

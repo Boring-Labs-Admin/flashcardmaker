@@ -7,6 +7,7 @@ interface InputSectionProps {
   isLoading: boolean;
   charLimit?: number;
   isPlusUser?: boolean;
+  isLoggedIn?: boolean;
   onPromptSubmit?: (prompt: string) => void;
 }
 
@@ -34,7 +35,7 @@ function readFile(file: File): Promise<UploadedFile> {
 }
 
 const InputSection = forwardRef<InputSectionHandle, InputSectionProps>(
-function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, onPromptSubmit }, ref) {
+function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, onPromptSubmit }, ref) {
   const [text, setText] = useState('');
   const [prompt, setPrompt] = useState('');
   const [files, setFiles] = useState<UploadedFile[]>([]);
@@ -151,54 +152,79 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, onPromptSubm
         </button>
       </div>
       {/* Prompt — Plus only */}
-      <div className="card" style={{ position: 'relative', opacity: isPlusUser ? 1 : 0.75 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div className="card" style={{ position: 'relative', border: isPlusUser ? undefined : '2px dashed #C7D9F5' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
           <div className="card-label">METHOD 03</div>
-          {!isPlusUser && (
-            <span style={{
-              fontSize: '0.65rem',
-              fontWeight: 800,
-              letterSpacing: '0.08em',
-              color: '#004AAD',
-              background: '#EEF4FF',
-              border: '1.5px solid #C7D9F5',
-              borderRadius: 5,
-              padding: '0.15rem 0.5rem',
-            }}>✦ PLUS</span>
-          )}
+          <span style={{
+            fontSize: '0.65rem',
+            fontWeight: 800,
+            letterSpacing: '0.08em',
+            color: isPlusUser ? 'white' : '#004AAD',
+            background: isPlusUser ? '#004AAD' : '#EEF4FF',
+            border: '1.5px solid #C7D9F5',
+            borderRadius: 5,
+            padding: '0.15rem 0.5rem',
+          }}>✦ PLUS</span>
         </div>
         <h3 className="card-title">Generate from Prompt</h3>
-        <textarea
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder="e.g. The causes of World War 1, Photosynthesis for A-level Biology, JavaScript promises..."
-          disabled={!isPlusUser || isLoading}
-          style={!isPlusUser ? { cursor: 'not-allowed', background: '#F5F7FB' } : undefined}
-        />
+
         {isPlusUser ? (
-          <button
-            className="btn"
-            onClick={() => onPromptSubmit?.(prompt)}
-            disabled={!prompt.trim() || isLoading}
-          >
-            ⚡ CREATE FLASHCARDS
-          </button>
+          <>
+            <textarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="e.g. The causes of World War 1, Photosynthesis for A-level Biology, JavaScript promises..."
+              disabled={isLoading}
+            />
+            <button
+              className="btn"
+              onClick={() => onPromptSubmit?.(prompt)}
+              disabled={!prompt.trim() || isLoading}
+            >
+              ⚡ CREATE FLASHCARDS
+            </button>
+          </>
         ) : (
-          <Link
-            href="/dashboard"
-            style={{
-              display: 'block',
+          <>
+            <textarea
+              disabled
+              placeholder="e.g. The causes of World War 1, Photosynthesis for A-level Biology, JavaScript promises..."
+              style={{ cursor: 'not-allowed', background: '#F5F7FB', opacity: 0.6 }}
+            />
+            <div style={{
+              marginTop: '1rem',
+              background: '#EEF4FF',
+              border: '1.5px solid #C7D9F5',
+              borderRadius: 10,
+              padding: '1rem 1.25rem',
               textAlign: 'center',
-              fontSize: '0.8rem',
-              color: '#004AAD',
-              opacity: 0.6,
-              marginTop: '0.5rem',
-              textDecoration: 'none',
-              fontWeight: 600,
-            }}
-          >
-            Upgrade to Plus to unlock →
-          </Link>
+            }}>
+              <div style={{ fontSize: '1.5rem', marginBottom: '0.4rem' }}>✦</div>
+              <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#004AAD', marginBottom: '0.3rem' }}>
+                {isLoggedIn ? 'Upgrade to Plus to unlock' : 'Plus feature'}
+              </div>
+              <div style={{ fontSize: '0.78rem', opacity: 0.65, marginBottom: '0.9rem', lineHeight: 1.5 }}>
+                {isLoggedIn
+                  ? 'Generate a full deck from any topic with no source material needed.'
+                  : 'Create a free account, then upgrade to Plus to generate flashcards from any topic.'}
+              </div>
+              <Link
+                href="/dashboard"
+                style={{
+                  display: 'inline-block',
+                  background: '#004AAD',
+                  color: 'white',
+                  borderRadius: 7,
+                  padding: '0.5rem 1.25rem',
+                  fontSize: '0.82rem',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                }}
+              >
+                {isLoggedIn ? 'Upgrade to Plus →' : 'Sign up free →'}
+              </Link>
+            </div>
+          </>
         )}
       </div>
     </div>

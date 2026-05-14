@@ -131,7 +131,7 @@ h1, .header-title { font-size: 3.5rem; font-weight: 700; line-height: 1.1; margi
 .container { max-width: 1400px; margin: 0 auto; padding: 3rem 1.5rem; }
 
 /* ── INPUT CARDS ─────────────────────────────── */
-.input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem; }
+.input-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 3rem; }
 
 .card {
   background: var(--light-blue);
@@ -434,7 +434,8 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 
 /* ── RESPONSIVE ─────────────────────────────── */
 @media (max-width: 1024px) {
-  .input-grid, .subject-grid { grid-template-columns: 1fr; }
+  .input-grid { grid-template-columns: repeat(2, 1fr); }
+  .subject-grid { grid-template-columns: 1fr; }
   .card-pair { grid-template-columns: 1fr; }
   .grid-view { grid-template-columns: repeat(2,1fr); }
   .deck-grid { grid-template-columns: repeat(2,1fr); }
@@ -442,6 +443,7 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 @media (max-width: 768px) {
   h1 { font-size: 2.5rem; }
   .tagline { font-size: 1.125rem; }
+  .input-grid { grid-template-columns: 1fr; }
   .features { grid-template-columns: 1fr; }
   .grid-view { grid-template-columns: 1fr; }
   .plan-grid { grid-template-columns: 1fr; }

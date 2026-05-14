@@ -351,6 +351,7 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
         isLoading={isLoading}
         charLimit={charLimit}
         isPlusUser={isPlusUser}
+        isLoggedIn={!!user}
       />
 
       {!hideFeatures && <div className="features">

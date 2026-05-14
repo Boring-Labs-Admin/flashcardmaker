@@ -48,6 +48,8 @@ export async function POST(request: NextRequest) {
   let creditUserId: string | null = null;
   // User ID for generation logging and rate limiting — set for all logged-in users
   let loggedInUserId: string | null = null;
+  // Whether this user can use Plus-only features
+  let isPlusOrAdmin = isAdmin;
 
   if (isAdmin) {
     cardLimit = PLANS.plus.cardLimit;
@@ -79,6 +81,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (planData.plan === 'plus') {
+      isPlusOrAdmin = true;
       cardLimit = PLANS.plus.cardLimit;
       charLimit = PLANS.plus.charLimit;
       fileLimit = PLANS.plus.fileLimit;
@@ -142,64 +145,84 @@ export async function POST(request: NextRequest) {
   let rawContent: string | string[];
   let topic: string | undefined;
 
+  let generationMode: string | undefined;
   try {
     const body = await request.json();
     rawContent = body.content;
     topic = body.topic;
+    generationMode = body.generationMode;
   } catch {
     return NextResponse.json({ error: 'Invalid request format.' }, { status: 400 });
   }
 
+  // Prompt-only generation — Plus/admin only, skip content validation
+  if (generationMode === 'prompt') {
+    if (!isPlusOrAdmin) {
+      return NextResponse.json(
+        { error: 'Generating from a prompt is a Plus feature. Upgrade to unlock it.' },
+        { status: 403 }
+      );
+    }
+    if (!topic || topic.trim().length < 3) {
+      return NextResponse.json(
+        { error: 'Please enter a prompt to generate flashcards from.' },
+        { status: 400 }
+      );
+    }
+  } else {
+    const contents: string[] = Array.isArray(rawContent) ? rawContent : [rawContent];
+
+    const hasContent = contents.some((c) => typeof c === 'string' && c.trim().length >= 10);
+    if (!hasContent) {
+      return NextResponse.json(
+        { error: 'Please provide more content to create flashcards from (at least 10 characters).' },
+        { status: 400 }
+      );
+    }
+
+    // Check character limit on plain text content
+    const totalTextLength = contents
+      .filter((c) => typeof c === 'string' && !c.startsWith('data:'))
+      .reduce((sum, c) => sum + c.length, 0);
+
+    if (totalTextLength > charLimit) {
+      return NextResponse.json(
+        {
+          error: `Your text is too long. The limit is ${charLimit.toLocaleString()} characters${
+            charLimit === PLANS.free.charLimit ? ' — upgrade to Plus for a higher limit.' : '.'
+          }`,
+          charsOver: totalTextLength - charLimit,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Check file limit
+    const fileCount = contents.filter((c) => typeof c === 'string' && c.startsWith('data:')).length;
+    if (fileCount > fileLimit) {
+      return NextResponse.json(
+        {
+          error: `You can upload up to ${fileLimit} file${fileLimit === 1 ? '' : 's'} per generation${
+            fileLimit === PLANS.free.fileLimit ? ' on the free plan — upgrade to Plus for more.' : '.'
+          }`,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Check total file payload size — prevents large files inflating token cost
+    const totalFileBytes = contents
+      .filter((c) => typeof c === 'string' && c.startsWith('data:'))
+      .reduce((sum, c) => sum + c.length, 0);
+    if (totalFileBytes > MAX_FILE_BYTES) {
+      return NextResponse.json(
+        { error: 'Total file size is too large. Please reduce the number or size of uploaded files.' },
+        { status: 400 }
+      );
+    }
+  }
+
   const contents: string[] = Array.isArray(rawContent) ? rawContent : [rawContent];
-
-  const hasContent = contents.some((c) => typeof c === 'string' && c.trim().length >= 10);
-  if (!hasContent) {
-    return NextResponse.json(
-      { error: 'Please provide more content to create flashcards from (at least 10 characters).' },
-      { status: 400 }
-    );
-  }
-
-  // Check character limit on plain text content
-  const totalTextLength = contents
-    .filter((c) => typeof c === 'string' && !c.startsWith('data:'))
-    .reduce((sum, c) => sum + c.length, 0);
-
-  if (totalTextLength > charLimit) {
-    return NextResponse.json(
-      {
-        error: `Your text is too long. The limit is ${charLimit.toLocaleString()} characters${
-          charLimit === PLANS.free.charLimit ? ' — upgrade to Plus for a higher limit.' : '.'
-        }`,
-        charsOver: totalTextLength - charLimit,
-      },
-      { status: 400 }
-    );
-  }
-
-  // Check file limit
-  const fileCount = contents.filter((c) => typeof c === 'string' && c.startsWith('data:')).length;
-  if (fileCount > fileLimit) {
-    return NextResponse.json(
-      {
-        error: `You can upload up to ${fileLimit} file${fileLimit === 1 ? '' : 's'} per generation${
-          fileLimit === PLANS.free.fileLimit ? ' on the free plan — upgrade to Plus for more.' : '.'
-        }`,
-      },
-      { status: 400 }
-    );
-  }
-
-  // Check total file payload size — prevents large files inflating token cost
-  const totalFileBytes = contents
-    .filter((c) => typeof c === 'string' && c.startsWith('data:'))
-    .reduce((sum, c) => sum + c.length, 0);
-  if (totalFileBytes > MAX_FILE_BYTES) {
-    return NextResponse.json(
-      { error: 'Total file size is too large. Please reduce the number or size of uploaded files.' },
-      { status: 400 }
-    );
-  }
 
   // 5. Build the Gemini request
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -216,34 +239,40 @@ Rules:
 - For mathematical expressions, use LaTeX notation: inline math with $...$ and block equations with $$...$$
 - Return ONLY a valid JSON array of objects with "question" and "answer" fields`;
 
-  const instructionText = topic
-    ? `Create flashcards about ${topic} from the provided content.`
-    : `Create flashcards from the provided content.`;
-
-  const fileParts: object[] = [];
-  const textChunks: string[] = [];
-
-  for (const c of contents) {
-    if (typeof c === 'string' && c.startsWith('data:')) {
-      const commaIndex = c.indexOf(',');
-      const header = c.slice(0, commaIndex);
-      const base64Data = c.slice(commaIndex + 1);
-      const mimeType = header.split(':')[1].split(';')[0];
-      fileParts.push({ inlineData: { mimeType, data: base64Data } });
-    } else if (typeof c === 'string' && c.trim().length > 0) {
-      textChunks.push(c);
-    }
-  }
+  const instructionText = generationMode === 'prompt'
+    ? `Create up to ${cardLimit} flashcards about: ${topic}. Use your knowledge to cover key concepts, definitions, important facts, and common exam questions on this topic comprehensively.`
+    : topic
+      ? `Create flashcards about ${topic} from the provided content.`
+      : `Create flashcards from the provided content.`;
 
   let contentParts: object[];
-  if (fileParts.length > 0) {
-    contentParts = [
-      ...fileParts,
-      ...(textChunks.length > 0 ? [{ text: textChunks.join('\n\n') }] : []),
-      { text: instructionText },
-    ];
+  if (generationMode === 'prompt') {
+    contentParts = [{ text: instructionText }];
   } else {
-    contentParts = [{ text: `${instructionText}\n\n${textChunks.join('\n\n')}` }];
+    const fileParts: object[] = [];
+    const textChunks: string[] = [];
+
+    for (const c of contents) {
+      if (typeof c === 'string' && c.startsWith('data:')) {
+        const commaIndex = c.indexOf(',');
+        const header = c.slice(0, commaIndex);
+        const base64Data = c.slice(commaIndex + 1);
+        const mimeType = header.split(':')[1].split(';')[0];
+        fileParts.push({ inlineData: { mimeType, data: base64Data } });
+      } else if (typeof c === 'string' && c.trim().length > 0) {
+        textChunks.push(c);
+      }
+    }
+
+    if (fileParts.length > 0) {
+      contentParts = [
+        ...fileParts,
+        ...(textChunks.length > 0 ? [{ text: textChunks.join('\n\n') }] : []),
+        { text: instructionText },
+      ];
+    } else {
+      contentParts = [{ text: `${instructionText}\n\n${textChunks.join('\n\n')}` }];
+    }
   }
 
   try {

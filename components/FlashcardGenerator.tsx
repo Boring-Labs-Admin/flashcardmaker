@@ -31,6 +31,7 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
   const [limitHit, setLimitHit] = useState<LimitReason | null>(null);
   const [charsOver, setCharsOver] = useState<number>(0);
   const [charLimit, setCharLimit] = useState<number>(PLANS.free.charLimit);
+  const [isPlusUser, setIsPlusUser] = useState(false);
   const inputRef = useRef<InputSectionHandle>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('single');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -47,6 +48,7 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
       .then((data: UserPlanData) => {
         const plan = data.anonymous ? 'free' : data.plan;
         setCharLimit(PLANS[plan].charLimit);
+        setIsPlusUser(!data.anonymous && data.plan === 'plus');
       })
       .catch(() => {}); // silently fail — default free limit already set
   }, []);
@@ -108,6 +110,49 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
           }
         } catch {
           // Auto-save failed silently — user can still see their cards
+          console.error('Auto-save failed');
+        }
+      }
+    } catch {
+      setError('Failed to connect. Please check your internet connection.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePromptSubmit = async (prompt: string) => {
+    setIsLoading(true);
+    setError(null);
+    setLimitHit(null);
+    setCharsOver(0);
+    setSavedDeck(null);
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: '', topic: prompt, generationMode: 'prompt' }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setError(data.error || 'Something went wrong. Please try again.');
+        return;
+      }
+      setFlashcards(data.flashcards);
+      setCurrentIndex(0);
+
+      if (user) {
+        try {
+          const saveRes = await fetch('/api/decks', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: prompt.charAt(0).toUpperCase() + prompt.slice(1), topic: prompt, flashcards: data.flashcards }),
+          });
+          if (saveRes.ok) {
+            const saveData = await saveRes.json();
+            setSavedDeck(saveData.deck);
+            onDeckSaved?.(saveData.deck);
+          }
+        } catch {
           console.error('Auto-save failed');
         }
       }
@@ -299,7 +344,14 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
       {error && <div className="error-message">{error}</div>}
 
       <h2 className="section-title">Generate Flashcards</h2>
-      <InputSection ref={inputRef} onSubmit={handleSubmit} isLoading={isLoading} charLimit={charLimit} />
+      <InputSection
+        ref={inputRef}
+        onSubmit={handleSubmit}
+        onPromptSubmit={handlePromptSubmit}
+        isLoading={isLoading}
+        charLimit={charLimit}
+        isPlusUser={isPlusUser}
+      />
 
       {!hideFeatures && <div className="features">
         <div className="feature">

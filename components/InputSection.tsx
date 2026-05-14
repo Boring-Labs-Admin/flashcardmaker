@@ -1,10 +1,13 @@
 'use client';
 import { useState, useRef, forwardRef, useImperativeHandle } from 'react';
+import Link from 'next/link';
 
 interface InputSectionProps {
   onSubmit: (content: string | string[]) => void;
   isLoading: boolean;
   charLimit?: number;
+  isPlusUser?: boolean;
+  onPromptSubmit?: (prompt: string) => void;
 }
 
 export interface InputSectionHandle {
@@ -31,8 +34,9 @@ function readFile(file: File): Promise<UploadedFile> {
 }
 
 const InputSection = forwardRef<InputSectionHandle, InputSectionProps>(
-function InputSection({ onSubmit, isLoading, charLimit }, ref) {
+function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, onPromptSubmit }, ref) {
   const [text, setText] = useState('');
+  const [prompt, setPrompt] = useState('');
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [fileError, setFileError] = useState('');
   const [isDragOver, setIsDragOver] = useState(false);
@@ -145,6 +149,57 @@ function InputSection({ onSubmit, isLoading, charLimit }, ref) {
         <button className="btn" onClick={() => onSubmit(text)} disabled={!text.trim() || isLoading}>
           ⚡ CREATE FLASHCARDS
         </button>
+      </div>
+      {/* Prompt — Plus only */}
+      <div className="card" style={{ position: 'relative', opacity: isPlusUser ? 1 : 0.75 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div className="card-label">METHOD 03</div>
+          {!isPlusUser && (
+            <span style={{
+              fontSize: '0.65rem',
+              fontWeight: 800,
+              letterSpacing: '0.08em',
+              color: '#004AAD',
+              background: '#EEF4FF',
+              border: '1.5px solid #C7D9F5',
+              borderRadius: 5,
+              padding: '0.15rem 0.5rem',
+            }}>✦ PLUS</span>
+          )}
+        </div>
+        <h3 className="card-title">Generate from Prompt</h3>
+        <textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="e.g. The causes of World War 1, Photosynthesis for A-level Biology, JavaScript promises..."
+          disabled={!isPlusUser || isLoading}
+          style={!isPlusUser ? { cursor: 'not-allowed', background: '#F5F7FB' } : undefined}
+        />
+        {isPlusUser ? (
+          <button
+            className="btn"
+            onClick={() => onPromptSubmit?.(prompt)}
+            disabled={!prompt.trim() || isLoading}
+          >
+            ⚡ CREATE FLASHCARDS
+          </button>
+        ) : (
+          <Link
+            href="/dashboard"
+            style={{
+              display: 'block',
+              textAlign: 'center',
+              fontSize: '0.8rem',
+              color: '#004AAD',
+              opacity: 0.6,
+              marginTop: '0.5rem',
+              textDecoration: 'none',
+              fontWeight: 600,
+            }}
+          >
+            Upgrade to Plus to unlock →
+          </Link>
+        )}
       </div>
     </div>
   );

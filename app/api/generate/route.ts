@@ -350,8 +350,8 @@ Rules:
       .insert({
         user_id: loggedInUserId,
         identifier_hash: isAnonymous ? identifier : null,
-        input_chars: totalTextLength,
-        file_count: fileCount,
+        input_chars: generationMode === 'prompt' ? (topic?.length ?? 0) : contents.filter((c) => !c.startsWith('data:')).reduce((s, c) => s + c.length, 0),
+        file_count: generationMode === 'prompt' ? 0 : contents.filter((c) => c.startsWith('data:')).length,
       })
       .then(({ error }) => { if (error) console.error('Failed to log generation:', error.message); });
 

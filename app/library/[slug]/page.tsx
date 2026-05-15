@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { LIBRARY_DECKS } from '@/lib/library';
+import { DECK_SEO } from '@/lib/library-seo';
 import LibraryDeckView from '@/components/LibraryDeckView';
 import NavBar from '@/components/NavBar';
 import { notFound } from 'next/navigation';
@@ -16,15 +17,17 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const deck = LIBRARY_DECKS.find(d => d.slug === params.slug);
   if (!deck) return {};
-  const description = `Study ${deck.cards.length} free ${deck.topic} flashcards for ${deck.subject}. Covers key concepts and exam topics — flip through questions and answers instantly, no signup needed.`;
+  const seo = DECK_SEO[deck.slug];
+  const title = seo?.metaTitle ?? `${deck.topic} Flashcards | Free ${deck.subject} Cards | Flashcard Maker`;
+  const description = seo?.metaDescription ?? `Study free ${deck.topic} flashcards for ${deck.subject}. Covers key concepts and exam topics. Flip through questions and answers instantly, no signup needed.`;
   return {
-    title: `${deck.topic} Flashcards — ${deck.cards.length} Free ${deck.subject} Cards | Flashcard Maker`,
+    title,
     description,
     alternates: {
       canonical: `https://flashcardmaker.co.uk/library/${deck.slug}`,
     },
     openGraph: {
-      title: `${deck.topic} Flashcards — ${deck.cards.length} Free ${deck.subject} Cards | Flashcard Maker`,
+      title,
       description,
       url: `https://flashcardmaker.co.uk/library/${deck.slug}`,
     },

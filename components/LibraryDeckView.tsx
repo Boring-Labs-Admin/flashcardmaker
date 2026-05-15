@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/auth-context';
 import LatexRenderer from '@/components/LatexRenderer';
 import FlashboardModal from '@/components/FlashboardModal';
 import type { LibraryDeck } from '@/lib/library';
+import { DECK_SEO } from '@/lib/library-seo';
 
 const FREE_LIMIT = 10;
 
@@ -16,6 +17,7 @@ export default function LibraryDeckView({ deck }: { deck: LibraryDeck }) {
   const fromDashboard = searchParams.get('from') === 'dashboard';
   const backHref = fromDashboard ? '/dashboard' : '/';
   const backLabel = fromDashboard ? '← Flashboard' : '← Home';
+  const seo = DECK_SEO[deck.slug];
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [flipped, setFlipped] = useState<Record<number, boolean>>({});
   const [saving, setSaving] = useState(false);
@@ -51,7 +53,9 @@ export default function LibraryDeckView({ deck }: { deck: LibraryDeck }) {
     <div className="container">
       <div className="library-deck-header">
         <Link href={backHref} className="back-link">{backLabel}</Link>
-        <h1 className="library-deck-title">{deck.title}</h1>
+        <h1 className="library-deck-title">{seo?.h1 ?? deck.title}</h1>
+        {seo?.h2 && <h2 className="library-deck-subtitle">{seo.h2}</h2>}
+        {seo?.intro && <p className="library-deck-intro">{seo.intro}</p>}
         <p className="library-deck-meta">{deck.cards.length} cards · {deck.subject}</p>
         {user && (
           <button

@@ -531,6 +531,8 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .back-link { font-size: 0.85rem; font-weight: 600; color: var(--cobalt-blue); text-decoration: none; opacity: 0.6; display: inline-block; margin-bottom: 1rem; }
 .back-link:hover { opacity: 1; }
 .library-deck-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.4rem; }
+.library-deck-subtitle { font-size: 1rem; font-weight: 600; color: var(--cobalt-blue); opacity: 0.75; margin-bottom: 0.75rem; }
+.library-deck-intro { font-size: 0.95rem; line-height: 1.6; opacity: 0.8; max-width: 640px; margin-bottom: 0.75rem; }
 .library-deck-meta { font-size: 0.85rem; opacity: 0.55; font-weight: 600; }
 .library-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin: 1.5rem 0; }
 @media (max-width: 700px) { .library-card-grid { grid-template-columns: repeat(2, 1fr); } }

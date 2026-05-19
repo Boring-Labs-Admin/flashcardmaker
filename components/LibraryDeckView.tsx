@@ -1,11 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { Suspense, useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import LatexRenderer from '@/components/LatexRenderer';
 import FlashboardModal from '@/components/FlashboardModal';
+import BackLink from '@/components/BackLink';
 import type { LibraryDeck } from '@/lib/library';
 import { DECK_SEO } from '@/lib/library-seo';
 
@@ -13,10 +12,6 @@ const FREE_LIMIT = 10;
 
 export default function LibraryDeckView({ deck }: { deck: LibraryDeck }) {
   const { user } = useAuth();
-  const searchParams = useSearchParams();
-  const fromDashboard = searchParams.get('from') === 'dashboard';
-  const backHref = fromDashboard ? '/dashboard' : '/';
-  const backLabel = fromDashboard ? '← Flashboard' : '← Home';
   const seo = DECK_SEO[deck.slug];
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [flipped, setFlipped] = useState<Record<number, boolean>>({});
@@ -52,7 +47,9 @@ export default function LibraryDeckView({ deck }: { deck: LibraryDeck }) {
   return (
     <div className="container">
       <div className="library-deck-header">
-        <Link href={backHref} className="back-link">{backLabel}</Link>
+        <Suspense fallback={<a className="back-link">← Home</a>}>
+          <BackLink />
+        </Suspense>
         <h1 className="library-deck-title">{seo?.h1 ?? deck.title}</h1>
         {seo?.h2 && <h2 className="library-deck-subtitle">{seo.h2}</h2>}
         {seo?.intro && <p className="library-deck-intro">{seo.intro}</p>}

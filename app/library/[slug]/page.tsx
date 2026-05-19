@@ -1,4 +1,3 @@
-import { Suspense } from 'react';
 import { LIBRARY_DECKS } from '@/lib/library';
 import { DECK_SEO } from '@/lib/library-seo';
 import LibraryDeckView from '@/components/LibraryDeckView';
@@ -41,9 +40,7 @@ export default function LibraryDeckPage({ params }: { params: { slug: string } }
   return (
     <main>
       <NavBar />
-      <Suspense>
-        <LibraryDeckView deck={deck} />
-      </Suspense>
+      <LibraryDeckView deck={deck} />
     </main>
   );
 }

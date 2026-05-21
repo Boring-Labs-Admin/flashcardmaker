@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import NavBar from '@/components/NavBar';
 import PricingCheckoutButtons from '@/components/PricingCheckoutButtons';
+import PricingSignUpButton from '@/components/PricingSignUpButton';
 
 export const metadata: Metadata = {
   title: 'Pricing | Free and Plus Plans | Flashcard Maker',
@@ -101,9 +102,7 @@ export default function PricingPage() {
               <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', opacity: 0.5, textTransform: 'uppercase', marginBottom: '0.5rem' }}>Free</div>
               <div style={{ fontSize: '2rem', fontWeight: 800, color: '#004AAD', marginBottom: '0.25rem' }}>£0</div>
               <div style={{ fontSize: '0.82rem', opacity: 0.6, marginBottom: '1.5rem' }}>No card required</div>
-              <Link href="/" style={{ display: 'block', textAlign: 'center', background: '#EEF4FF', color: '#004AAD', border: '2px solid #004AAD', borderRadius: 8, padding: '0.6rem 1rem', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none', marginBottom: '1.5rem' }}>
-                Get started free
-              </Link>
+              <PricingSignUpButton />
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
                 {FREE_FEATURES.map((f) => (
                   <li key={f} style={{ display: 'flex', gap: '0.5rem', fontSize: '0.85rem' }}>

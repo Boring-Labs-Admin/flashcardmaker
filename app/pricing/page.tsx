@@ -68,6 +68,7 @@ const CREDIT_FEATURES = [
 ];
 
 const PLUS_FEATURES = [
+  'Generate decks from any topic with AI',
   'Unlimited generations',
   '60 cards per deck',
   '100,000 character input',

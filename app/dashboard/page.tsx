@@ -373,6 +373,7 @@ function DashboardContent() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginBottom: '1.5rem' }}>
                   {[
+                    'Generate decks from any topic with AI',
                     'Unlimited generations',
                     '60 cards per deck',
                     '100,000 character input',
@@ -523,6 +524,7 @@ function DashboardContent() {
 
                   <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.1rem', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
                     {[
+                      'Generate decks from any topic with AI',
                       'Unlimited deck generation',
                       'Create larger decks (up to 60 cards)',
                       'Paste entire chapters (up to 100,000 chars)',

@@ -84,6 +84,7 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
         {/* Features */}
         <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.5rem 0', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {[
+            'Generate decks from any topic with AI',
             'Unlimited deck generation',
             'Create larger decks (up to 60 cards)',
             'Paste entire chapters (up to 100,000 chars)',

@@ -375,7 +375,8 @@ function DashboardContent() {
                   {[
                     'Unlimited generations',
                     '60 cards per deck',
-                    '20,000 character input',
+                    '100,000 character input',
+                    'Up to 20 files per generation',
                     'Priority processing enabled',
                   ].map(line => (
                     <div key={line} style={{ display: 'flex', gap: '0.5rem', fontSize: '0.82rem', opacity: 0.9 }}>
@@ -524,7 +525,8 @@ function DashboardContent() {
                     {[
                       'Unlimited deck generation',
                       'Create larger decks (up to 60 cards)',
-                      'Paste entire chapters (20,000 chars)',
+                      'Paste entire chapters (up to 100,000 chars)',
+                      'Upload up to 20 files at once',
                       'Faster processing, priority queue',
                     ].map(f => (
                       <li key={f} style={{ display: 'flex', gap: '0.5rem', fontSize: '0.8rem', opacity: 0.9 }}>

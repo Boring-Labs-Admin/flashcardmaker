@@ -70,8 +70,8 @@ const CREDIT_FEATURES = [
 const PLUS_FEATURES = [
   'Unlimited generations',
   '60 cards per deck',
-  '20,000 character input',
-  'Up to 20 files',
+  '100,000 character input',
+  'Up to 20 files per generation',
   'Priority generation speed',
   'Everything in Free',
 ];

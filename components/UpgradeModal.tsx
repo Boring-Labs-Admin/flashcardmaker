@@ -86,7 +86,8 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
           {[
             'Unlimited deck generation',
             'Create larger decks (up to 60 cards)',
-            'Paste entire chapters (20,000 chars)',
+            'Paste entire chapters (up to 100,000 chars)',
+            'Upload up to 20 files at once',
             'Faster processing, priority queue',
           ].map(feature => (
             <li key={feature} style={{ fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

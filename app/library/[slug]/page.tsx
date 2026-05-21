@@ -33,14 +33,54 @@ export async function generateMetadata({
   };
 }
 
+const FREE_LIMIT = 10;
+
 export default function LibraryDeckPage({ params }: { params: { slug: string } }) {
   const deck = LIBRARY_DECKS.find(d => d.slug === params.slug);
   if (!deck) notFound();
 
+  const seo = DECK_SEO[deck.slug];
+  const visibleCards = deck.cards.slice(0, FREE_LIMIT);
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: visibleCards.map(card => ({
+      '@type': 'Question',
+      name: card.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: card.answer,
+      },
+    })),
+  };
+
+  const SUBJECT_PAGE_SLUGS: Record<string, string> = {
+    Biology: 'biology', Chemistry: 'chemistry', Physics: 'physics',
+    Maths: 'maths', Psychology: 'psychology', Medicine: 'medical',
+    Anatomy: 'anatomy', Nursing: 'nursing', History: 'history',
+    Geography: 'geography', Economics: 'business', 'Business Studies': 'business',
+  };
+  const subjectSlug = SUBJECT_PAGE_SLUGS[deck.subject];
+  const breadcrumbItems = [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://flashcardmaker.co.uk' },
+    ...(subjectSlug ? [{ '@type': 'ListItem', position: 2, name: `${deck.subject} Flashcards`, item: `https://flashcardmaker.co.uk/${subjectSlug}-flashcards` }] : []),
+    { '@type': 'ListItem', position: subjectSlug ? 3 : 2, name: seo?.h1 ?? deck.title, item: `https://flashcardmaker.co.uk/library/${deck.slug}` },
+  ];
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems,
+  };
+
   return (
-    <main>
-      <NavBar />
-      <LibraryDeckView deck={deck} />
-    </main>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <main>
+        <NavBar />
+        <LibraryDeckView deck={deck} />
+      </main>
+    </>
   );
 }

@@ -1,25 +1,18 @@
-'use client';
-
-import { useState } from 'react';
-import NavBar from '@/components/NavBar';
-import Header from '@/components/Header';
-import FlashcardGenerator from '@/components/FlashcardGenerator';
-import FlashboardModal from '@/components/FlashboardModal';
 import Link from 'next/link';
+import HomePageClient from '@/components/HomePageClient';
 import { SUBJECTS, CURRICULA } from '@/lib/subjects';
 import { getDecksBySubject } from '@/lib/library';
 
 const decksBySubject = getDecksBySubject();
 
 export default function HomeContent() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   return (
     <main>
-      <NavBar onLoginClick={() => setIsModalOpen(true)} />
-      <Header />
+      {/* Interactive section — NavBar, Header, FlashcardGenerator, login modal */}
+      <HomePageClient />
+
+      {/* Static content — server-rendered for Google */}
       <div className="container">
-        <FlashcardGenerator onOpenModal={() => setIsModalOpen(true)} />
         <div className="subject-section">
           <h2 className="section-title">Flashcards by Subject</h2>
           <p className="section-subtitle">Pick a subject and upload your notes — your deck is ready in seconds</p>
@@ -32,6 +25,7 @@ export default function HomeContent() {
             ))}
           </div>
         </div>
+
         <div className="subject-section">
           <h2 className="section-title">Flashcards by Curriculum</h2>
           <p className="section-subtitle">Find flashcards tailored to your exam board or qualification</p>
@@ -44,6 +38,7 @@ export default function HomeContent() {
             ))}
           </div>
         </div>
+
         <div className="subject-section" id="free-flashcards">
           <h2 className="section-title">Free Flashcard Library</h2>
           <p className="section-subtitle">Browse pre-made flashcard sets — no account needed to get started</p>
@@ -63,7 +58,6 @@ export default function HomeContent() {
           </div>
         </div>
       </div>
-      <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </main>
   );
 }

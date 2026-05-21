@@ -1,6 +1,7 @@
 'use client';
 import { useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import Link from 'next/link';
+import UpgradeModal from '@/components/UpgradeModal';
 
 interface InputSectionProps {
   onSubmit: (content: string | string[]) => void;
@@ -41,6 +42,7 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [fileError, setFileError] = useState('');
   const [isDragOver, setIsDragOver] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useImperativeHandle(ref, () => ({
@@ -75,6 +77,7 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
   };
 
   return (
+    <>
     <div className="input-grid">
       {/* Upload */}
       <div className="card">
@@ -208,26 +211,49 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
                   ? 'Generate a full deck from any topic with no source material needed.'
                   : 'Create a free account, then upgrade to Plus to generate flashcards from any topic.'}
               </div>
-              <Link
-                href="/dashboard"
-                style={{
-                  display: 'inline-block',
-                  background: '#004AAD',
-                  color: 'white',
-                  borderRadius: 7,
-                  padding: '0.5rem 1.25rem',
-                  fontSize: '0.82rem',
-                  fontWeight: 700,
-                  textDecoration: 'none',
-                }}
-              >
-                {isLoggedIn ? 'Upgrade to Plus →' : 'Sign up free →'}
-              </Link>
+              {isLoggedIn ? (
+                <button
+                  onClick={() => setShowUpgradeModal(true)}
+                  style={{
+                    display: 'inline-block',
+                    background: '#004AAD',
+                    color: 'white',
+                    borderRadius: 7,
+                    padding: '0.5rem 1.25rem',
+                    fontSize: '0.82rem',
+                    fontWeight: 700,
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontFamily: 'inherit',
+                  }}
+                >
+                  Upgrade to Plus →
+                </button>
+              ) : (
+                <Link
+                  href="/dashboard"
+                  style={{
+                    display: 'inline-block',
+                    background: '#004AAD',
+                    color: 'white',
+                    borderRadius: 7,
+                    padding: '0.5rem 1.25rem',
+                    fontSize: '0.82rem',
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                  }}
+                >
+                  Sign up free →
+                </Link>
+              )}
             </div>
           </>
         )}
       </div>
     </div>
+
+    <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
+    </>
   );
 });
 

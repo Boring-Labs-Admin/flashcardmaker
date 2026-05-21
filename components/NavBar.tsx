@@ -25,6 +25,9 @@ export default function NavBar({ onLoginClick }: NavBarProps) {
 
         {/* Desktop buttons */}
         <div className="nav-buttons">
+          <Link href="/pricing" style={{ color: 'white', fontSize: '0.85rem', fontWeight: 600, opacity: 0.8, textDecoration: 'none' }}>
+            Pricing
+          </Link>
           {user && (
             <>
               <span style={{ color: 'white', fontSize: '0.85rem', opacity: 0.8 }}>
@@ -60,6 +63,9 @@ export default function NavBar({ onLoginClick }: NavBarProps) {
                 {user.user_metadata?.full_name || user.email}
               </span>
             )}
+            <Link href="/pricing" className="nav-login-btn" onClick={() => setIsMenuOpen(false)}>
+              Pricing
+            </Link>
             {user && (
               <Link href="/dashboard" className="nav-login-btn" onClick={() => setIsMenuOpen(false)}>
                 My Flashboard

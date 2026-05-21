@@ -4,24 +4,38 @@ interface HeaderProps {
 }
 
 export default function Header({ title, subtitle }: HeaderProps) {
+  if (subtitle || title) {
+    return (
+      <header className="header">
+        <div className="header-content">
+          <h1 className="header-title">{title ?? 'Flashcard Maker'}</h1>
+          <p className="tagline">
+            {subtitle} <span className="bolt-accent">⚡</span>
+          </p>
+        </div>
+      </header>
+    );
+  }
+
   return (
     <header className="header">
       <div className="header-content">
-        <h1 className="header-title">{title ?? 'Flashcard Maker'}</h1>
-        <p className="tagline">
-          {subtitle ? (
-            <>{subtitle} <span className="bolt-accent">⚡</span></>
-          ) : (
-            <>Turn your documents, notes and photos into flashcards{' '}
-            <span className="bolt-accent">⚡ instantly</span></>
-          )}
+        <h1 className="header-title">
+          Free Flashcard Maker <span className="bolt-accent">⚡</span> for Students
+        </h1>
+        <p className="header-description">
+          Upload your notes, paste your text or generate from any topic — get a full revision deck in seconds.
+          No manual typing. No signup needed.
         </p>
-        {!subtitle && (
-          <p className="header-library-cta">
-            Or check out our{' '}
-            <a href="#free-flashcards" className="header-library-btn">FREE FLASHCARD LIBRARY</a>
-          </p>
-        )}
+        <div className="header-trust">
+          <span>✓ Free to use</span>
+          <span>✓ Works with PDFs, Word docs and images</span>
+          <span>✓ GCSE, A Level and beyond</span>
+        </div>
+        <p className="header-library-cta">
+          Or browse our{' '}
+          <a href="#free-flashcards" className="header-library-btn">FREE FLASHCARD LIBRARY</a>
+        </p>
       </div>
     </header>
   );

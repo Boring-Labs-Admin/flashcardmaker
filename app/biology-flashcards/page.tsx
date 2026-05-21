@@ -1,30 +1,21 @@
 import type { Metadata } from 'next';
 import SubjectContent from '@/components/SubjectContent';
+import { SUBJECT_SEO } from '@/lib/subject-seo';
+
+const seo = SUBJECT_SEO.biology;
 
 export const metadata: Metadata = {
-  title: 'Biology Flashcards - Create Study Cards Instantly | Flashcard Maker',
-  description:
-    'Create biology flashcards from your notes and textbooks instantly. AI-powered free flashcard maker for biology revision. Upload documents and get your deck in seconds.',
+  title: seo.metaTitle,
+  description: seo.metaDescription,
   alternates: { canonical: 'https://flashcardmaker.co.uk/biology-flashcards' },
   openGraph: {
-    title: 'Biology Flashcards - Create Study Cards Instantly',
-    description: 'Create biology flashcards from your notes and textbooks instantly.',
+    title: seo.metaTitle,
+    description: seo.metaDescription,
     url: 'https://flashcardmaker.co.uk/biology-flashcards',
     type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Biology Flashcards',
-    description: 'Create biology flashcards from your notes instantly.',
   },
 };
 
 export default function BiologyFlashcards() {
-  return (
-    <SubjectContent
-      title="Flashcard Maker - Biology Flashcards"
-      subtitle="Turn your biology notes into study cards instantly"
-      topic="biology"
-    />
-  );
+  return <SubjectContent topic="biology" />;
 }

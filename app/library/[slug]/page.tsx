@@ -89,7 +89,14 @@ export default function LibraryDeckPage({ params }: { params: { slug: string } }
         {relatedDecks.length > 0 && (
           <div className="container">
             <div className="library-related">
-              <h2 className="library-related-title">More free {deck.subject} flashcards</h2>
+              <div className="library-related-header">
+                <h2 className="library-related-title">More free {deck.subject} flashcards</h2>
+                {subjectSlug && (
+                  <Link href={`/${subjectSlug}-flashcards`} className="library-related-view-all">
+                    View all {deck.subject} flashcards →
+                  </Link>
+                )}
+              </div>
               <div className="library-related-grid">
                 {relatedDecks.map(d => (
                   <Link key={d.slug} href={`/library/${d.slug}`} className="library-related-card">

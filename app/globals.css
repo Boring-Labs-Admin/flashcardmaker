@@ -551,7 +551,10 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 
 /* ── LIBRARY GATE ────────────────────────────────── */
 .library-related { padding: 2rem 0 1rem; border-top: 1.5px solid #E0E8F5; }
-.library-related-title { font-size: 1.1rem; font-weight: 800; color: var(--cobalt-blue); margin-bottom: 1rem; }
+.library-related-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+.library-related-title { font-size: 1.1rem; font-weight: 800; color: var(--cobalt-blue); margin: 0; }
+.library-related-view-all { font-size: 0.82rem; font-weight: 700; color: var(--cobalt-blue); text-decoration: none; opacity: 0.65; }
+.library-related-view-all:hover { opacity: 1; }
 .library-related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; }
 .library-related-card { display: flex; flex-direction: column; gap: 0.25rem; background: #EEF4FF; border: 1.5px solid #C7D9F5; border-radius: 10px; padding: 0.85rem 1rem; text-decoration: none; transition: border-color 0.15s, background 0.15s; }
 .library-related-card:hover { background: #E0EDFF; border-color: var(--cobalt-blue); }

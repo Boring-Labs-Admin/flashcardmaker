@@ -1,30 +1,16 @@
 import type { Metadata } from 'next';
 import SubjectContent from '@/components/SubjectContent';
+import { SUBJECT_SEO } from '@/lib/subject-seo';
+
+const seo = SUBJECT_SEO.geography;
 
 export const metadata: Metadata = {
-  title: 'Geography Flashcards - Create Study Cards Instantly | Flashcard Maker',
-  description:
-    'Create geography flashcards from your notes and textbooks instantly. AI-powered free flashcard maker for geography revision. Upload documents and get your deck in seconds.',
+  title: seo.metaTitle,
+  description: seo.metaDescription,
   alternates: { canonical: 'https://flashcardmaker.co.uk/geography-flashcards' },
-  openGraph: {
-    title: 'Geography Flashcards - Create Study Cards Instantly',
-    description: 'Create geography flashcards from your notes and textbooks instantly.',
-    url: 'https://flashcardmaker.co.uk/geography-flashcards',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Geography Flashcards',
-    description: 'Create geography flashcards from your notes instantly.',
-  },
+  openGraph: { title: seo.metaTitle, description: seo.metaDescription, url: 'https://flashcardmaker.co.uk/geography-flashcards', type: 'website' },
 };
 
 export default function GeographyFlashcards() {
-  return (
-    <SubjectContent
-      title="Flashcard Maker - Geography Flashcards"
-      subtitle="Turn your geography notes into study cards instantly"
-      topic="geography"
-    />
-  );
+  return <SubjectContent topic="geography" />;
 }

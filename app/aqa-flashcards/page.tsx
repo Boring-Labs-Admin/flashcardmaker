@@ -1,30 +1,16 @@
 import type { Metadata } from 'next';
 import SubjectContent from '@/components/SubjectContent';
+import { SUBJECT_SEO } from '@/lib/subject-seo';
+
+const seo = SUBJECT_SEO.aqa;
 
 export const metadata: Metadata = {
-  title: 'AQA Flashcards - Create Study Cards Instantly | Flashcard Maker',
-  description:
-    'Create AQA flashcards from your notes and textbooks instantly. AI-powered free flashcard maker for AQA exam revision. Upload documents and get your deck in seconds.',
+  title: seo.metaTitle,
+  description: seo.metaDescription,
   alternates: { canonical: 'https://flashcardmaker.co.uk/aqa-flashcards' },
-  openGraph: {
-    title: 'AQA Flashcards - Create Study Cards Instantly',
-    description: 'Create AQA flashcards from your notes and textbooks instantly.',
-    url: 'https://flashcardmaker.co.uk/aqa-flashcards',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'AQA Flashcards',
-    description: 'Create AQA flashcards from your notes instantly.',
-  },
+  openGraph: { title: seo.metaTitle, description: seo.metaDescription, url: 'https://flashcardmaker.co.uk/aqa-flashcards', type: 'website' },
 };
 
 export default function AqaFlashcards() {
-  return (
-    <SubjectContent
-      title="Flashcard Maker - AQA Flashcards"
-      subtitle="Turn your AQA notes into study cards instantly"
-      topic="aqa"
-    />
-  );
+  return <SubjectContent topic="aqa" />;
 }

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import SubjectPageClient from '@/components/SubjectPageClient';
 import { SUBJECTS, CURRICULA } from '@/lib/subjects';
 import { LIBRARY_DECKS } from '@/lib/library';
+import { SUBJECT_SEO } from '@/lib/subject-seo';
 
 const TOPIC_TO_SUBJECTS: Record<string, string[]> = {
   biology:   ['Biology'],
@@ -22,19 +23,23 @@ const TOPIC_TO_SUBJECTS: Record<string, string[]> = {
 };
 
 interface SubjectContentProps {
-  title: string;
-  subtitle: string;
   topic: string;
 }
 
-export default function SubjectContent({ title, subtitle, topic }: SubjectContentProps) {
+export default function SubjectContent({ topic }: SubjectContentProps) {
+  const seo = SUBJECT_SEO[topic];
   const subjects = TOPIC_TO_SUBJECTS[topic] ?? [];
   const relatedDecks = LIBRARY_DECKS.filter(d => subjects.includes(d.subject));
 
   return (
     <main>
-      {/* Interactive section — NavBar, Header, FlashcardGenerator, login modal */}
-      <SubjectPageClient title={title} subtitle={subtitle} topic={topic} />
+      {/* Interactive section — NavBar, Header, intro, FlashcardGenerator, login modal */}
+      <SubjectPageClient
+        title={seo?.h1 ?? topic}
+        subtitle={seo?.subtitle ?? ''}
+        intro={seo?.intro ?? ''}
+        topic={topic}
+      />
 
       {/* Static content — server-rendered for Google */}
       <div className="container">

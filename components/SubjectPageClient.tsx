@@ -9,10 +9,11 @@ import FlashboardModal from '@/components/FlashboardModal';
 interface SubjectPageClientProps {
   title: string;
   subtitle: string;
+  intro: string;
   topic: string;
 }
 
-export default function SubjectPageClient({ title, subtitle, topic }: SubjectPageClientProps) {
+export default function SubjectPageClient({ title, subtitle, intro, topic }: SubjectPageClientProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -20,6 +21,11 @@ export default function SubjectPageClient({ title, subtitle, topic }: SubjectPag
       <NavBar onLoginClick={() => setIsModalOpen(true)} />
       <Header title={title} subtitle={subtitle} />
       <div className="container">
+        {intro && (
+          <p style={{ fontSize: '0.95rem', lineHeight: 1.7, opacity: 0.75, maxWidth: 680, marginBottom: '2rem' }}>
+            {intro}
+          </p>
+        )}
         <FlashcardGenerator topic={topic} onOpenModal={() => setIsModalOpen(true)} />
       </div>
       <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />

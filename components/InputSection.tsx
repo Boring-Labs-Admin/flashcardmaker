@@ -2,6 +2,7 @@
 import { useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import Link from 'next/link';
 import UpgradeModal from '@/components/UpgradeModal';
+import FlashboardModal from '@/components/FlashboardModal';
 
 interface InputSectionProps {
   onSubmit: (content: string | string[]) => void;
@@ -43,6 +44,7 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
   const [fileError, setFileError] = useState('');
   const [isDragOver, setIsDragOver] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useImperativeHandle(ref, () => ({
@@ -230,8 +232,8 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
                   Upgrade to Plus →
                 </button>
               ) : (
-                <Link
-                  href="/dashboard"
+                <button
+                  onClick={() => setShowSignUpModal(true)}
                   style={{
                     display: 'inline-block',
                     background: '#004AAD',
@@ -240,11 +242,13 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
                     padding: '0.5rem 1.25rem',
                     fontSize: '0.82rem',
                     fontWeight: 700,
-                    textDecoration: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontFamily: 'inherit',
                   }}
                 >
                   Sign up free →
-                </Link>
+                </button>
               )}
             </div>
           </>
@@ -253,6 +257,7 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
     </div>
 
     <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
+    <FlashboardModal isOpen={showSignUpModal} onClose={() => setShowSignUpModal(false)} />
     </>
   );
 });

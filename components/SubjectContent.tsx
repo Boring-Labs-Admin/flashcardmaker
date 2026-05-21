@@ -1,11 +1,5 @@
-'use client';
-
-import { useState } from 'react';
 import Link from 'next/link';
-import NavBar from '@/components/NavBar';
-import Header from '@/components/Header';
-import FlashcardGenerator from '@/components/FlashcardGenerator';
-import FlashboardModal from '@/components/FlashboardModal';
+import SubjectPageClient from '@/components/SubjectPageClient';
 import { SUBJECTS, CURRICULA } from '@/lib/subjects';
 import { LIBRARY_DECKS } from '@/lib/library';
 
@@ -34,18 +28,16 @@ interface SubjectContentProps {
 }
 
 export default function SubjectContent({ title, subtitle, topic }: SubjectContentProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   const subjects = TOPIC_TO_SUBJECTS[topic] ?? [];
   const relatedDecks = LIBRARY_DECKS.filter(d => subjects.includes(d.subject));
 
   return (
     <main>
-      <NavBar onLoginClick={() => setIsModalOpen(true)} />
-      <Header title={title} subtitle={subtitle} />
-      <div className="container">
-        <FlashcardGenerator topic={topic} onOpenModal={() => setIsModalOpen(true)} />
+      {/* Interactive section — NavBar, Header, FlashcardGenerator, login modal */}
+      <SubjectPageClient title={title} subtitle={subtitle} topic={topic} />
 
+      {/* Static content — server-rendered for Google */}
+      <div className="container">
         {relatedDecks.length > 0 && (
           <div className="subject-section" id="free-flashcards">
             <h2 className="section-title">Free Flashcard Sets</h2>
@@ -77,6 +69,7 @@ export default function SubjectContent({ title, subtitle, topic }: SubjectConten
             ))}
           </div>
         </div>
+
         <div className="subject-section">
           <h2 className="section-title">Flashcards by Curriculum</h2>
           <p className="section-subtitle">Find flashcards tailored to your exam board or qualification</p>
@@ -90,7 +83,6 @@ export default function SubjectContent({ title, subtitle, topic }: SubjectConten
           </div>
         </div>
       </div>
-      <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </main>
   );
 }

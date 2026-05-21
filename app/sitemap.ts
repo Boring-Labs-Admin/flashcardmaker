@@ -4,9 +4,9 @@ import { LIBRARY_DECKS } from '@/lib/library';
 
 const BASE = 'https://flashcardmaker.co.uk';
 
-const LIBRARY_UPDATED = new Date('2026-05-15');
-const SUBJECTS_UPDATED = new Date('2026-04-13');
-const HOME_UPDATED = new Date('2026-04-13');
+const LIBRARY_UPDATED = new Date('2026-05-21');
+const SUBJECTS_UPDATED = new Date('2026-05-21');
+const HOME_UPDATED = new Date('2026-05-21');
 const STATIC_UPDATED = new Date('2025-01-01');
 
 export default function sitemap(): MetadataRoute.Sitemap {

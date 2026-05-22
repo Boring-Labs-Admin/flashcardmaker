@@ -172,10 +172,22 @@ export async function POST(request: NextRequest) {
   } else {
     const contents: string[] = Array.isArray(rawContent) ? rawContent : [rawContent];
 
-    const hasContent = contents.some((c) => typeof c === 'string' && c.trim().length >= 10);
+    const textContents = contents.filter((c) => typeof c === 'string' && !c.startsWith('data:'));
+    const fileContents = contents.filter((c) => typeof c === 'string' && c.startsWith('data:'));
+
+    // Text-only submissions need a meaningful amount of content so the AI cannot
+    // generate cards from general knowledge using just a word or short phrase.
+    const minTextLength = fileContents.length > 0 ? 10 : 150;
+    const totalTextLength_check = textContents.reduce((sum, c) => sum + c.trim().length, 0);
+    const hasContent = fileContents.length > 0 || totalTextLength_check >= minTextLength;
+
     if (!hasContent) {
       return NextResponse.json(
-        { error: 'Please provide more content to create flashcards from (at least 10 characters).' },
+        {
+          error: totalTextLength_check > 0
+            ? `Please paste more of your study notes. A minimum of 150 characters is needed — try adding a few paragraphs of content.`
+            : 'Please paste your study notes or upload a file to generate flashcards.',
+        },
         { status: 400 }
       );
     }
@@ -227,7 +239,7 @@ export async function POST(request: NextRequest) {
   // 5. Build the Gemini request
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-  const systemPrompt = `You are a flashcard creation expert. Create study flashcards from the provided content.
+  const systemPrompt = `You are a flashcard creation assistant. Your job is to create study flashcards based strictly on the content provided by the user.
 
 Rules:
 - Create up to ${cardLimit} flashcards maximum
@@ -237,13 +249,14 @@ Rules:
 - Do not begin answers by restating the question or using prefatory phrases (e.g. "The answer is...", "The reaction for X is:"). State the answer directly.
 - Cover the key concepts from the content
 - For mathematical expressions, use LaTeX notation: inline math with $...$ and block equations with $$...$$
-- Return ONLY a valid JSON array of objects with "question" and "answer" fields`;
+- Return ONLY a valid JSON array of objects with "question" and "answer" fields
+- IMPORTANT: Base every question and answer ONLY on information explicitly present in the provided content. Do NOT use general knowledge or add information not found in the content. If the content is too brief to support meaningful flashcards, return fewer cards.`;
 
   const instructionText = generationMode === 'prompt'
     ? `Create up to ${cardLimit} flashcards about: ${topic}. Use your knowledge to cover key concepts, definitions, important facts, and common exam questions on this topic comprehensively.`
     : topic
-      ? `Create flashcards about ${topic} from the provided content.`
-      : `Create flashcards from the provided content.`;
+      ? `Create flashcards about ${topic} using ONLY the content provided below. Do not add any information beyond what is in the provided content.`
+      : `Create flashcards using ONLY the content provided below. Do not add any information beyond what is in the provided content.`;
 
   let contentParts: object[];
   if (generationMode === 'prompt') {

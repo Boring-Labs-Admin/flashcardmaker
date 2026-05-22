@@ -152,7 +152,12 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
             {text.length.toLocaleString()}{charLimit ? ` / ${charLimit.toLocaleString()}` : ''} characters
           </div>
         )}
-        <button className="btn" onClick={() => onSubmit(text)} disabled={!text.trim() || isLoading}>
+        {text.trim().length > 0 && text.trim().length < 150 && (
+          <p style={{ fontSize: '0.78rem', color: '#b45309', margin: '0.4rem 0 0', lineHeight: 1.4 }}>
+            Add more content — paste at least a paragraph of your study notes for best results ({150 - text.trim().length} characters to go).
+          </p>
+        )}
+        <button className="btn" onClick={() => onSubmit(text)} disabled={!text.trim() || text.trim().length < 150 || isLoading}>
           ⚡ CREATE FLASHCARDS
         </button>
       </div>

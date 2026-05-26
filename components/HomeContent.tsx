@@ -42,6 +42,11 @@ export default function HomeContent() {
         <div className="subject-section" id="free-flashcards">
           <h2 className="section-title">Free Flashcard Library</h2>
           <p className="section-subtitle">Browse pre-made flashcard sets — no account needed to get started</p>
+          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+            <Link href="/library" className="btn-outline">
+              View full library →
+            </Link>
+          </div>
           <div className="library-directory">
             {Object.entries(decksBySubject).map(([subject, decks]) => (
               <div key={subject} className="library-subject-group">

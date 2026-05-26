@@ -34,7 +34,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
         </div>
         <p className="header-library-cta">
           Or browse our{' '}
-          <a href="#free-flashcards" className="header-library-btn">FREE FLASHCARD LIBRARY</a>
+          <a href="/library" className="header-library-btn">FREE FLASHCARD LIBRARY</a>
         </p>
       </div>
     </header>

@@ -24,6 +24,8 @@ export default function Footer() {
         </a>
       </div>
       <div className="site-footer-links">
+        <Link href="/library" className="site-footer-link">Free Library</Link>
+        <Link href="/pricing" className="site-footer-link">Pricing</Link>
         <Link href="/privacy-policy" className="site-footer-link">Privacy Policy</Link>
         <Link href="/terms" className="site-footer-link">Terms of Service</Link>
       </div>

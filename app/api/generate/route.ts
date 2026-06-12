@@ -294,7 +294,7 @@ Rules:
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
         response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
+          model: 'gemini-3.1-flash-lite',
           contents: [{ role: 'user', parts: contentParts }],
           config: {
             systemInstruction: systemPrompt,

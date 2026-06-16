@@ -7,6 +7,18 @@ import { cookies } from 'next/headers';
 import { hashIP, checkRateLimit, recordGeneration } from '@/lib/rateLimit';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { PLANS } from '@/lib/plans';
+import mammoth from 'mammoth';
+
+const DOCX_MIME_TYPES = new Set([
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+  'application/msword', // .doc
+]);
+
+const SUPPORTED_INLINE_MIME_TYPES = new Set([
+  'application/pdf',
+  'image/jpeg', 'image/jpg', 'image/png', 'image/gif',
+  'image/webp', 'image/heic', 'image/heif',
+]);
 
 const ADMIN_EMAIL = 'admin@boringlabs.co.uk';
 const PLUS_REQUESTS_PER_MINUTE = 10;
@@ -271,7 +283,29 @@ Rules:
         const header = c.slice(0, commaIndex);
         const base64Data = c.slice(commaIndex + 1);
         const mimeType = header.split(':')[1].split(';')[0];
-        fileParts.push({ inlineData: { mimeType, data: base64Data } });
+
+        if (DOCX_MIME_TYPES.has(mimeType)) {
+          // Extract plain text from Word documents so Gemini can process them
+          try {
+            const buffer = Buffer.from(base64Data, 'base64');
+            const { value: docText } = await mammoth.extractRawText({ buffer });
+            if (docText.trim()) textChunks.push(docText);
+          } catch (docErr) {
+            console.error('Failed to extract text from Word document:', docErr);
+            return NextResponse.json(
+              { error: 'Could not read the Word document. Please save it as a PDF or copy-paste the text instead.' },
+              { status: 400 }
+            );
+          }
+        } else if (SUPPORTED_INLINE_MIME_TYPES.has(mimeType)) {
+          fileParts.push({ inlineData: { mimeType, data: base64Data } });
+        } else {
+          // Unsupported file type — return a clear error rather than letting Gemini throw
+          return NextResponse.json(
+            { error: `Unsupported file type (${mimeType}). Please upload a PDF, image, Word document, or paste your text directly.` },
+            { status: 400 }
+          );
+        }
       } else if (typeof c === 'string' && c.trim().length > 0) {
         textChunks.push(c);
       }

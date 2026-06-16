@@ -6,7 +6,7 @@ const BASE = 'https://flashcardmaker.co.uk';
 
 const LIBRARY_UPDATED = new Date('2026-05-26');
 const SUBJECTS_UPDATED = new Date('2026-05-26');
-const HOME_UPDATED = new Date('2026-05-26');
+const HOME_UPDATED = new Date('2026-06-16');
 const STATIC_UPDATED = new Date('2025-01-01');
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -46,7 +46,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${BASE}/pricing`,
-      lastModified: new Date('2026-05-26'),
+      lastModified: SUBJECTS_UPDATED,
       changeFrequency: 'monthly' as const,
       priority: 0.7,
     },

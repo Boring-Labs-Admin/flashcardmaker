@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import type { User } from '@supabase/supabase-js';
+import posthog from 'posthog-js';
 
 interface AuthContextType {
   user: User | null;
@@ -31,6 +32,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(session?.user ?? null);
         if (event === 'INITIAL_SESSION') {
           setLoading(false);
+        }
+        if (event === 'SIGNED_IN' && session?.user) {
+          // Treat as a fresh signup if the account was created in the last minute —
+          // distinguishes new signups from returning logins without a server round-trip
+          const createdRecently = Date.now() - new Date(session.user.created_at).getTime() < 60_000;
+          posthog.capture(createdRecently ? 'signup_completed' : 'login_completed');
         }
       });
 

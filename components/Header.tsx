@@ -32,10 +32,9 @@ export default function Header({ title, subtitle }: HeaderProps) {
           <span>✓ Works with PDFs, Word docs and images</span>
           <span>✓ GCSE, A Level and beyond</span>
         </div>
-        <p className="header-library-cta">
-          Or browse our{' '}
-          <a href="/library" className="header-library-btn">FREE FLASHCARD LIBRARY</a>
-        </p>
+        <div className="header-library-cta">
+          <a href="/library" className="header-library-btn">📚 Browse the Free Flashcard Library →</a>
+        </div>
       </div>
     </header>
   );

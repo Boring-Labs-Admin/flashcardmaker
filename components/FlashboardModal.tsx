@@ -1,12 +1,22 @@
 'use client';
 import { useAuth } from '@/lib/auth-context';
 
+export type FlashboardModalReason = 'save' | 'test' | 'library' | 'generic';
+
 interface FlashboardModalProps {
   isOpen: boolean;
   onClose: () => void;
+  reason?: FlashboardModalReason;
 }
 
-export default function FlashboardModal({ isOpen, onClose }: FlashboardModalProps) {
+const SUBTITLES: Record<FlashboardModalReason, string> = {
+  save: 'Create a free account to save this deck forever — access it anytime from your Flashboard.',
+  test: 'Create a free account to test yourself on this deck with a multiple-choice quiz.',
+  library: 'Create a free account to see every card in this deck — no payment needed.',
+  generic: 'Save your decks, access them anywhere, and track your progress.',
+};
+
+export default function FlashboardModal({ isOpen, onClose, reason = 'generic' }: FlashboardModalProps) {
   const { user, signInWithGoogle } = useAuth();
   if (!isOpen) return null;
 
@@ -16,7 +26,7 @@ export default function FlashboardModal({ isOpen, onClose }: FlashboardModalProp
         <div className="modal-logo">⚡</div>
         <div className="modal-title">Log in to your Flashboard</div>
         <div className="modal-subtitle">
-          Save your decks, access them anywhere, and track your progress.
+          {SUBTITLES[reason]}
         </div>
         {!user ? (
           <>

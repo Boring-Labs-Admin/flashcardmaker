@@ -1,6 +1,7 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import posthog from 'posthog-js';
 import { useAuth } from '@/lib/auth-context';
 import LatexRenderer from '@/components/LatexRenderer';
 import FlashboardModal from '@/components/FlashboardModal';
@@ -20,6 +21,11 @@ export default function LibraryDeckView({ deck }: { deck: LibraryDeck }) {
 
   const visibleCards = user ? deck.cards : deck.cards.slice(0, FREE_LIMIT);
   const hasGate = !user && deck.cards.length > FREE_LIMIT;
+  const lockedCount = deck.cards.length - FREE_LIMIT;
+
+  useEffect(() => {
+    if (hasGate) posthog.capture('library_gate_hit', { slug: deck.slug, lockedCount });
+  }, [hasGate, deck.slug, lockedCount]);
 
   const toggleFlip = (i: number) =>
     setFlipped(f => ({ ...f, [i]: !f[i] }));
@@ -93,8 +99,8 @@ export default function LibraryDeckView({ deck }: { deck: LibraryDeck }) {
         <div className="library-gate">
           <div className="library-gate-inner">
             <div style={{ fontSize: '2rem' }}>🔒</div>
-            <h3>See all {deck.cards.length} cards for free</h3>
-            <p>Create a free account to unlock the full deck — no payment needed.</p>
+            <h3>{lockedCount} more card{lockedCount !== 1 ? 's' : ''} waiting</h3>
+            <p>Create a free account to unlock the other {lockedCount} card{lockedCount !== 1 ? 's' : ''} in this deck — no payment needed.</p>
             <button className="btn" onClick={() => setIsModalOpen(true)}>
               Create Free Account
             </button>
@@ -102,7 +108,7 @@ export default function LibraryDeckView({ deck }: { deck: LibraryDeck }) {
         </div>
       )}
 
-      <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} reason="library" />
     </div>
   );
 }

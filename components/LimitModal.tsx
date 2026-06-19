@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
+import posthog from 'posthog-js';
 
 type LimitReason = 'daily' | 'generations' | 'chars';
 
@@ -32,6 +34,10 @@ const CONTENT: Record<LimitReason, { title: string; body: string; cta: string }>
 };
 
 export default function LimitModal({ isOpen, onClose, reason, onSignIn, charsOver, onTrimText }: LimitModalProps) {
+  useEffect(() => {
+    if (isOpen) posthog.capture('limit_hit', { reason });
+  }, [isOpen, reason]);
+
   if (!isOpen) return null;
 
   const { title, body, cta } = CONTENT[reason];

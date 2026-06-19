@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import posthog from 'posthog-js';
 import { useAuth } from '@/lib/auth-context';
 import { Deck, TestOptions } from '@/lib/types';
 import { UserPlanData } from '@/lib/plans';
@@ -62,6 +63,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   // Detect ?payment=success after returning from Stripe Checkout
   useEffect(() => {
     if (searchParams.get('payment') === 'success') {
+      posthog.capture('checkout_completed');
       setPaymentSuccess(true);
       setSettingsTab('billing');
       setSettingsOpen(true);

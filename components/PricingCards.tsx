@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import posthog from 'posthog-js';
 import { useAuth } from '@/lib/auth-context';
 import PricingCheckoutButtons from '@/components/PricingCheckoutButtons';
 import PricingSignUpButton from '@/components/PricingSignUpButton';
@@ -43,6 +44,7 @@ export default function PricingCards() {
   const [showSignIn, setShowSignIn] = useState(false);
 
   const handleBuyCredits = async (productKey: string) => {
+    posthog.capture('upgrade_clicked', { productKey });
     if (!user) {
       setShowSignIn(true);
       return;

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import SubjectPageClient from '@/components/SubjectPageClient';
+import PlanFeaturesSection from '@/components/PlanFeaturesSection';
 import { SUBJECTS, CURRICULA } from '@/lib/subjects';
 import { LIBRARY_DECKS } from '@/lib/library';
 import { SUBJECT_SEO } from '@/lib/subject-seo';
@@ -61,6 +62,8 @@ export default function SubjectContent({ topic }: SubjectContentProps) {
             </div>
           </div>
         )}
+
+        <PlanFeaturesSection />
 
         <div className="subject-section">
           <h2 className="section-title">Flashcards by Subject</h2>

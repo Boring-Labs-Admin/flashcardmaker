@@ -4,7 +4,7 @@ import { useState } from 'react';
 import NavBar from '@/components/NavBar';
 import Header from '@/components/Header';
 import FlashcardGenerator from '@/components/FlashcardGenerator';
-import FlashboardModal from '@/components/FlashboardModal';
+import FlashboardModal, { FlashboardModalReason } from '@/components/FlashboardModal';
 
 interface SubjectPageClientProps {
   title: string;
@@ -15,10 +15,16 @@ interface SubjectPageClientProps {
 
 export default function SubjectPageClient({ title, subtitle, intro, topic }: SubjectPageClientProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalReason, setModalReason] = useState<FlashboardModalReason>('generic');
+
+  const openModal = (reason: FlashboardModalReason = 'generic') => {
+    setModalReason(reason);
+    setIsModalOpen(true);
+  };
 
   return (
     <>
-      <NavBar onLoginClick={() => setIsModalOpen(true)} />
+      <NavBar onLoginClick={() => openModal('generic')} />
       <Header title={title} subtitle={subtitle} />
       <div className="container">
         {intro && (
@@ -26,9 +32,9 @@ export default function SubjectPageClient({ title, subtitle, intro, topic }: Sub
             {intro}
           </p>
         )}
-        <FlashcardGenerator topic={topic} onOpenModal={() => setIsModalOpen(true)} />
+        <FlashcardGenerator topic={topic} onOpenModal={openModal} />
       </div>
-      <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} reason={modalReason} />
     </>
   );
 }

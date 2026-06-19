@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import posthog from 'posthog-js';
 import { Flashcard, ViewMode, Deck } from '@/lib/types';
 import { useAuth } from '@/lib/auth-context';
 import { PLANS, UserPlanData } from '@/lib/plans';
@@ -9,14 +10,14 @@ import ViewToggle from './ViewToggle';
 import SingleView from './SingleView';
 import SideBySideView from './SideBySideView';
 import GridView from './GridView';
-import FlashboardModal from './FlashboardModal';
+import FlashboardModal, { FlashboardModalReason } from './FlashboardModal';
 import SaveDeckModal from './SaveDeckModal';
 import LimitModal from './LimitModal';
 import DownloadModal from './DownloadModal';
 import GeneratingLoader from './GeneratingLoader';
 
 interface FlashcardGeneratorProps {
-  onOpenModal?: () => void;
+  onOpenModal?: (reason?: FlashboardModalReason) => void;
   topic?: string;
   hideFeatures?: boolean;
   onDeckSaved?: (deck: Deck) => void;
@@ -36,12 +37,16 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
   const inputRef = useRef<InputSectionHandle>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('single');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalReason, setModalReason] = useState<FlashboardModalReason>('generic');
   const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [savedDeck, setSavedDeck] = useState<Deck | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const openAuthModal = onOpenModal ?? (() => setIsModalOpen(true));
+  const openAuthModal = onOpenModal ?? ((reason: FlashboardModalReason = 'generic') => {
+    setModalReason(reason);
+    setIsModalOpen(true);
+  });
 
   useEffect(() => {
     fetch('/api/user/plan')
@@ -67,6 +72,7 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
   }, [flashcards.length, savedDeck]);
 
   const handleSubmit = async (content: string | string[]) => {
+    posthog.capture('generate_clicked', { mode: 'content' });
     setIsLoading(true);
     setError(null);
     setLimitHit(null);
@@ -92,6 +98,7 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
       }
       setFlashcards(data.flashcards);
       setCurrentIndex(0);
+      posthog.capture('deck_generated', { mode: 'content', cardCount: data.flashcards.length, loggedIn: !!user });
 
       // Auto-save deck for logged-in users
       if (user) {
@@ -122,6 +129,7 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
   };
 
   const handlePromptSubmit = async (prompt: string) => {
+    posthog.capture('generate_clicked', { mode: 'prompt' });
     setIsLoading(true);
     setError(null);
     setLimitHit(null);
@@ -140,6 +148,7 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
       }
       setFlashcards(data.flashcards);
       setCurrentIndex(0);
+      posthog.capture('deck_generated', { mode: 'prompt', cardCount: data.flashcards.length, loggedIn: !!user });
 
       if (user) {
         try {
@@ -256,8 +265,14 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
     if (user) {
       setIsSaveModalOpen(true);
     } else {
-      openAuthModal();
+      posthog.capture('save_prompt_shown', { reason: 'save' });
+      openAuthModal('save');
     }
+  };
+
+  const handleTestClick = () => {
+    posthog.capture('save_prompt_shown', { reason: 'test' });
+    openAuthModal('test');
   };
 
   // ── LOADING ──────────────────────────────────────────
@@ -283,13 +298,13 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
               {savedDeck ? (
                 <span className="saved-indicator">✓ Saved to Flashboard</span>
               ) : !user ? (
-                <button className="locked-btn" onClick={handleSaveClick}>
-                  💾 Save deck <span className="locked-icon">🔒</span>
+                <button className="locked-btn" onClick={handleSaveClick} title="Create a free account to save this deck forever">
+                  💾 Save forever <span className="locked-icon">🔒</span>
                 </button>
               ) : null}
               {!user && (
-                <button className="locked-btn" onClick={openAuthModal}>
-                  📝 Test <span className="locked-icon">🔒</span>
+                <button className="locked-btn" onClick={handleTestClick} title="Create a free account to test yourself on this deck">
+                  📝 Test yourself <span className="locked-icon">🔒</span>
                 </button>
               )}
               <button className="locked-btn" onClick={() => setIsDownloadModalOpen(true)}>⬇ Download</button>
@@ -313,7 +328,7 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
           </div>
         </div>
 
-        <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} reason={modalReason} />
         <DownloadModal
           isOpen={isDownloadModalOpen}
           onClose={() => setIsDownloadModalOpen(false)}

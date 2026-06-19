@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import posthog from 'posthog-js';
 import { useAuth } from '@/lib/auth-context';
 import FlashboardModal from '@/components/FlashboardModal';
 
@@ -10,6 +11,7 @@ export default function PricingCheckoutButtons() {
   const { user } = useAuth();
 
   const handleCheckout = async (productKey: 'plus_monthly' | 'plus_yearly') => {
+    posthog.capture('upgrade_clicked', { productKey });
     if (!user) {
       setShowSignIn(true);
       return;

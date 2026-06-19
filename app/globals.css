@@ -323,6 +323,15 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .modal-close { margin-top: 1rem; font-size: 0.85rem; color: var(--cobalt-blue); opacity: 0.5; cursor: pointer; background: none; border: none; font-family: "IBM Plex Mono", monospace; display: block; width: 100%; }
 .modal-close:hover { opacity: 1; }
 
+/* ── WIDE / SETTINGS MODALS ─────────────────────────────── */
+.modal-wide { max-width: 900px; max-height: 85vh; overflow-y: auto; }
+.modal-settings { max-width: 760px; width: 92%; display: flex; padding: 0; text-align: left; max-height: 85vh; overflow: hidden; }
+.modal-settings-tabs { width: 180px; flex-shrink: 0; background: var(--light-blue); border-right: 2px solid var(--cobalt-blue); padding: 1.5rem 0.75rem; display: flex; flex-direction: column; gap: 0.25rem; }
+.modal-settings-tab { background: none; border: none; text-align: left; padding: 0.6rem 0.75rem; border-radius: 8px; font-family: "IBM Plex Mono", monospace; font-size: 0.85rem; font-weight: 700; color: var(--cobalt-blue); opacity: 0.6; cursor: pointer; }
+.modal-settings-tab:hover { opacity: 0.85; }
+.modal-settings-tab.active { opacity: 1; background: white; }
+.modal-settings-content { flex: 1; min-width: 0; padding: 2rem; overflow-y: auto; }
+
 /* ── HIDDEN ─────────────────────────────── */
 .hidden { display: none !important; }
 
@@ -339,6 +348,114 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .dashboard-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; }
 .dashboard-subtitle { font-size: 1.1rem; opacity: 0.75; font-weight: 300; }
 .dashboard-empty { text-align: center; padding: 4rem 2rem; }
+.dashboard-page-title { font-size: 1.85rem; font-weight: 700; color: var(--cobalt-blue); margin-bottom: 0.4rem; }
+.dashboard-page-subtitle { font-size: 1rem; opacity: 0.6; font-weight: 400; }
+
+/* ── DASHBOARD APP SHELL ─────────────────────────────── */
+.dashboard-shell { display: flex; min-height: 100vh; }
+.dashboard-main { flex: 1; min-width: 0; }
+
+.dashboard-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--cobalt-blue);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 1rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+.dashboard-sidebar-logo {
+  color: white;
+  font-weight: 800;
+  font-size: 1.1rem;
+  text-decoration: none;
+  padding: 0.5rem 0.75rem 1.5rem;
+}
+.dashboard-sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; }
+.dashboard-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: white;
+  opacity: 0.75;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.7rem 0.75rem;
+  border-radius: 8px;
+  transition: all 0.15s;
+}
+.dashboard-sidebar-link:hover { opacity: 1; background: rgba(255,255,255,0.08); }
+.dashboard-sidebar-link.active { opacity: 1; background: var(--dark-blue); }
+.dashboard-sidebar-icon { font-size: 1.1rem; line-height: 1; }
+
+.dashboard-sidebar-user { position: relative; margin-top: 1rem; }
+.dashboard-sidebar-user-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: none;
+  border: none;
+  color: white;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: left;
+}
+.dashboard-sidebar-user-btn:hover { background: rgba(255,255,255,0.08); }
+.dashboard-sidebar-avatar {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--yellow-bolt);
+  color: var(--cobalt-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.8rem;
+}
+.dashboard-sidebar-username { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.dashboard-user-menu {
+  position: absolute;
+  bottom: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  background: white;
+  color: var(--cobalt-blue);
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+.dashboard-user-menu button {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 0.55rem 0.65rem;
+  border-radius: 6px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cobalt-blue);
+  cursor: pointer;
+}
+.dashboard-user-menu button:hover { background: var(--light-blue); }
+.dashboard-user-menu-divider { height: 1px; background: #E0E8F5; margin: 0.3rem 0.4rem; }
+
+.dashboard-mobile-bar { display: none; }
+.dashboard-mobile-overlay { display: none; }
 .deck-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2rem; margin-bottom: 3rem; }
 .deck-card { background: var(--light-blue); border: 3px solid var(--cobalt-blue); border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem; transition: all 0.3s; }
 .deck-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,74,173,0.2); }
@@ -460,6 +577,24 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
   .nav-bar { position: relative; }
   .nav-buttons { display: none; }
   .nav-hamburger { display: block; }
+  /* Dashboard sidebar collapses to a drawer */
+  .dashboard-shell { flex-direction: column; }
+  .dashboard-mobile-bar {
+    display: flex; align-items: center; gap: 1rem;
+    background: var(--cobalt-blue); color: white; padding: 1rem 1.25rem;
+    border-bottom: 3px solid var(--yellow-bolt); position: sticky; top: 0; z-index: 50;
+  }
+  .dashboard-mobile-hamburger { background: none; border: none; color: white; font-size: 1.25rem; cursor: pointer; }
+  .dashboard-mobile-logo { color: white; font-weight: 800; text-decoration: none; }
+  .dashboard-mobile-overlay { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 60; }
+  .dashboard-sidebar {
+    position: fixed; top: 0; left: -280px; height: 100vh; z-index: 70;
+    transition: left 0.2s ease; box-shadow: 4px 0 20px rgba(0,0,0,0.2);
+  }
+  .dashboard-sidebar.open { left: 0; }
+  .modal-settings { flex-direction: column; max-height: 90vh; }
+  .modal-settings-tabs { flex-direction: row; width: 100%; border-right: none; border-bottom: 2px solid var(--cobalt-blue); overflow-x: auto; }
+  .modal-settings-content { padding: 1.25rem; }
   /* Horizontal scroll deck grid */
   .deck-grid {
     display: flex;

@@ -1,6 +1,12 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Footer() {
+  const pathname = usePathname();
+  if (pathname?.startsWith('/dashboard')) return null;
+
   return (
     <footer className="site-footer">
       <span className="site-footer-copy">© {new Date().getFullYear()} Flashcard Maker</span>

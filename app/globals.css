@@ -664,7 +664,8 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
     padding-bottom: 0.75rem;
     margin-bottom: 2rem;
   }
-  .deck-grid .deck-card {
+  .deck-grid .deck-card,
+  .deck-grid .test-deck-card {
     flex: 0 0 78vw;
     max-width: 320px;
   }

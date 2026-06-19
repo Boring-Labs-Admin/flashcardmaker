@@ -32,3 +32,13 @@ export interface GenerationResponse {
   error?: string;
   blocked?: boolean;
 }
+
+export interface ExamDate {
+  id: string;
+  user_id: string;
+  title: string;
+  subject?: string;
+  exam_date: string; // ISO date, e.g. "2026-06-12"
+  notes?: string;
+  created_at: string;
+}

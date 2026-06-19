@@ -2,16 +2,9 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
-import { PLANS } from '@/lib/plans';
 import { useDashboard, SettingsTab } from '@/lib/dashboard-context';
 
 const mono: React.CSSProperties = { fontFamily: '"IBM Plex Mono", monospace' };
-
-const CREDIT_PACKS = [
-  { label: '1 generation',   price: '£0.99', perUnit: '£0.99 each',  saving: null,         best: false, productKey: 'credits_1'  },
-  { label: '5 generations',  price: '£3.49', perUnit: '£0.70 each',  saving: 'Save 29%',   best: false, productKey: 'credits_5'  },
-  { label: '10 generations', price: '£5.99', perUnit: '£0.60 each',  saving: 'Best value', best: true,  productKey: 'credits_10' },
-];
 
 const TABS: { id: SettingsTab; label: string }[] = [
   { id: 'account', label: 'Account' },
@@ -23,19 +16,15 @@ export default function SettingsModal() {
   const { user } = useAuth();
   const {
     isSettingsOpen, setSettingsOpen, settingsTab, setSettingsTab,
-    planData, isAdmin, checkoutLoading, handleCheckout, handlePortal,
+    planData, isAdmin, checkoutLoading, handlePortal,
     deleteError, deleteLoading, handleDeleteAccount,
-    paymentSuccess, dismissPaymentSuccess, setHelpOpen,
+    setHelpOpen,
   } = useDashboard();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   if (!isSettingsOpen) return null;
 
   const isPlus = planData?.plan === 'plus';
-  const freeBanked = planData?.free_banked ?? 0;
-  const paidCredits = planData?.paid_credits ?? 0;
-  const totalRemaining = freeBanked + paidCredits;
-  const maxGenerations = PLANS.free.maxBanked as number;
 
   return (
     <div className="modal-overlay active" onClick={() => setSettingsOpen(false)}>
@@ -120,26 +109,10 @@ export default function SettingsModal() {
             <div style={{ ...mono, textAlign: 'left' }}>
               <h3 style={{ marginBottom: '1.5rem' }}>Billing</h3>
 
-              {paymentSuccess && (
-                <div style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap',
-                  background: '#E6F4EC', border: '1.5px solid #6FCF97', borderRadius: 10,
-                  padding: '0.75rem 1.1rem', marginBottom: '1.5rem', gap: '1rem',
-                }}>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#007a3d' }}>
-                    ✓ Payment successful — your plan has been updated.
-                  </span>
-                  <button onClick={dismissPaymentSuccess} style={{
-                    background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem',
-                    color: '#007a3d', lineHeight: 1, padding: 0,
-                  }}>×</button>
-                </div>
-              )}
-
               {(isPlus || isAdmin) ? (
                 <div style={{
                   border: '2px solid #004AAD', borderRadius: 12, padding: '1.5rem',
-                  background: '#004AAD', color: 'white', maxWidth: 560,
+                  background: '#004AAD', color: 'white', maxWidth: 480,
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
                     <span style={{ fontWeight: 800, fontSize: '1rem' }}>⚡ Flashcard Maker Plus</span>
@@ -148,20 +121,9 @@ export default function SettingsModal() {
                       fontSize: '0.68rem', fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase',
                     }}>Active</span>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginBottom: '1.5rem' }}>
-                    {[
-                      'Generate decks from any topic with AI',
-                      'Unlimited generations',
-                      '60 cards per deck',
-                      '100,000 character input',
-                      'Up to 20 files per generation',
-                      'Priority processing enabled',
-                    ].map(line => (
-                      <div key={line} style={{ display: 'flex', gap: '0.5rem', fontSize: '0.82rem', opacity: 0.9 }}>
-                        <span style={{ color: '#F5C518', flexShrink: 0 }}>✓</span>{line}
-                      </div>
-                    ))}
-                  </div>
+                  <p style={{ fontSize: '0.82rem', opacity: 0.85, marginBottom: '1.5rem' }}>
+                    Manage your payment details or cancel your subscription anytime.
+                  </p>
                   <button
                     onClick={handlePortal}
                     disabled={checkoutLoading === 'portal'}
@@ -175,139 +137,15 @@ export default function SettingsModal() {
                   </button>
                 </div>
               ) : (
-                <div className="plan-grid">
-                  {/* COL 1: Current Plan */}
-                  <div style={{ border: '1.5px solid #C7D9F5', borderRadius: 12, padding: '1.25rem', background: 'white' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                      <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.09em', opacity: 0.45, textTransform: 'uppercase' }}>Current Plan</span>
-                      <span style={{
-                        background: '#EEF4FF', color: '#004AAD', borderRadius: 20, padding: '0.15rem 0.65rem',
-                        fontSize: '0.68rem', fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase',
-                        border: '1px solid #C7D9F5',
-                      }}>Free</span>
-                    </div>
-                    <div style={{
-                      marginBottom: '1rem', padding: '0.6rem 0.75rem',
-                      background: totalRemaining === 0 ? '#FFF5F5' : '#EEF4FF', borderRadius: 7,
-                      fontSize: '0.8rem', color: totalRemaining === 0 ? '#c00' : '#004AAD', fontWeight: 600,
-                    }}>
-                      {totalRemaining} / {maxGenerations} generations available
-                      {totalRemaining < maxGenerations && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.35rem', fontSize: '0.72rem', fontWeight: 700, color: '#007a3d' }}>
-                          <span style={{ background: '#E6F4EC', borderRadius: 4, padding: '0.1rem 0.4rem' }}>
-                            +1 free generation added daily
-                          </span>
-                        </div>
-                      )}
-                      {paidCredits > 0 && (
-                        <div style={{ fontWeight: 400, fontSize: '0.72rem', opacity: 0.65, marginTop: '0.2rem' }}>
-                          includes {paidCredits} paid credit{paidCredits !== 1 ? 's' : ''}
-                        </div>
-                      )}
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                      {[
-                        '📅  1 generation per day',
-                        '🏦  Up to 5 banked',
-                        '🃏  30 cards per deck',
-                        '📝  5,000 char input',
-                      ].map(line => (
-                        <div key={line} style={{ fontSize: '0.78rem', opacity: 0.6 }}>{line}</div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* COL 2: Credit Packs */}
-                  <div style={{ border: '1.5px solid #C7D9F5', borderRadius: 12, padding: '1.25rem', background: 'white' }}>
-                    <div style={{ marginBottom: '1rem' }}>
-                      <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.09em', opacity: 0.45, textTransform: 'uppercase', marginBottom: '0.35rem' }}>Need more decks now?</div>
-                      <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#004AAD' }}>Credit Packs</div>
-                      <div style={{ fontSize: '0.75rem', opacity: 0.55, marginTop: '0.2rem' }}>One-time · stack · never expire</div>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
-                      {CREDIT_PACKS.map(pack => (
-                        <button
-                          key={pack.label}
-                          onClick={() => handleCheckout(pack.productKey)}
-                          disabled={checkoutLoading === pack.productKey}
-                          style={{
-                            border: pack.best ? '2px solid #004AAD' : '1.5px solid #E0E8F5',
-                            borderRadius: 8, padding: '0.55rem 0.75rem',
-                            background: pack.best ? '#EEF4FF' : 'white',
-                            cursor: checkoutLoading === pack.productKey ? 'not-allowed' : 'pointer',
-                            textAlign: 'left', width: '100%',
-                            opacity: checkoutLoading === pack.productKey ? 0.65 : 1,
-                            fontFamily: 'inherit',
-                          }}>
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.15rem' }}>
-                            <span style={{ fontWeight: 700, fontSize: '0.82rem' }}>
-                              {pack.best && '🏆 '}{pack.label}
-                            </span>
-                            <span style={{ fontWeight: 800, color: '#004AAD', fontSize: '0.9rem' }}>
-                              {checkoutLoading === pack.productKey ? '…' : pack.price}
-                            </span>
-                          </div>
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <span style={{ fontSize: '0.7rem', opacity: 0.5 }}>{pack.perUnit}</span>
-                            {pack.saving && (
-                              <span style={{ fontSize: '0.67rem', fontWeight: 700, color: '#007a3d', background: '#E6F4EC', borderRadius: 4, padding: '0.1rem 0.35rem' }}>
-                                {pack.saving}
-                              </span>
-                            )}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* COL 3: Plus Hero */}
-                  <div style={{ border: '2.5px solid #004AAD', borderRadius: 12, padding: '1.25rem', background: '#004AAD', color: 'white', position: 'relative' }}>
-                    <div style={{ position: 'absolute', top: -11, left: '50%', transform: 'translateX(-50%)', background: '#F5C518', color: '#004AAD', fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.08em', padding: '0.15rem 0.65rem', borderRadius: 20, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
-                      Recommended
-                    </div>
-                    <div style={{ marginBottom: '1rem' }}>
-                      <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.09em', opacity: 0.6, textTransform: 'uppercase', marginBottom: '0.35rem' }}>Use it regularly?</div>
-                      <div style={{ fontWeight: 800, fontSize: '1rem' }}>⚡ Flashcard Maker Plus</div>
-                    </div>
-                    <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.1rem', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
-                      {[
-                        'Generate decks from any topic with AI',
-                        'Unlimited deck generation',
-                        'Create larger decks (up to 60 cards)',
-                        'Paste entire chapters (up to 100,000 chars)',
-                        'Upload up to 20 files at once',
-                        'Faster processing, priority queue',
-                      ].map(f => (
-                        <li key={f} style={{ display: 'flex', gap: '0.5rem', fontSize: '0.8rem', opacity: 0.9 }}>
-                          <span style={{ color: '#F5C518', flexShrink: 0 }}>✓</span>{f}
-                        </li>
-                      ))}
-                    </ul>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      <button
-                        onClick={() => handleCheckout('plus_monthly')}
-                        disabled={!!checkoutLoading}
-                        style={{
-                          width: '100%', background: '#F5C518', border: 'none', borderRadius: 7,
-                          padding: '0.6rem', fontSize: '0.82rem', fontFamily: 'inherit', fontWeight: 800,
-                          cursor: checkoutLoading ? 'not-allowed' : 'pointer', color: '#004AAD',
-                          opacity: checkoutLoading ? 0.7 : 1,
-                        }}>
-                        {checkoutLoading === 'plus_monthly' ? 'Opening…' : 'Get Plus — £4.99/month'}
-                      </button>
-                      <button
-                        onClick={() => handleCheckout('plus_yearly')}
-                        disabled={!!checkoutLoading}
-                        style={{
-                          width: '100%', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.4)',
-                          borderRadius: 7, padding: '0.5rem', fontSize: '0.78rem', fontFamily: 'inherit', fontWeight: 700,
-                          cursor: checkoutLoading ? 'not-allowed' : 'pointer', color: 'white',
-                          opacity: checkoutLoading ? 0.7 : 1,
-                        }}>
-                        {checkoutLoading === 'plus_yearly' ? 'Opening…' : '£39/year — save 35%'}
-                      </button>
-                    </div>
-                  </div>
+                <div style={{
+                  border: '1.5px dashed #C7D9F5', borderRadius: 12, padding: '2rem',
+                  background: '#F7FAFF', maxWidth: 480, textAlign: 'center',
+                }}>
+                  <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🚧</div>
+                  <p style={{ fontSize: '0.88rem', opacity: 0.65, lineHeight: 1.6 }}>
+                    Billing management is coming soon. To upgrade your plan in the meantime, use{' '}
+                    <strong>Upgrade Plan</strong> from the menu.
+                  </p>
                 </div>
               )}
             </div>

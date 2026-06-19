@@ -28,7 +28,7 @@ const PLUS_FEATURES = [
 
 export default function PricingCards() {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem', alignItems: 'start' }}>
+    <div className="pricing-cards-grid">
 
       {/* Free */}
       <div style={{ border: '2px solid #004AAD', borderRadius: 14, padding: '1.75rem', background: 'white' }}>

@@ -324,7 +324,9 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .modal-close:hover { opacity: 1; }
 
 /* ── WIDE / SETTINGS MODALS ─────────────────────────────── */
-.modal-wide { max-width: 900px; max-height: 85vh; overflow-y: auto; }
+.modal-wide { max-width: 1140px; width: 95%; max-height: 90vh; overflow-y: auto; }
+.pricing-cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; align-items: start; }
+@media (max-width: 860px) { .pricing-cards-grid { grid-template-columns: 1fr; } }
 .modal-settings { max-width: 760px; width: 92%; display: flex; padding: 0; text-align: left; max-height: 85vh; overflow: hidden; }
 .modal-settings-tabs { width: 180px; flex-shrink: 0; background: var(--light-blue); border-right: 2px solid var(--cobalt-blue); padding: 1.5rem 0.75rem; display: flex; flex-direction: column; gap: 0.25rem; }
 .modal-settings-tab { background: none; border: none; text-align: left; padding: 0.6rem 0.75rem; border-radius: 8px; font-family: "IBM Plex Mono", monospace; font-size: 0.85rem; font-weight: 700; color: var(--cobalt-blue); opacity: 0.6; cursor: pointer; }

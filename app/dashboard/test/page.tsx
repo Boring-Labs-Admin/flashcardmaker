@@ -44,21 +44,19 @@ function TestYourselfContent() {
           <Link href="/dashboard" className="btn-outline">Create Flashcards →</Link>
         </div>
       ) : (
-        <div className="library-directory">
-          <div className="library-subject-group">
-            {decks.map(deck => (
-              <button
-                key={deck.id}
-                className="library-directory-row"
-                style={{ width: '100%', border: 'none', background: 'none', cursor: 'pointer', font: 'inherit' }}
-                onClick={() => router.push(`/dashboard/test?deckId=${deck.id}`)}
-              >
-                <span className="library-row-title">{deck.title}</span>
-                <span className="library-row-count">{deck.flashcards.length} cards</span>
-                <span className="library-row-arrow">→</span>
-              </button>
-            ))}
-          </div>
+        <div className="deck-grid">
+          {decks.map(deck => (
+            <button
+              key={deck.id}
+              className="test-deck-card"
+              onClick={() => router.push(`/dashboard/test?deckId=${deck.id}`)}
+            >
+              <span className="test-deck-icon">📝</span>
+              <span className="test-deck-card-title">{deck.title}</span>
+              <span className="test-deck-card-meta">{deck.flashcards.length} cards</span>
+              <span className="test-deck-card-cta">Start Test →</span>
+            </button>
+          ))}
         </div>
       )}
     </div>

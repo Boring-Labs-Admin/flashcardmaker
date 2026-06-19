@@ -484,6 +484,29 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .deck-test-btn { flex: 1; padding: 0.7rem 0.75rem; font-size: 0.85rem; background: white; border: 2px solid var(--cobalt-blue); color: var(--cobalt-blue); border-radius: 8px; font-family: "IBM Plex Mono", monospace; font-weight: 700; cursor: pointer; transition: all 0.2s; }
 .deck-test-btn:hover { background: var(--cobalt-blue); color: white; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,74,173,0.25); }
 
+/* ── TEST YOURSELF DECK PICKER ─────────────────────────────── */
+.test-deck-card {
+  background: var(--light-blue);
+  border: 3px solid var(--cobalt-blue);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.test-deck-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,74,173,0.2); background: var(--cobalt-blue); color: white; }
+.test-deck-icon { font-size: 1.75rem; }
+.test-deck-card-title { font-size: 1.1rem; font-weight: 700; color: var(--cobalt-blue); line-height: 1.3; }
+.test-deck-card:hover .test-deck-card-title { color: white; }
+.test-deck-card-meta { font-size: 0.8rem; opacity: 0.6; font-weight: 500; }
+.test-deck-card-cta { margin-top: auto; padding-top: 0.5rem; font-weight: 700; font-size: 0.85rem; color: var(--cobalt-blue); display: flex; align-items: center; gap: 0.35rem; }
+.test-deck-card:hover .test-deck-card-cta { color: white; }
+
 /* ── TEST MODE ─────────────────────────────────────── */
 .test-fullpage { display: flex; flex-direction: column; min-height: calc(100vh - 64px); }
 

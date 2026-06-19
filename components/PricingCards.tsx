@@ -1,5 +1,16 @@
+'use client';
+
+import { useState } from 'react';
+import { useAuth } from '@/lib/auth-context';
 import PricingCheckoutButtons from '@/components/PricingCheckoutButtons';
 import PricingSignUpButton from '@/components/PricingSignUpButton';
+import FlashboardModal from '@/components/FlashboardModal';
+
+const CREDIT_PACKS = [
+  { label: '1 generation',   price: '£0.99', productKey: 'credits_1'  },
+  { label: '5 generations',  price: '£3.49', productKey: 'credits_5'  },
+  { label: '10 generations', price: '£5.99', productKey: 'credits_10' },
+];
 
 const FREE_FEATURES = [
   '1 free generation per day',
@@ -27,6 +38,31 @@ const PLUS_FEATURES = [
 ];
 
 export default function PricingCards() {
+  const { user } = useAuth();
+  const [loading, setLoading] = useState<string | null>(null);
+  const [showSignIn, setShowSignIn] = useState(false);
+
+  const handleBuyCredits = async (productKey: string) => {
+    if (!user) {
+      setShowSignIn(true);
+      return;
+    }
+    setLoading(productKey);
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productKey }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch {
+      // silently reset — user can retry
+    } finally {
+      setLoading(null);
+    }
+  };
+
   return (
     <div className="pricing-cards-grid">
 
@@ -51,15 +87,23 @@ export default function PricingCards() {
         <div style={{ fontSize: '2rem', fontWeight: 800, color: '#004AAD', marginBottom: '0.25rem' }}>From £0.99</div>
         <div style={{ fontSize: '0.82rem', opacity: 0.6, marginBottom: '1.5rem' }}>Top up from your Flashboard</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem' }}>
-          {[
-            { label: '1 generation', price: '£0.99' },
-            { label: '5 generations', price: '£3.49' },
-            { label: '10 generations', price: '£5.99' },
-          ].map((pack) => (
-            <div key={pack.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#EEF4FF', borderRadius: 7, padding: '0.5rem 0.75rem', fontSize: '0.85rem' }}>
+          {CREDIT_PACKS.map((pack) => (
+            <button
+              key={pack.label}
+              onClick={() => handleBuyCredits(pack.productKey)}
+              disabled={loading === pack.productKey}
+              style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                background: '#EEF4FF', border: 'none', borderRadius: 7, padding: '0.5rem 0.75rem',
+                fontSize: '0.85rem', width: '100%', fontFamily: 'inherit',
+                cursor: loading === pack.productKey ? 'not-allowed' : 'pointer',
+                opacity: loading === pack.productKey ? 0.65 : 1,
+              }}>
               <span>{pack.label}</span>
-              <span style={{ fontWeight: 800, color: '#004AAD' }}>{pack.price}</span>
-            </div>
+              <span style={{ fontWeight: 800, color: '#004AAD' }}>
+                {loading === pack.productKey ? '…' : pack.price}
+              </span>
+            </button>
           ))}
         </div>
         <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
@@ -92,6 +136,7 @@ export default function PricingCards() {
         <PricingCheckoutButtons />
       </div>
 
+      <FlashboardModal isOpen={showSignIn} onClose={() => setShowSignIn(false)} />
     </div>
   );
 }

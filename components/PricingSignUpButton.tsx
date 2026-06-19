@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import FlashboardModal from '@/components/FlashboardModal';
 import Link from 'next/link';
@@ -8,8 +9,17 @@ import Link from 'next/link';
 export default function PricingSignUpButton() {
   const [showModal, setShowModal] = useState(false);
   const { user } = useAuth();
+  const pathname = usePathname();
 
   if (user) {
+    // Already inside the dashboard — "Go to Flashboard" would link to the page you're already on
+    if (pathname?.startsWith('/dashboard')) {
+      return (
+        <div style={{ display: 'block', textAlign: 'center', background: '#EEF4FF', color: '#004AAD', border: '2px solid #004AAD', borderRadius: 8, padding: '0.6rem 1rem', fontWeight: 700, fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+          ✓ You're signed up
+        </div>
+      );
+    }
     return (
       <Link
         href="/dashboard"

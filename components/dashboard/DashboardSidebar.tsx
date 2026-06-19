@@ -73,7 +73,7 @@ export default function DashboardSidebar() {
       )}
 
       <aside className={`dashboard-sidebar${isMobileOpen ? ' open' : ''}`}>
-        <Link href="/" className="dashboard-sidebar-logo">Flashcard Maker</Link>
+        <div className="dashboard-sidebar-logo">Flashcard Maker</div>
 
         <SidebarLinks pathname={pathname} onNavigate={() => setMobileOpen(false)} />
 

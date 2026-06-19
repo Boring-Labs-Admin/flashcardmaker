@@ -13,6 +13,7 @@ import FlashboardModal from './FlashboardModal';
 import SaveDeckModal from './SaveDeckModal';
 import LimitModal from './LimitModal';
 import DownloadModal from './DownloadModal';
+import GeneratingLoader from './GeneratingLoader';
 
 interface FlashcardGeneratorProps {
   onOpenModal?: () => void;
@@ -261,13 +262,7 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
 
   // ── LOADING ──────────────────────────────────────────
   if (isLoading) {
-    return (
-      <div className="loading">
-        <div className="spinner">⚡</div>
-        <h2 style={{ fontSize: '2rem', marginTop: '1rem' }}>Creating Your Flashcards</h2>
-        <p style={{ opacity: 0.7 }}>Reading your content and building your deck...</p>
-      </div>
-    );
+    return <GeneratingLoader />;
   }
 
   // ── RESULTS ──────────────────────────────────────────

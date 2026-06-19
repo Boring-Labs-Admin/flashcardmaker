@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Zap } from 'lucide-react';
 
 const MESSAGES = [
   'Reading your content...',
@@ -34,7 +35,7 @@ export default function GeneratingLoader() {
 
   return (
     <div className="loading">
-      <div className="spinner">⚡</div>
+      <div className="spinner"><Zap size={48} strokeWidth={1.75} /></div>
       <h2 style={{ fontSize: '2rem', marginTop: '1rem' }}>Creating Your Flashcards</h2>
       <p className="loading-status" key={messageIndex}>{MESSAGES[messageIndex]}</p>
       <div className="loading-progress-track">

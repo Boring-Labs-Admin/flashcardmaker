@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { X, Zap, AlertTriangle, Construction } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { useDashboard, SettingsTab } from '@/lib/dashboard-context';
 
@@ -40,7 +41,7 @@ export default function SettingsModal() {
             </button>
           ))}
           <div style={{ flex: 1 }} />
-          <button className="modal-close" style={{ margin: 0, textAlign: 'left' }} onClick={() => setSettingsOpen(false)}>✕ Close</button>
+          <button className="modal-close" style={{ margin: 0, textAlign: 'left', justifyContent: 'flex-start' }} onClick={() => setSettingsOpen(false)}><X size={14} /> Close</button>
         </div>
 
         <div className="modal-settings-content">
@@ -73,8 +74,8 @@ export default function SettingsModal() {
                     background: '#FFF5F5', border: '1.5px solid #fca5a5',
                     borderRadius: 8, padding: '1rem', maxWidth: 480,
                   }}>
-                    <p style={{ fontSize: '0.82rem', color: '#b91c1c', fontWeight: 700, marginBottom: '0.75rem', lineHeight: 1.5 }}>
-                      ⚠ This will permanently delete your account and all saved flashcard decks. This cannot be undone.
+                    <p style={{ display: 'flex', alignItems: 'flex-start', gap: '0.4rem', fontSize: '0.82rem', color: '#b91c1c', fontWeight: 700, marginBottom: '0.75rem', lineHeight: 1.5 }}>
+                      <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: '0.15rem' }} /> This will permanently delete your account and all saved flashcard decks. This cannot be undone.
                     </p>
                     <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                       <button
@@ -115,7 +116,7 @@ export default function SettingsModal() {
                   background: '#004AAD', color: 'white', maxWidth: 480,
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-                    <span style={{ fontWeight: 800, fontSize: '1rem' }}>⚡ Flashcard Maker Plus</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 800, fontSize: '1rem' }}><Zap size={16} /> Flashcard Maker Plus</span>
                     <span style={{
                       background: '#F5C518', color: '#004AAD', borderRadius: 20, padding: '0.15rem 0.65rem',
                       fontSize: '0.68rem', fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase',
@@ -141,7 +142,7 @@ export default function SettingsModal() {
                   border: '1.5px dashed #C7D9F5', borderRadius: 12, padding: '2rem',
                   background: '#F7FAFF', maxWidth: 480, textAlign: 'center',
                 }}>
-                  <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🚧</div>
+                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.75rem', color: 'var(--cobalt-blue)', opacity: 0.6 }}><Construction size={32} strokeWidth={1.75} /></div>
                   <p style={{ fontSize: '0.88rem', opacity: 0.65, lineHeight: 1.6 }}>
                     Billing management is coming soon. To upgrade your plan in the meantime, use{' '}
                     <strong>Upgrade Plan</strong> from the menu.

@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import posthog from 'posthog-js';
+import { Check, Lock } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import LatexRenderer from '@/components/LatexRenderer';
 import FlashboardModal from '@/components/FlashboardModal';
@@ -67,7 +68,7 @@ export default function LibraryDeckView({ deck }: { deck: LibraryDeck }) {
             onClick={saveToFlashboard}
             disabled={saving || saved}
           >
-            {saved ? '✓ Saved to Flashboard' : saving ? 'Saving…' : 'Save to Flashboard'}
+            {saved ? <><Check size={15} strokeWidth={2.5} /> Saved to Flashboard</> : saving ? 'Saving…' : 'Save to Flashboard'}
           </button>
         )}
       </div>
@@ -98,7 +99,7 @@ export default function LibraryDeckView({ deck }: { deck: LibraryDeck }) {
       {hasGate && (
         <div className="library-gate">
           <div className="library-gate-inner">
-            <div style={{ fontSize: '2rem' }}>🔒</div>
+            <div style={{ display: 'flex', justifyContent: 'center', color: 'var(--cobalt-blue)' }}><Lock size={32} strokeWidth={1.75} /></div>
             <h3>{lockedCount} more card{lockedCount !== 1 ? 's' : ''} waiting</h3>
             <p>Create a free account to unlock the other {lockedCount} card{lockedCount !== 1 ? 's' : ''} in this deck — no payment needed.</p>
             <button className="btn" onClick={() => setIsModalOpen(true)}>

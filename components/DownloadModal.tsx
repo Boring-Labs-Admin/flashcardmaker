@@ -1,5 +1,7 @@
 'use client';
 
+import { Download, Lock } from 'lucide-react';
+
 interface DownloadModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -42,7 +44,7 @@ export default function DownloadModal({
   return (
     <div style={OVERLAY} onClick={onClose}>
       <div style={PANEL} onClick={e => e.stopPropagation()}>
-        <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem', lineHeight: 1 }}>⬇️</div>
+        <div style={{ color: '#004AAD', marginBottom: '0.75rem' }}><Download size={40} strokeWidth={1.75} /></div>
         <h2 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#004AAD', marginBottom: '0.4rem', lineHeight: 1.3 }}>
           Download your deck
         </h2>
@@ -100,7 +102,7 @@ export default function DownloadModal({
           }}>
             <div>
               <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#004AAD' }}>
-                CSV {!isLoggedIn && <span style={{ fontSize: '0.75rem', opacity: 0.5 }}>🔒</span>}
+                CSV {!isLoggedIn && <span style={{ display: 'inline-flex', verticalAlign: 'middle', opacity: 0.5, marginLeft: '0.2rem' }}><Lock size={12} /></span>}
               </div>
               <div style={{ fontSize: '0.78rem', opacity: 0.6, marginTop: '0.15rem' }}>
                 Import into Anki, Quizlet, or spreadsheets

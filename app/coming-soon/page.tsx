@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Zap } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Coming Soon — Flashcard Maker',
@@ -25,7 +26,7 @@ export default function ComingSoonPage() {
         maxWidth: '480px',
         width: '100%',
       }}>
-        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚡</div>
+        <div style={{ display: 'flex', justifyContent: 'center', color: '#004AAD', marginBottom: '1rem' }}><Zap size={48} strokeWidth={1.75} /></div>
         <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#004AAD', marginBottom: '1rem' }}>
           Coming Soon
         </h1>

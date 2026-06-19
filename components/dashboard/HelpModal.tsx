@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { X } from 'lucide-react';
 import { useDashboard } from '@/lib/dashboard-context';
 
 const FAQS = [
@@ -77,7 +78,7 @@ export default function HelpModal() {
           })}
         </div>
 
-        <button className="modal-close" onClick={() => setHelpOpen(false)}>✕ Close</button>
+        <button className="modal-close" onClick={() => setHelpOpen(false)}><X size={14} /> Close</button>
       </div>
     </div>
   );

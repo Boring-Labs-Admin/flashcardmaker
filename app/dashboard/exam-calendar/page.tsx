@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { ChevronLeft, ChevronRight, Loader2, CalendarDays, Trash2 } from 'lucide-react';
 import { ExamDate } from '@/lib/types';
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -162,9 +163,9 @@ export default function ExamCalendarPage() {
 
       <div className="exam-calendar-wrap">
         <div className="exam-calendar-nav">
-          <button type="button" onClick={() => setViewMonth(new Date(year, month - 1, 1))}>←</button>
+          <button type="button" onClick={() => setViewMonth(new Date(year, month - 1, 1))} aria-label="Previous month"><ChevronLeft size={18} /></button>
           <span>{monthLabel}</span>
-          <button type="button" onClick={() => setViewMonth(new Date(year, month + 1, 1))}>→</button>
+          <button type="button" onClick={() => setViewMonth(new Date(year, month + 1, 1))} aria-label="Next month"><ChevronRight size={18} /></button>
         </div>
         <div className="exam-calendar-weekdays">
           {WEEKDAYS.map(d => <div key={d}>{d}</div>)}
@@ -189,11 +190,11 @@ export default function ExamCalendarPage() {
         <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--cobalt-blue)', marginBottom: '1rem' }}>Upcoming Exams</h2>
         {loading ? (
           <div className="loading">
-            <div className="spinner">⚡</div>
+            <div className="spinner"><Loader2 size={40} strokeWidth={2} /></div>
           </div>
         ) : upcoming.length === 0 ? (
           <div className="dashboard-empty">
-            <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📅</div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem', color: 'var(--cobalt-blue)', opacity: 0.5 }}><CalendarDays size={64} strokeWidth={1.5} /></div>
             <h2 style={{ marginBottom: '0.5rem' }}>No exams added yet</h2>
             <p style={{ opacity: 0.7 }}>Click &quot;+ Add Exam&quot; to add your first one.</p>
           </div>
@@ -209,7 +210,7 @@ export default function ExamCalendarPage() {
                   {ex.subject && <div className="exam-list-subject">{ex.subject}</div>}
                   {ex.notes && <div className="exam-list-notes">{ex.notes}</div>}
                 </div>
-                <button className="deck-delete-btn" onClick={() => handleDelete(ex.id)} title="Delete">🗑️</button>
+                <button className="deck-delete-btn" onClick={() => handleDelete(ex.id)} title="Delete"><Trash2 size={16} /></button>
               </div>
             ))}
           </div>

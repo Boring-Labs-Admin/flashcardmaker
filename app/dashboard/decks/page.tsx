@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Loader2, Layers } from 'lucide-react';
 import { Deck, ViewMode } from '@/lib/types';
 import { useDashboard } from '@/lib/dashboard-context';
 import DeckCard from '@/components/DeckCard';
@@ -74,12 +75,12 @@ export default function YourFlashcardsPage() {
 
       {fetching ? (
         <div className="loading">
-          <div className="spinner">⚡</div>
+          <div className="spinner"><Loader2 size={40} strokeWidth={2} /></div>
           <p style={{ opacity: 0.7, marginTop: '1rem' }}>Loading your decks...</p>
         </div>
       ) : decks.length === 0 ? (
         <div className="dashboard-empty">
-          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📚</div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem', color: 'var(--cobalt-blue)', opacity: 0.5 }}><Layers size={64} strokeWidth={1.5} /></div>
           <h2 style={{ marginBottom: '0.5rem' }}>No decks saved yet</h2>
           <p style={{ opacity: 0.7 }}>Generate a deck under Create Flashcards to get started.</p>
         </div>

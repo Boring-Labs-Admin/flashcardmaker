@@ -172,8 +172,8 @@ h1, .header-title { font-size: 3.5rem; font-weight: 700; line-height: 1.1; margi
 /* ── FILE LIST ─────────────────────────────── */
 .file-list { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.75rem; max-height: 10rem; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(0,74,173,0.3) transparent; }
 .file-item { display: flex; align-items: center; justify-content: space-between; background: white; border: 1px solid var(--cobalt-blue); border-radius: 6px; padding: 0.4rem 0.75rem; gap: 0.5rem; }
-.file-name { font-size: 0.8rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
-.file-remove { background: none; border: none; color: var(--cobalt-blue); cursor: pointer; font-size: 0.75rem; opacity: 0.45; padding: 0; flex-shrink: 0; line-height: 1; font-family: "IBM Plex Mono", monospace; }
+.file-name { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.file-remove { display: inline-flex; align-items: center; background: none; border: none; color: var(--cobalt-blue); cursor: pointer; opacity: 0.45; padding: 0; flex-shrink: 0; line-height: 1; font-family: "IBM Plex Mono", monospace; }
 .file-remove:hover { opacity: 1; color: #c00; }
 
 textarea {
@@ -192,6 +192,10 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 
 .btn {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   background: linear-gradient(135deg, var(--cobalt-blue) 0%, var(--dark-blue) 100%);
   color: white;
   font-weight: 700;
@@ -236,9 +240,9 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 
 .locked-btn { background: var(--light-blue); border: 2px solid var(--cobalt-blue); color: var(--cobalt-blue); padding: 0.5rem 1rem; border-radius: 6px; font-family: "IBM Plex Mono", monospace; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.35rem; white-space: nowrap; }
 .locked-btn:hover { background: var(--cobalt-blue); color: white; }
-.locked-icon { font-size: 0.75rem; opacity: 0.6; }
+.locked-icon { display: inline-flex; opacity: 0.6; }
 
-.reset-btn { background: white; border: 2px solid var(--cobalt-blue); color: var(--cobalt-blue); padding: 0.5rem 1rem; border-radius: 6px; font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.reset-btn { background: white; border: 2px solid var(--cobalt-blue); color: var(--cobalt-blue); padding: 0.5rem 1rem; border-radius: 6px; font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; gap: 0.35rem; }
 .reset-btn:hover { background: var(--cobalt-blue); color: white; }
 
 /* ── VIEWPORT ─────────────────────────────── */
@@ -256,7 +260,7 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .flashcard-text { font-size: 1.25rem; font-weight: 500; text-align: center; line-height: 1.6; margin: auto; padding: 0.5rem 0; width: 100%; }
 
 .card-nav { background: white; border-top: 2px solid var(--cobalt-blue); padding: 0.75rem 1.5rem; display: flex; justify-content: center; gap: 0.75rem; flex-shrink: 0; }
-.control-btn { background: var(--cobalt-blue); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 700; font-family: "IBM Plex Mono", monospace; font-size: 0.875rem; cursor: pointer; transition: all 0.2s; }
+.control-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; background: var(--cobalt-blue); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 700; font-family: "IBM Plex Mono", monospace; font-size: 0.875rem; cursor: pointer; transition: all 0.2s; }
 .control-btn:hover { background: var(--yellow-bolt); color: var(--cobalt-blue); }
 .control-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 .control-btn.secondary { background: white; border: 2px solid var(--cobalt-blue); color: var(--cobalt-blue); }
@@ -280,7 +284,7 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 
 /* ── LOADING ─────────────────────────────── */
 .loading { text-align: center; padding: 4rem; }
-.spinner { font-size: 4rem; animation: spin 2s linear infinite; display: inline-block; }
+.spinner { display: inline-flex; color: var(--cobalt-blue); animation: spin 2s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-status { opacity: 0.7; font-size: 1.05rem; min-height: 1.5rem; animation: loading-status-in 0.35s ease; }
 @keyframes loading-status-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 0.7; transform: translateY(0); } }
@@ -301,7 +305,8 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .subject-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
 .subject-card { background: var(--light-blue); border: 3px solid var(--cobalt-blue); border-radius: 12px; padding: 2rem; text-decoration: none; color: var(--cobalt-blue); transition: all 0.3s; text-align: center; display: block; }
 .subject-card:hover { background: var(--cobalt-blue); color: white; }
-.subject-icon { font-size: 3rem; margin-bottom: 1rem; }
+.subject-icon { display: flex; justify-content: center; margin-bottom: 1rem; color: var(--cobalt-blue); }
+.subject-card:hover .subject-icon { color: white; }
 
 /* ── SUBJECT PAGE FREE DECK LIST ─────────────────── */
 .subject-deck-list { display: flex; flex-direction: column; border: 1.5px solid #C7D9F5; border-radius: 12px; overflow: hidden; }
@@ -318,13 +323,13 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
 .modal-overlay.active { display: flex; }
 .modal { background: white; border: 3px solid var(--cobalt-blue); border-radius: 16px; padding: 3rem; max-width: 480px; width: 90%; text-align: center; }
-.modal-logo { font-size: 3rem; margin-bottom: 1rem; }
+.modal-logo { display: flex; justify-content: center; color: var(--cobalt-blue); margin-bottom: 1rem; }
 .modal-title { font-size: 1.75rem; font-weight: 700; color: var(--cobalt-blue); margin-bottom: 0.5rem; }
 .modal-subtitle { font-size: 0.95rem; color: var(--cobalt-blue); opacity: 0.7; margin-bottom: 2rem; font-weight: 300; }
 .modal-btn { width: 100%; background: linear-gradient(135deg, var(--cobalt-blue), var(--dark-blue)); color: white; border: none; border-radius: 8px; padding: 1rem; font-family: "IBM Plex Mono", monospace; font-size: 1rem; font-weight: 700; cursor: pointer; margin-bottom: 0.75rem; transition: all 0.3s; }
 .modal-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,74,173,0.3); }
 .modal-btn.secondary { background: white; color: var(--cobalt-blue); border: 2px solid var(--cobalt-blue); }
-.modal-close { margin-top: 1rem; font-size: 0.85rem; color: var(--cobalt-blue); opacity: 0.5; cursor: pointer; background: none; border: none; font-family: "IBM Plex Mono", monospace; display: block; width: 100%; }
+.modal-close { display: flex; align-items: center; justify-content: center; gap: 0.3rem; margin-top: 1rem; font-size: 0.85rem; color: var(--cobalt-blue); opacity: 0.5; cursor: pointer; background: none; border: none; font-family: "IBM Plex Mono", monospace; width: 100%; }
 .modal-close:hover { opacity: 1; }
 
 /* ── WIDE / SETTINGS MODALS ─────────────────────────────── */
@@ -342,7 +347,7 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .hidden { display: none !important; }
 
 /* ── SAVED INDICATOR ─────────────────────────────── */
-.saved-indicator { font-size: 0.85rem; font-weight: 700; color: #1a7a4a; background: #e6f7ef; border: 2px solid #1a7a4a; padding: 0.5rem 1rem; border-radius: 6px; white-space: nowrap; }
+.saved-indicator { display: flex; align-items: center; gap: 0.35rem; font-size: 0.85rem; font-weight: 700; color: #1a7a4a; background: #e6f7ef; border: 2px solid #1a7a4a; padding: 0.5rem 1rem; border-radius: 6px; white-space: nowrap; }
 
 /* ── SAVE DECK MODAL ─────────────────────────────── */
 .deck-name-input { width: 100%; background: white; border: 2px solid var(--cobalt-blue); border-radius: 8px; color: var(--cobalt-blue); padding: 0.875rem 1rem; font-family: "IBM Plex Mono", monospace; font-size: 1rem; margin-bottom: 0.75rem; }
@@ -364,7 +369,7 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 
 .exam-calendar-wrap { border: 2px solid var(--cobalt-blue); border-radius: 12px; overflow: hidden; background: white; }
 .exam-calendar-nav { display: flex; align-items: center; justify-content: space-between; background: var(--cobalt-blue); color: white; padding: 0.75rem 1.25rem; font-weight: 700; font-size: 1rem; }
-.exam-calendar-nav button { background: rgba(255,255,255,0.15); border: none; color: white; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 1rem; font-family: inherit; }
+.exam-calendar-nav button { display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.15); border: none; color: white; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-family: inherit; }
 .exam-calendar-nav button:hover { background: rgba(255,255,255,0.3); }
 .exam-calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--light-blue); border-bottom: 2px solid var(--cobalt-blue); }
 .exam-calendar-weekdays div { text-align: center; padding: 0.5rem 0; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.55; }
@@ -421,7 +426,7 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 }
 .dashboard-sidebar-link:hover { background: rgba(255,255,255,0.08); }
 .dashboard-sidebar-link.active { background: var(--dark-blue); }
-.dashboard-sidebar-icon { font-size: 1.1rem; line-height: 1; }
+.dashboard-sidebar-icon { display: flex; align-items: center; flex-shrink: 0; opacity: 0.9; }
 
 .dashboard-sidebar-user { position: relative; margin-top: 1rem; }
 .dashboard-sidebar-user-btn {
@@ -471,6 +476,9 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
   z-index: 10;
 }
 .dashboard-user-menu button {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
   background: none;
   border: none;
   text-align: left;
@@ -482,6 +490,7 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
   color: var(--cobalt-blue);
   cursor: pointer;
 }
+.dashboard-user-menu button svg { flex-shrink: 0; opacity: 0.75; }
 .dashboard-user-menu button:hover { background: var(--light-blue); }
 .dashboard-user-menu-divider { height: 1px; background: #E0E8F5; margin: 0.3rem 0.4rem; }
 
@@ -493,10 +502,10 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .deck-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; }
 .deck-topic-badge { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; background: var(--cobalt-blue); color: var(--yellow-bolt); padding: 3px 10px; border-radius: 4px; text-transform: capitalize; }
 .deck-card-actions { display: flex; align-items: center; gap: 0.25rem; flex-shrink: 0; }
-.deck-action-btn { background: none; border: none; cursor: pointer; font-size: 0.9rem; opacity: 0.45; padding: 2px; line-height: 1; transition: opacity 0.2s; }
+.deck-action-btn { display: inline-flex; align-items: center; background: none; border: none; cursor: pointer; opacity: 0.45; padding: 2px; line-height: 1; transition: opacity 0.2s; }
 .deck-action-btn:hover { opacity: 1; }
-.deck-delete-btn { background: none; border: none; cursor: pointer; font-size: 0.9rem; opacity: 0.65; padding: 2px; line-height: 1; transition: opacity 0.2s; flex-shrink: 0; }
-.deck-delete-btn:hover { opacity: 1; }
+.deck-delete-btn { display: inline-flex; align-items: center; background: none; border: none; cursor: pointer; opacity: 0.65; padding: 2px; line-height: 1; transition: opacity 0.2s; flex-shrink: 0; }
+.deck-delete-btn:hover { opacity: 1; color: #c00; }
 .deck-confirm-delete { display: flex; align-items: center; gap: 0.5rem; margin: 0.4rem 0; padding: 0.5rem 0.75rem; background: #FFF0F0; border: 1.5px solid #FFBBBB; border-radius: 8px; font-size: 0.78rem; font-weight: 600; color: #991111; }
 .deck-confirm-delete span { flex: 1; }
 .deck-confirm-yes { background: #CC3333; color: white; border: none; border-radius: 5px; padding: 0.25rem 0.65rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; font-family: inherit; }
@@ -510,6 +519,7 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .deck-card-title-input { font-size: 1.1rem; font-weight: 700; color: var(--cobalt-blue); line-height: 1.3; border: 2px solid var(--cobalt-blue); border-radius: 6px; padding: 2px 6px; width: 100%; background: white; font-family: inherit; outline: none; }
 .deck-card-meta { display: flex; justify-content: space-between; font-size: 0.8rem; opacity: 0.6; font-weight: 500; }
 .deck-btn-row { display: flex; gap: 0.5rem; margin-top: auto; }
+.deck-study-btn, .deck-test-btn { display: flex; align-items: center; justify-content: center; gap: 0.4rem; }
 .deck-study-btn { flex: 1; padding: 0.7rem 0.75rem; font-size: 0.85rem; }
 .deck-test-btn { flex: 1; padding: 0.7rem 0.75rem; font-size: 0.85rem; background: white; border: 2px solid var(--cobalt-blue); color: var(--cobalt-blue); border-radius: 8px; font-family: "IBM Plex Mono", monospace; font-weight: 700; cursor: pointer; transition: all 0.2s; }
 .deck-test-btn:hover { background: var(--cobalt-blue); color: white; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,74,173,0.25); }
@@ -530,7 +540,8 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
   transition: all 0.3s;
 }
 .test-deck-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,74,173,0.2); background: var(--cobalt-blue); color: white; }
-.test-deck-icon { font-size: 1.75rem; }
+.test-deck-icon { display: flex; color: var(--cobalt-blue); }
+.test-deck-card:hover .test-deck-icon { color: white; }
 .test-deck-card-title { font-size: 1.1rem; font-weight: 700; color: var(--cobalt-blue); line-height: 1.3; }
 .test-deck-card:hover .test-deck-card-title { color: white; }
 .test-deck-card-meta { font-size: 0.8rem; opacity: 0.6; font-weight: 500; }

@@ -2,6 +2,7 @@
 
 import { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Loader2, ClipboardCheck } from 'lucide-react';
 import { useDashboard } from '@/lib/dashboard-context';
 import TestMode from '@/components/TestMode';
 import Link from 'next/link';
@@ -33,12 +34,12 @@ function TestYourselfContent() {
 
       {fetching ? (
         <div className="loading">
-          <div className="spinner">⚡</div>
+          <div className="spinner"><Loader2 size={40} strokeWidth={2} /></div>
           <p style={{ opacity: 0.7, marginTop: '1rem' }}>Loading your decks...</p>
         </div>
       ) : decks.length === 0 ? (
         <div className="dashboard-empty">
-          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📝</div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem', color: 'var(--cobalt-blue)', opacity: 0.5 }}><ClipboardCheck size={64} strokeWidth={1.5} /></div>
           <h2 style={{ marginBottom: '0.5rem' }}>No decks to test yet</h2>
           <p style={{ opacity: 0.7, marginBottom: '1rem' }}>Create a deck first, then come back here to test yourself.</p>
           <Link href="/dashboard" className="btn-outline">Create Flashcards →</Link>
@@ -51,7 +52,7 @@ function TestYourselfContent() {
               className="test-deck-card"
               onClick={() => router.push(`/dashboard/test?deckId=${deck.id}`)}
             >
-              <span className="test-deck-icon">📝</span>
+              <span className="test-deck-icon"><ClipboardCheck size={28} strokeWidth={1.75} /></span>
               <span className="test-deck-card-title">{deck.title}</span>
               <span className="test-deck-card-meta">{deck.flashcards.length} cards</span>
               <span className="test-deck-card-cta">Start Test →</span>

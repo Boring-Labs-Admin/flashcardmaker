@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import posthog from 'posthog-js';
+import { Check, Save, Lock, ClipboardCheck, Download, Trash2, Files, Zap, Target } from 'lucide-react';
 import { Flashcard, ViewMode, Deck } from '@/lib/types';
 import { useAuth } from '@/lib/auth-context';
 import { PLANS, UserPlanData } from '@/lib/plans';
@@ -296,20 +297,20 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
             </div>
             <div className="tool-toolbar-right">
               {savedDeck ? (
-                <span className="saved-indicator">✓ Saved to Flashboard</span>
+                <span className="saved-indicator"><Check size={15} strokeWidth={2.5} /> Saved to Flashboard</span>
               ) : !user ? (
                 <button className="locked-btn" onClick={handleSaveClick} title="Create a free account to save this deck forever">
-                  💾 Save forever <span className="locked-icon">🔒</span>
+                  <Save size={15} /> Save forever <span className="locked-icon"><Lock size={12} /></span>
                 </button>
               ) : null}
               {!user && (
                 <button className="locked-btn" onClick={handleTestClick} title="Create a free account to test yourself on this deck">
-                  📝 Test yourself <span className="locked-icon">🔒</span>
+                  <ClipboardCheck size={15} /> Test yourself <span className="locked-icon"><Lock size={12} /></span>
                 </button>
               )}
-              <button className="locked-btn" onClick={() => setIsDownloadModalOpen(true)}>⬇ Download</button>
+              <button className="locked-btn" onClick={() => setIsDownloadModalOpen(true)}><Download size={15} /> Download</button>
               <button className="reset-btn" onClick={handleReset}>
-                🗑️ New deck
+                <Trash2 size={15} /> New deck
               </button>
             </div>
           </div>
@@ -366,17 +367,17 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
 
       {!hideFeatures && <div className="features">
         <div className="feature">
-          <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>📚</div>
+          <div style={{ marginBottom: '1rem' }}><Files size={40} strokeWidth={1.75} /></div>
           <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.5rem' }}>Works With Anything</div>
           <div style={{ fontSize: '0.9rem', opacity: 0.8 }}>Documents, notes, photos, PDFs — just upload and go</div>
         </div>
         <div className="feature">
-          <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>⚡</div>
+          <div style={{ marginBottom: '1rem' }}><Zap size={40} strokeWidth={1.75} /></div>
           <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.5rem' }}>Instant Results</div>
           <div style={{ fontSize: '0.9rem', opacity: 0.8 }}>Your full deck ready in seconds, no effort required</div>
         </div>
         <div className="feature">
-          <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🎯</div>
+          <div style={{ marginBottom: '1rem' }}><Target size={40} strokeWidth={1.75} /></div>
           <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.5rem' }}>Start For Free</div>
           <div style={{ fontSize: '0.9rem', opacity: 0.8 }}>Generate one free deck per day without an account. Or sign up for free and save your decks to your Flashboard.</div>
         </div>

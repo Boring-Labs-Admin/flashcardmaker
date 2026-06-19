@@ -1,5 +1,6 @@
 'use client';
 
+import { X } from 'lucide-react';
 import PricingCards from '@/components/PricingCards';
 import { useDashboard } from '@/lib/dashboard-context';
 
@@ -15,7 +16,7 @@ export default function UpgradePlanModal() {
           <div className="modal-subtitle">Start free. Upgrade when you need more.</div>
         </div>
         <PricingCards />
-        <button className="modal-close" onClick={() => setUpgradeOpen(false)}>✕ Close</button>
+        <button className="modal-close" onClick={() => setUpgradeOpen(false)}><X size={14} /> Close</button>
       </div>
     </div>
   );

@@ -24,7 +24,7 @@ export default function HomeContent() {
           <div className="subject-grid">
             {SUBJECTS.map((s) => (
               <Link key={s.href} href={s.href} className="subject-card">
-                <div className="subject-icon">{s.icon}</div>
+                <div className="subject-icon"><s.icon size={32} strokeWidth={1.75} /></div>
                 <h3 style={{ fontSize: '1.5rem', fontWeight: 700 }}>{s.name}</h3>
               </Link>
             ))}
@@ -37,7 +37,7 @@ export default function HomeContent() {
           <div className="subject-grid">
             {CURRICULA.map((c) => (
               <Link key={c.href} href={c.href} className="subject-card">
-                <div className="subject-icon">{c.icon}</div>
+                <div className="subject-icon"><c.icon size={32} strokeWidth={1.75} /></div>
                 <h3 style={{ fontSize: '1.5rem', fontWeight: 700 }}>{c.name}</h3>
               </Link>
             ))}

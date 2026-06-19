@@ -1,4 +1,5 @@
 'use client';
+import { Zap, Sparkles, X } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 
 export type FlashboardModalReason = 'save' | 'test' | 'library' | 'generic';
@@ -23,7 +24,7 @@ export default function FlashboardModal({ isOpen, onClose, reason = 'generic' }:
   return (
     <div className="modal-overlay active" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-logo">⚡</div>
+        <div className="modal-logo"><Zap size={48} strokeWidth={1.75} /></div>
         <div className="modal-title">Log in to your Flashboard</div>
         <div className="modal-subtitle">
           {SUBTITLES[reason]}
@@ -35,11 +36,11 @@ export default function FlashboardModal({ isOpen, onClose, reason = 'generic' }:
             </button>
           </>
         ) : (
-          <div style={{ background: 'var(--light-blue)', border: '2px solid var(--cobalt-blue)', borderRadius: 8, padding: '1rem', marginBottom: '1rem', fontSize: '0.9rem' }}>
-            ✨ Coming soon for logged-in users
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: 'var(--light-blue)', border: '2px solid var(--cobalt-blue)', borderRadius: 8, padding: '1rem', marginBottom: '1rem', fontSize: '0.9rem' }}>
+            <Sparkles size={16} /> Coming soon for logged-in users
           </div>
         )}
-        <button className="modal-close" onClick={onClose}>✕ Not now</button>
+        <button className="modal-close" onClick={onClose}><X size={14} /> Not now</button>
       </div>
     </div>
   );

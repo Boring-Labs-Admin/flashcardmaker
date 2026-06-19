@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import posthog from 'posthog-js';
+import { CalendarClock, FileWarning, Zap, Scissors } from 'lucide-react';
 
 type LimitReason = 'daily' | 'generations' | 'chars';
 
@@ -72,8 +73,8 @@ export default function LimitModal({ isOpen, onClose, reason, onSignIn, charsOve
         onClick={e => e.stopPropagation()}
       >
         {/* Icon */}
-        <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem', lineHeight: 1 }}>
-          {reason === 'daily' ? '📅' : reason === 'chars' ? '📝' : '⚡'}
+        <div style={{ color: '#004AAD', marginBottom: '0.75rem' }}>
+          {reason === 'daily' ? <CalendarClock size={40} strokeWidth={1.75} /> : reason === 'chars' ? <FileWarning size={40} strokeWidth={1.75} /> : <Zap size={40} strokeWidth={1.75} />}
         </div>
 
         {/* Title */}
@@ -92,6 +93,7 @@ export default function LimitModal({ isOpen, onClose, reason, onSignIn, charsOve
             <button
               onClick={onTrimText}
               style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem',
                 background: '#004AAD',
                 color: 'white',
                 border: 'none',
@@ -104,7 +106,7 @@ export default function LimitModal({ isOpen, onClose, reason, onSignIn, charsOve
                 width: '100%',
               }}
             >
-              ✂️ Trim text and try again
+              <Scissors size={15} /> Trim text and try again
             </button>
           )}
           {reason === 'daily' && onSignIn ? (

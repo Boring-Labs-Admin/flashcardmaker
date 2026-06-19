@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { Save, X } from 'lucide-react';
 import { Flashcard, Deck } from '@/lib/types';
 
 interface SaveDeckModalProps {
@@ -41,7 +42,7 @@ export default function SaveDeckModal({ isOpen, onClose, flashcards, topic, onSa
   return (
     <div className="modal-overlay active" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-logo">💾</div>
+        <div className="modal-logo"><Save size={40} strokeWidth={1.75} /></div>
         <div className="modal-title">Save Your Deck</div>
         <div className="modal-subtitle">{flashcards.length} cards will be saved to your Flashboard.</div>
         <input
@@ -55,10 +56,10 @@ export default function SaveDeckModal({ isOpen, onClose, flashcards, topic, onSa
           autoFocus
         />
         {error && <div style={{ color: '#c00', fontSize: '0.85rem', marginBottom: '0.5rem' }}>{error}</div>}
-        <button className="modal-btn" onClick={handleSave} disabled={saving}>
-          {saving ? 'Saving...' : '💾 Save Deck'}
+        <button className="modal-btn" onClick={handleSave} disabled={saving} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}>
+          {saving ? 'Saving...' : <><Save size={16} /> Save Deck</>}
         </button>
-        <button className="modal-close" onClick={onClose}>✕ Cancel</button>
+        <button className="modal-close" onClick={onClose}><X size={14} /> Cancel</button>
       </div>
     </div>
   );

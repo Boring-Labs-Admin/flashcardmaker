@@ -1,5 +1,6 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
+import { Pencil, Palette, Trash2, Zap, ClipboardCheck } from 'lucide-react';
 import { Deck } from '@/lib/types';
 
 const COLORS = [
@@ -78,17 +79,17 @@ export default function DeckCard({ deck, onDelete, onStudy, onTest, onUpdate }: 
             className="deck-action-btn"
             onClick={startEdit}
             title="Rename deck"
-          >✏️</button>
+          ><Pencil size={15} /></button>
           <button
             className="deck-action-btn"
             onClick={(e) => { e.stopPropagation(); setShowColors(s => !s); setIsEditing(false); }}
             title="Change colour"
-          >🎨</button>
+          ><Palette size={15} /></button>
           <button
             className="deck-delete-btn"
             onClick={handleDelete}
             title="Delete deck"
-          >🗑️</button>
+          ><Trash2 size={15} /></button>
         </div>
       </div>
 
@@ -142,8 +143,8 @@ export default function DeckCard({ deck, onDelete, onStudy, onTest, onUpdate }: 
         <span>{date}</span>
       </div>
       <div className="deck-btn-row">
-        <button className="btn deck-study-btn" onClick={() => onStudy(deck)}>⚡ Study</button>
-        <button className="btn deck-test-btn" onClick={() => onTest(deck)}>📝 Test</button>
+        <button className="btn deck-study-btn" onClick={() => onStudy(deck)}><Zap size={15} /> Study</button>
+        <button className="btn deck-test-btn" onClick={() => onTest(deck)}><ClipboardCheck size={15} /> Test</button>
       </div>
     </div>
   );

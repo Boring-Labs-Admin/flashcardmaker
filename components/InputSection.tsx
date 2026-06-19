@@ -1,6 +1,7 @@
 'use client';
 import { useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import Link from 'next/link';
+import { UploadCloud, FileText, X, Zap, Sparkles } from 'lucide-react';
 import UpgradeModal from '@/components/UpgradeModal';
 import FlashboardModal from '@/components/FlashboardModal';
 
@@ -96,7 +97,7 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
           onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
           onDragLeave={() => setIsDragOver(false)}
         >
-          <div style={{ fontSize: '3rem', marginBottom: '1rem', lineHeight: 1 }}>📤</div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}><UploadCloud size={48} strokeWidth={1.75} /></div>
           <div style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.5rem' }}>
             {files.length === 0 ? 'Click or drag files here' : 'Add more files'}
           </div>
@@ -118,15 +119,15 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
           <div className="file-list">
             {files.map((f, i) => (
               <div key={i} className="file-item">
-                <span className="file-name">📄 {f.name}</span>
-                <button className="file-remove" onClick={(e) => { e.stopPropagation(); removeFile(i); }} title="Remove">✕</button>
+                <span className="file-name"><FileText size={14} style={{ flexShrink: 0 }} /> {f.name}</span>
+                <button className="file-remove" onClick={(e) => { e.stopPropagation(); removeFile(i); }} title="Remove"><X size={13} /></button>
               </div>
             ))}
           </div>
         )}
         {files.length > 0 && (
           <button className="btn" onClick={handleSubmitFiles} disabled={isLoading}>
-            ⚡ CREATE FLASHCARDS
+            <Zap size={18} /> CREATE FLASHCARDS
           </button>
         )}
       </div>
@@ -158,7 +159,7 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
           </p>
         )}
         <button className="btn" onClick={() => onSubmit(text)} disabled={!text.trim() || text.trim().length < 150 || isLoading}>
-          ⚡ CREATE FLASHCARDS
+          <Zap size={18} /> CREATE FLASHCARDS
         </button>
       </div>
       {/* Prompt — Plus only */}
@@ -166,6 +167,9 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
           <div className="card-label">METHOD 03</div>
           <span style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.25rem',
             fontSize: '0.65rem',
             fontWeight: 800,
             letterSpacing: '0.08em',
@@ -174,7 +178,7 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
             border: '1.5px solid #C7D9F5',
             borderRadius: 5,
             padding: '0.15rem 0.5rem',
-          }}>✦ PLUS</span>
+          }}><Sparkles size={11} /> PLUS</span>
         </div>
         <h3 className="card-title">Generate from Prompt</h3>
 
@@ -191,7 +195,7 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
               onClick={() => onPromptSubmit?.(prompt)}
               disabled={!prompt.trim() || isLoading}
             >
-              ⚡ CREATE FLASHCARDS
+              <Zap size={18} /> CREATE FLASHCARDS
             </button>
           </>
         ) : (
@@ -209,7 +213,7 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
               padding: '1rem 1.25rem',
               textAlign: 'center',
             }}>
-              <div style={{ fontSize: '1.5rem', marginBottom: '0.4rem' }}>✦</div>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.4rem', color: '#004AAD' }}><Sparkles size={24} strokeWidth={1.75} /></div>
               <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#004AAD', marginBottom: '0.3rem' }}>
                 {isLoggedIn ? 'Upgrade to Plus to unlock' : 'Plus feature'}
               </div>

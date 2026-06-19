@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { Menu, X } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import FlashboardModal from './FlashboardModal';
 
@@ -55,7 +56,7 @@ export default function NavBar({ onLoginClick }: NavBarProps) {
           onClick={() => setIsMenuOpen(o => !o)}
           aria-label="Toggle menu"
         >
-          {isMenuOpen ? '✕' : '☰'}
+          {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
 
         {/* Mobile dropdown */}

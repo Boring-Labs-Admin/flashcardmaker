@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import posthog from 'posthog-js';
+import { Zap } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import PricingCheckoutButtons from '@/components/PricingCheckoutButtons';
 import PricingSignUpButton from '@/components/PricingSignUpButton';
@@ -122,7 +123,7 @@ export default function PricingCards() {
         <div style={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', background: '#F5C518', color: '#004AAD', fontSize: '0.7rem', fontWeight: 800, letterSpacing: '0.08em', padding: '0.2rem 0.75rem', borderRadius: 20, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
           Most popular
         </div>
-        <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', opacity: 0.7, textTransform: 'uppercase', marginBottom: '0.5rem' }}>⚡ Flashcard Maker Plus</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', opacity: 0.7, textTransform: 'uppercase', marginBottom: '0.5rem' }}><Zap size={12} /> Flashcard Maker Plus</div>
         <div style={{ marginBottom: '0.25rem' }}>
           <span style={{ fontSize: '2rem', fontWeight: 800 }}>£4.99</span>
           <span style={{ opacity: 0.7, fontSize: '0.9rem' }}>/month</span>

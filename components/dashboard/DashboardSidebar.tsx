@@ -3,15 +3,16 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { Zap, Layers, ClipboardCheck, CalendarDays, Library, Sparkles, Settings, HelpCircle, LogOut, Menu, X } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { useDashboard } from '@/lib/dashboard-context';
 
 const NAV_ITEMS = [
-  { label: 'Create Flashcards', href: '/dashboard', icon: '⚡' },
-  { label: 'Your Flashcards', href: '/dashboard/decks', icon: '📚' },
-  { label: 'Test Yourself', href: '/dashboard/test', icon: '📝' },
-  { label: 'Exam Calendar', href: '/dashboard/exam-calendar', icon: '📅' },
-  { label: 'Free Library', href: '/dashboard/library', icon: '🌐' },
+  { label: 'Create Flashcards', href: '/dashboard', icon: Zap },
+  { label: 'Your Flashcards', href: '/dashboard/decks', icon: Layers },
+  { label: 'Test Yourself', href: '/dashboard/test', icon: ClipboardCheck },
+  { label: 'Exam Calendar', href: '/dashboard/exam-calendar', icon: CalendarDays },
+  { label: 'Free Library', href: '/dashboard/library', icon: Library },
 ];
 
 function SidebarLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
@@ -21,6 +22,7 @@ function SidebarLinks({ pathname, onNavigate }: { pathname: string; onNavigate?:
         const isActive = item.href === '/dashboard'
           ? pathname === '/dashboard'
           : pathname.startsWith(item.href);
+        const Icon = item.icon;
         return (
           <Link
             key={item.href}
@@ -28,7 +30,7 @@ function SidebarLinks({ pathname, onNavigate }: { pathname: string; onNavigate?:
             className={`dashboard-sidebar-link${isActive ? ' active' : ''}`}
             onClick={onNavigate}
           >
-            <span className="dashboard-sidebar-icon">{item.icon}</span>
+            <span className="dashboard-sidebar-icon"><Icon size={18} strokeWidth={2} /></span>
             {item.label}
           </Link>
         );
@@ -63,7 +65,7 @@ export default function DashboardSidebar() {
           onClick={() => setMobileOpen(o => !o)}
           aria-label="Toggle menu"
         >
-          {isMobileOpen ? '✕' : '☰'}
+          {isMobileOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
         <Link href="/" className="dashboard-mobile-logo">Flashcard Maker</Link>
       </div>
@@ -81,17 +83,17 @@ export default function DashboardSidebar() {
           {isUserMenuOpen && (
             <div className="dashboard-user-menu">
               <button onClick={() => { setUserMenuOpen(false); setUpgradeOpen(true); }}>
-                ⚡ Upgrade Plan
+                <Sparkles size={16} /> Upgrade Plan
               </button>
               <button onClick={() => { setUserMenuOpen(false); setSettingsTab('account'); setSettingsOpen(true); }}>
-                ⚙️ Settings
+                <Settings size={16} /> Settings
               </button>
               <button onClick={() => { setUserMenuOpen(false); setHelpOpen(true); }}>
-                ❓ Help
+                <HelpCircle size={16} /> Help
               </button>
               <div className="dashboard-user-menu-divider" />
               <button onClick={handleLogout}>
-                ↩ Log Out
+                <LogOut size={16} /> Log Out
               </button>
             </div>
           )}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Zap } from 'lucide-react';
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -77,8 +78,8 @@ export default function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
         <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', opacity: 0.6, textTransform: 'uppercase', marginBottom: '0.4rem' }}>
           Use it regularly?
         </div>
-        <div style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '1.25rem' }}>
-          ⚡ Flashcard Maker Plus
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '1.15rem', fontWeight: 800, marginBottom: '1.25rem' }}>
+          <Zap size={18} /> Flashcard Maker Plus
         </div>
 
         {/* Features */}

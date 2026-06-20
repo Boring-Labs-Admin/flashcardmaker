@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Zap } from 'lucide-react';
 import NavBar from '@/components/NavBar';
 import PricingCards from '@/components/PricingCards';
+import ComparisonTable from '@/components/ComparisonTable';
+import FaqAccordion from '@/components/FaqAccordion';
 
 export const metadata: Metadata = {
   title: 'Pricing | Free and Plus Plans | Flashcard Maker',
@@ -52,6 +56,25 @@ const jsonLd = {
   ],
 };
 
+const FAQS = [
+  {
+    q: 'Do I need an account to make flashcards?',
+    a: 'No — you can generate one free deck per day with no sign-up at all. Create a free account if you want to save your decks, test yourself, and bank up to 5 unused generations.',
+  },
+  {
+    q: "What's the difference between credit packs and Plus?",
+    a: 'Credit packs are a one-off top-up — pay once, use those generations whenever, they never expire. Plus is a subscription for unlimited generations, bigger decks, topic-only generation and priority speed. If you generate decks regularly, Plus works out cheaper; if you just need a few extra now and then, a credit pack is simpler.',
+  },
+  {
+    q: 'Can I cancel Plus any time?',
+    a: 'Yes. Manage or cancel your subscription anytime from your Flashboard — no minimum term, no cancellation fee.',
+  },
+  {
+    q: 'Is the yearly plan really cheaper?',
+    a: '£39/year works out to about £3.25/month — roughly 35% less than paying monthly at £4.99.',
+  },
+];
+
 export default function PricingPage() {
   return (
     <>
@@ -59,20 +82,47 @@ export default function PricingPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <main style={{ fontFamily: '"IBM Plex Mono", monospace' }}>
+      <main>
         <NavBar />
 
-        <div style={{ maxWidth: 960, margin: '0 auto', padding: '3rem 1.5rem 4rem' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h1 style={{ fontSize: '2.2rem', fontWeight: 800, color: '#004AAD', marginBottom: '0.5rem' }}>Simple Pricing</h1>
-            <p style={{ opacity: 0.65, fontSize: '1rem' }}>Start free. Upgrade when you need more.</p>
+        <section className="header" style={{ textAlign: 'center' }}>
+          <div className="header-content">
+            <div className="pill" style={{ margin: '0 auto 1.25rem' }}><Zap size={13} /> Free to start · no card needed</div>
+            <h1 className="header-title">Simple pricing, no surprises</h1>
+            <p className="header-description" style={{ margin: '0 auto' }}>Make your first deck free today. Pay only when you want unlimited generations and bigger decks.</p>
+          </div>
+        </section>
+
+        <div className="container">
+          <div id="plans">
+            <PricingCards />
           </div>
 
-          <PricingCards />
+          <div className="subject-section" style={{ textAlign: 'center' }}>
+            <div className="eyebrow" style={{ justifyContent: 'center' }}>At a glance</div>
+            <h2 className="section-title" style={{ fontSize: '2rem' }}>What you get on each plan</h2>
+            <ComparisonTable />
+          </div>
 
-          <div style={{ textAlign: 'center', marginTop: '2.5rem', opacity: 0.5, fontSize: '0.82rem' }}>
-            Questions?{' '}
-            <a href="mailto:admin@boringlabs.co.uk" style={{ color: 'inherit' }}>admin@boringlabs.co.uk</a>
+          <div className="subject-section" style={{ textAlign: 'center' }}>
+            <div className="eyebrow" style={{ justifyContent: 'center' }}>Questions</div>
+            <h2 className="section-title" style={{ fontSize: '2rem', marginBottom: '2rem' }}>Good to know before you upgrade</h2>
+            <FaqAccordion items={FAQS} />
+            <p style={{ marginTop: '2rem', opacity: 0.6, fontSize: '0.85rem', fontFamily: 'var(--sans)' }}>
+              Still have a question?{' '}
+              <a href="mailto:support@flashcardmaker.co.uk" style={{ color: 'var(--cobalt-blue)', fontWeight: 700 }}>support@flashcardmaker.co.uk</a>
+            </p>
+          </div>
+
+          <div className="subject-section">
+            <div className="final-cta">
+              <h2>Try it before you spend a penny.</h2>
+              <p>Make your first deck free, then decide. No card needed to start.</p>
+              <div className="final-cta-actions">
+                <Link href="/#generator" className="btn-cta-light">Make my flashcards</Link>
+                <a href="#plans" className="btn-cta-ghost">Get Plus</a>
+              </div>
+            </div>
           </div>
         </div>
       </main>

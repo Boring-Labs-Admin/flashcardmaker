@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import NavBar from '@/components/NavBar';
 import Header from '@/components/Header';
 import FlashcardGenerator from '@/components/FlashcardGenerator';
@@ -9,11 +9,12 @@ import FlashboardModal, { FlashboardModalReason } from '@/components/FlashboardM
 interface SubjectPageClientProps {
   title: string;
   subtitle: string;
-  intro: string;
   topic: string;
+  pill?: ReactNode;
+  breadcrumbLabel?: string;
 }
 
-export default function SubjectPageClient({ title, subtitle, intro, topic }: SubjectPageClientProps) {
+export default function SubjectPageClient({ title, subtitle, topic, pill, breadcrumbLabel }: SubjectPageClientProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalReason, setModalReason] = useState<FlashboardModalReason>('generic');
 
@@ -25,15 +26,14 @@ export default function SubjectPageClient({ title, subtitle, intro, topic }: Sub
   return (
     <>
       <NavBar onLoginClick={() => openModal('generic')} />
-      <Header title={title} subtitle={subtitle} />
-      <div className="container">
-        {intro && (
-          <p style={{ fontSize: '0.95rem', lineHeight: 1.7, opacity: 0.75, maxWidth: 680, marginBottom: '2rem' }}>
-            {intro}
-          </p>
-        )}
-        <FlashcardGenerator topic={topic} onOpenModal={openModal} />
-      </div>
+      <section className="header" id="generator">
+        <div className="header-content hero-grid">
+          <Header title={title} subtitle={subtitle} pill={pill} breadcrumbLabel={breadcrumbLabel} />
+          <div>
+            <FlashcardGenerator topic={topic} onOpenModal={openModal} hideFeatures />
+          </div>
+        </div>
+      </section>
       <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} reason={modalReason} />
     </>
   );

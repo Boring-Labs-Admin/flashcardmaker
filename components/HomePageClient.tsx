@@ -19,11 +19,15 @@ export default function HomePageClient() {
   return (
     <>
       <NavBar onLoginClick={() => openModal('generic')} />
-      <Header />
+      <section className="header" id="generator">
+        <div className="header-content hero-grid">
+          <Header />
+          <div>
+            <FlashcardGenerator onOpenModal={openModal} hideFeatures />
+          </div>
+        </div>
+      </section>
       <HowItWorksStrip />
-      <div className="container">
-        <FlashcardGenerator onOpenModal={openModal} />
-      </div>
       <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} reason={modalReason} />
     </>
   );

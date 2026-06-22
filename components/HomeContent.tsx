@@ -19,6 +19,8 @@ const deckCountBySubject: Record<string, number> = {};
 for (const deck of LIBRARY_DECKS) {
   deckCountBySubject[deck.subject] = (deckCountBySubject[deck.subject] ?? 0) + 1;
 }
+const totalDeckCount = LIBRARY_DECKS.length;
+const LIBRARY_PREVIEW_SUBJECTS = ['Biology', 'Chemistry', 'History'];
 
 export default function HomeContent() {
   return (
@@ -126,32 +128,29 @@ export default function HomeContent() {
           </div>
         </div>
 
-        <div className="subject-section" id="free-flashcards">
-          <h2 className="section-title">Free Flashcard Library</h2>
-          <p className="section-subtitle">Browse pre-made flashcard sets — no account needed to get started</p>
-          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-            <Link href="/library" className="btn-outline">
-              View full library →
-            </Link>
-          </div>
-          <div className="library-directory">
-            {Object.entries(decksBySubject).map(([subject, decks]) => (
-              <div key={subject} className="library-subject-group">
-                <div className="library-subject-heading">{subject}</div>
-                {decks.slice(0, 3).map(deck => (
-                  <Link key={deck.slug} href={`/library/${deck.slug}`} className="library-directory-row">
-                    <span className="library-row-title">{deck.title}</span>
-                    <span className="library-row-count">{deck.cards.length} cards</span>
-                    <span className="library-row-arrow">→</span>
-                  </Link>
-                ))}
+        <div className="subject-section" id="free-flashcards" style={{ textAlign: 'center', borderTop: '1px solid var(--line)', paddingTop: '4rem' }}>
+          <div className="eyebrow" style={{ justifyContent: 'center' }}>Free library</div>
+          <h2 className="section-title" style={{ fontSize: '2rem' }}>No notes today? Borrow ours.</h2>
+          <p className="section-subtitle">{totalDeckCount}+ ready-made decks written for the UK curriculum — browse the first 10 cards of any deck with no account.</p>
+          <div className="lib-grid">
+            {LIBRARY_PREVIEW_SUBJECTS.map(subject => (
+              <div key={subject} className="lib-col">
+                <h4>{subject}</h4>
+                <ul>
+                  {(decksBySubject[subject] ?? []).slice(0, 5).map(deck => (
+                    <li key={deck.slug}>
+                      <Link href={`/library/${deck.slug}`}>
+                        <span className="nm">{deck.title}</span>
+                        <span className="ct">{deck.cards.length} cards →</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
             ))}
           </div>
-          <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-            <Link href="/library" className="btn-outline">
-              View full library →
-            </Link>
+          <div style={{ marginTop: '2rem' }}>
+            <Link href="/library" className="btn-ghost btn-lg">Browse all {totalDeckCount}+ decks →</Link>
           </div>
         </div>
 

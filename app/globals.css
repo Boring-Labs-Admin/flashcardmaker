@@ -703,6 +703,22 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .btn-outline { background: white; border: 2px solid var(--cobalt-blue); color: var(--cobalt-blue); border-radius: 8px; padding: 0.65rem 1.25rem; font-family: "IBM Plex Mono", monospace; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: all 0.15s; }
 .btn-outline:hover { background: var(--light-blue); }
 
+/* ── PILL BUTTON (white-bg context) ─────────────────────────────── */
+.btn-ghost { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: var(--cobalt-blue); border: 2px solid var(--line); border-radius: 999px; padding: 0.75rem 1.5rem; font-family: var(--mono); font-weight: 700; font-size: 0.9rem; text-decoration: none; transition: all 0.15s; }
+.btn-ghost:hover { border-color: var(--cobalt-blue); background: var(--sky); }
+.btn-lg { padding: 0.95rem 1.75rem; font-size: 0.95rem; }
+
+/* ── LIBRARY PREVIEW (homepage) ─────────────────────────────── */
+.lib-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2.5rem; }
+.lib-col { background: white; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow-sm); text-align: left; }
+.lib-col h4 { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: white; background: var(--cobalt-blue); padding: 0.75rem 1rem; margin: 0; }
+.lib-col ul { list-style: none; margin: 0; padding: 0.4rem 0.5rem; }
+.lib-col li a { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.6rem 0.6rem; border-radius: 9px; font-size: 0.875rem; text-decoration: none; color: inherit; }
+.lib-col li a:hover { background: var(--sky); }
+.lib-col .nm { font-weight: 500; font-family: var(--sans); }
+.lib-col .ct { font-family: var(--mono); font-size: 0.72rem; color: var(--mute); display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
+@media (max-width: 980px) { .lib-grid { grid-template-columns: 1fr; } }
+
 @media (max-width: 600px) { .test-options-grid { grid-template-columns: 1fr; } .test-question { font-size: 1.25rem; } }
 
 .dashboard-library-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }

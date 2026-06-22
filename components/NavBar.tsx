@@ -52,7 +52,7 @@ export default function NavBar({ onLoginClick }: NavBarProps) {
             className="nav-login-btn"
             onClick={user ? signOut : handleLoginClick}
           >
-            {user ? 'Sign Out' : 'Login / Sign up to Your Flashboard'}
+            {user ? 'Sign Out' : 'Log in / Sign up'}
           </button>
         </div>
 
@@ -94,7 +94,7 @@ export default function NavBar({ onLoginClick }: NavBarProps) {
               className="nav-login-btn"
               onClick={() => { user ? signOut() : handleLoginClick(); setIsMenuOpen(false); }}
             >
-              {user ? 'Sign Out' : 'Login / Sign up to Your Flashboard'}
+              {user ? 'Sign Out' : 'Log in / Sign up'}
             </button>
           </div>
         )}

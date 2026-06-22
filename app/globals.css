@@ -342,17 +342,18 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 @media (max-width: 480px) { .subject-grid-4 { grid-template-columns: 1fr; } }
 
 /* ── CURRICULUM WIDE CARDS ─────────────────────────────── */
-.curric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.curric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2.4rem; }
 .curric-card {
-  background: linear-gradient(160deg, var(--cobalt-700), var(--cobalt-600));
-  color: white; border-radius: var(--r-lg); padding: 1.6rem;
+  background: linear-gradient(160deg, #003c8c, #0150bd);
+  color: white; border-radius: var(--r-lg); padding: 1.625rem;
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-  text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none; transition: transform 0.15s, box-shadow 0.15s;
+  border: 1px solid rgba(255,255,255,0.12);
 }
-.curric-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
-.curric-card-title { font-family: var(--mono); font-size: 1.2rem; font-weight: 700; margin-bottom: 0.3rem; }
-.curric-card-sub { font-family: var(--sans); font-size: 0.85rem; opacity: 0.8; }
-.curric-arrow { flex-shrink: 0; width: 38px; height: 38px; border-radius: 11px; background: var(--bolt-deep); color: var(--navy); display: flex; align-items: center; justify-content: center; }
+.curric-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.curric-card-title { font-family: var(--mono); font-size: 1.125rem; font-weight: 700; margin-bottom: 0.3rem; }
+.curric-card-sub { font-family: var(--sans); font-size: 0.8125rem; color: #bcd2ff; }
+.curric-arrow { flex-shrink: 0; width: 38px; height: 38px; border-radius: 11px; background: var(--yellow-bolt); color: var(--navy); display: flex; align-items: center; justify-content: center; }
 @media (max-width: 768px) { .curric-grid { grid-template-columns: 1fr; } }
 
 /* ── FEATURE SPLITS (Study modes / Works with anything) ─────────────────────────────── */

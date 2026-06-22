@@ -113,8 +113,9 @@ export default function HomeContent() {
         </div>
 
         <div className="subject-section">
-          <h2 className="section-title">Flashcards by Curriculum</h2>
-          <p className="section-subtitle">Find flashcards tailored to your exam board or qualification</p>
+          <div className="eyebrow" style={{ justifyContent: 'center' }}>By exam board</div>
+          <h2 className="section-title" style={{ fontSize: '2rem' }}>Revising for a specific qualification?</h2>
+          <p className="section-subtitle">Jump to decks framed around what your spec actually asks for.</p>
           <div className="curric-grid">
             {CURRICULA.map((c) => (
               <Link key={c.href} href={c.href} className="curric-card">

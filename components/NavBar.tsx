@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import FlashboardModal from './FlashboardModal';
 
@@ -14,8 +14,23 @@ export default function NavBar({ onLoginClick }: NavBarProps) {
   const { user, signOut } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const accountRef = useRef<HTMLDivElement>(null);
 
   const handleLoginClick = onLoginClick ?? (() => setIsModalOpen(true));
+
+  useEffect(() => {
+    if (!isAccountOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (accountRef.current && !accountRef.current.contains(e.target as Node)) {
+        setIsAccountOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isAccountOpen]);
+
+  const displayName = user?.user_metadata?.full_name || user?.email || '';
 
   return (
     <>
@@ -26,34 +41,50 @@ export default function NavBar({ onLoginClick }: NavBarProps) {
 
         {/* Desktop buttons */}
         <div className="nav-buttons">
-          <Link href="/" style={{ color: 'white', fontSize: '0.85rem', fontWeight: 600, opacity: 0.8, textDecoration: 'none' }}>
-            Make flashcards
-          </Link>
-          <Link href="/library" style={{ color: 'white', fontSize: '0.85rem', fontWeight: 600, opacity: 0.8, textDecoration: 'none' }}>
-            Free Library
-          </Link>
-          <Link href="/#subjects" style={{ color: 'white', fontSize: '0.85rem', fontWeight: 600, opacity: 0.8, textDecoration: 'none' }}>
-            Subjects
-          </Link>
-          <Link href="/pricing" style={{ color: 'white', fontSize: '0.85rem', fontWeight: 600, opacity: 0.8, textDecoration: 'none' }}>
-            Pricing
-          </Link>
-          {user && (
-            <>
-              <span style={{ color: 'white', fontSize: '0.85rem', opacity: 0.8 }}>
-                {user.user_metadata?.full_name || user.email}
-              </span>
-              <Link href="/dashboard" className="nav-login-btn">
-                My Flashboard
-              </Link>
-            </>
+          <div className="nav-links">
+            <Link href="/" style={{ color: 'white', fontSize: '0.85rem', fontWeight: 600, opacity: 0.8, textDecoration: 'none' }}>
+              Make flashcards
+            </Link>
+            <Link href="/library" style={{ color: 'white', fontSize: '0.85rem', fontWeight: 600, opacity: 0.8, textDecoration: 'none' }}>
+              Free Library
+            </Link>
+            <Link href="/#subjects" style={{ color: 'white', fontSize: '0.85rem', fontWeight: 600, opacity: 0.8, textDecoration: 'none' }}>
+              Subjects
+            </Link>
+            <Link href="/pricing" style={{ color: 'white', fontSize: '0.85rem', fontWeight: 600, opacity: 0.8, textDecoration: 'none' }}>
+              Pricing
+            </Link>
+          </div>
+
+          {user ? (
+            <div className="nav-account" ref={accountRef}>
+              <button
+                className="nav-account-trigger"
+                onClick={() => setIsAccountOpen(o => !o)}
+              >
+                <span>{displayName}</span>
+                <ChevronDown size={14} />
+              </button>
+              {isAccountOpen && (
+                <div className="nav-account-dropdown">
+                  <div className="nav-account-dropdown-email">{displayName}</div>
+                  <Link href="/dashboard" className="nav-account-dropdown-item" onClick={() => setIsAccountOpen(false)}>
+                    My Flashboard
+                  </Link>
+                  <button
+                    className="nav-account-dropdown-item"
+                    onClick={() => { setIsAccountOpen(false); signOut(); }}
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button className="nav-login-btn" onClick={handleLoginClick}>
+              Log in / Sign up
+            </button>
           )}
-          <button
-            className="nav-login-btn"
-            onClick={user ? signOut : handleLoginClick}
-          >
-            {user ? 'Sign Out' : 'Log in / Sign up'}
-          </button>
         </div>
 
         {/* Mobile hamburger */}

@@ -72,7 +72,62 @@ textarea { font-family: "IBM Plex Mono", monospace; font-weight: 400; }
   letter-spacing: -0.01em;
 }
 .nav-logo:hover { opacity: 0.8; }
-.nav-buttons { display: flex; align-items: center; gap: 1rem; }
+.nav-buttons { display: flex; align-items: center; gap: 1.75rem; }
+.nav-links { display: flex; align-items: center; gap: 1.5rem; }
+.nav-account { position: relative; }
+.nav-account-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255,255,255,0.12);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  max-width: 160px;
+}
+.nav-account-trigger span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav-account-trigger:hover { background: rgba(255,255,255,0.2); }
+.nav-account-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: white;
+  border-radius: var(--r, 10px);
+  box-shadow: var(--shadow-lg, 0 20px 40px -10px rgba(0,0,0,0.25));
+  min-width: 200px;
+  overflow: hidden;
+  z-index: 110;
+}
+.nav-account-dropdown-email {
+  padding: 0.75rem 1rem 0.6rem;
+  font-size: 0.78rem;
+  color: var(--mute, #667);
+  border-bottom: 1px solid var(--line, #e5e7eb);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nav-account-dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.7rem 1rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink, #111);
+  background: none;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+}
+.nav-account-dropdown-item:hover { background: var(--bg, #f3f6fb); }
 .nav-hamburger {
   display: none;
   background: none;

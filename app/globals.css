@@ -400,6 +400,20 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .mock-filetype-chip { background: white; border: 1.5px solid var(--line); border-radius: var(--r-sm); padding: 1rem 0.85rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
 .mock-filetype-chip .tile { width: 36px; height: 36px; border-radius: 10px; background: var(--sky); color: var(--cobalt-blue); display: flex; align-items: center; justify-content: center; }
 .mock-filetype-chip span { font-family: var(--mono); font-size: 0.72rem; font-weight: 700; color: var(--slate); }
+
+/* ── INTERACTIVE FLIP-CARD DEMO (Works with anything) ─────────────────────────────── */
+.fcard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.fcard { perspective: 1000px; height: 118px; cursor: pointer; background: none; border: none; padding: 0; text-align: left; font: inherit; }
+.fcard-in { position: relative; width: 100%; height: 100%; transition: transform 0.55s cubic-bezier(0.2,0.7,0.2,1); transform-style: preserve-3d; }
+.fcard.flipped .fcard-in { transform: rotateY(180deg); }
+.fface { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 14px; padding: 13px 14px; display: flex; flex-direction: column; justify-content: space-between; }
+.ffront { background: linear-gradient(160deg, #004AAD, #0152bf); color: #fff; }
+.fback { background: linear-gradient(160deg, #fffdf0, #fff7cf); color: var(--navy); border: 1.5px solid var(--yellow-bolt); transform: rotateY(180deg); }
+.fface .lab { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.65; }
+.ffront .lab { color: var(--yellow-bolt); }
+.fface .q { font-size: 13.5px; font-weight: 600; line-height: 1.32; }
+.fback .q { font-family: var(--sans); font-weight: 450; }
+.fface .flip-hint { font-family: var(--mono); font-size: 10px; opacity: 0.6; align-self: flex-end; }
 @media (max-width: 980px) {
   .feature-split { grid-template-columns: 1fr; }
   .feature-split.rev .fig, .feature-split.rev .feature-split-text { order: 0; }

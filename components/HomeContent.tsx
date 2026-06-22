@@ -1,9 +1,10 @@
 import Link from 'next/link';
-import { Check, ArrowRight, FileText, File, Image as ImageIcon, Sigma } from 'lucide-react';
+import { Check, ArrowRight } from 'lucide-react';
 import HomePageClient from '@/components/HomePageClient';
 import PricingCards from '@/components/PricingCards';
 import ScrollReveal from '@/components/ScrollReveal';
 import StudyModesDemo from '@/components/StudyModesDemo';
+import WorksWithAnythingDemo from '@/components/WorksWithAnythingDemo';
 import { SUBJECTS, CURRICULA } from '@/lib/subjects';
 import { getDecksBySubject, LIBRARY_DECKS } from '@/lib/library';
 
@@ -54,30 +55,29 @@ export default function HomeContent() {
         </ScrollReveal>
 
         <ScrollReveal>
-          <div className="subject-section">
-            <div className="feature-split rev">
-              <div className="fig">
-                <div className="mock-filetypes">
-                  <div className="mock-filetype-chip"><span className="tile"><FileText size={18} /></span><span>PDF</span></div>
-                  <div className="mock-filetype-chip"><span className="tile"><File size={18} /></span><span>Word</span></div>
-                  <div className="mock-filetype-chip"><span className="tile"><ImageIcon size={18} /></span><span>Photos</span></div>
-                  <div className="mock-filetype-chip"><span className="tile"><Sigma size={18} /></span><span>Equations</span></div>
+          <div
+            className="subject-section"
+            style={{ background: 'var(--bg)', marginLeft: 'calc(-50vw + 50%)', marginRight: 'calc(-50vw + 50%)', width: '100vw', padding: '4rem 0' }}
+          >
+            <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 1.5rem' }}>
+              <div className="feature-split rev">
+                <div className="fig">
+                  <WorksWithAnythingDemo />
                 </div>
-              </div>
-              <div className="feature-split-text">
-                <div className="eyebrow">Works with anything</div>
-                <h3>Whatever your notes look like, we read them</h3>
-                <p>Lecture slides, scanned PDFs, photos of a textbook page, even equations — drop them in and get a deck back.</p>
-                <ul className="feat-list">
-                  {[
-                    'PDFs and Word documents',
-                    'Photos of handwritten or printed notes',
-                    'Plain pasted text',
-                    'Maths and science notation, rendered properly',
-                  ].map(f => (
-                    <li key={f}><span className="tick"><Check size={14} strokeWidth={3} /></span>{f}</li>
-                  ))}
-                </ul>
+                <div className="feature-split-text">
+                  <div className="eyebrow">Works with anything</div>
+                  <h3>Whatever your notes look like, we read them</h3>
+                  <p>Lecture slides, a scanned handout, a photo of the whiteboard, a messy Word doc — drop it in and we&apos;ll pull out what matters. Equations and formulae come through properly formatted, too.</p>
+                  <ul className="feat-list">
+                    {[
+                      'PDF, Word (.docx), and images — JPG, PNG, HEIC and more',
+                      'Maths & science equations rendered cleanly with LaTeX',
+                      "Export to PDF or CSV once you've saved a free account",
+                    ].map(f => (
+                      <li key={f}><span className="tick"><Check size={14} strokeWidth={3} /></span>{f}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
           </div>

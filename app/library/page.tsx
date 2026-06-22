@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Library as LibraryIcon } from 'lucide-react';
+import { Library as LibraryIcon, Zap } from 'lucide-react';
 import NavBar from '@/components/NavBar';
 import { LIBRARY_DECKS, getDecksBySubject } from '@/lib/library';
 import type { Metadata } from 'next';
@@ -79,7 +79,7 @@ export default function LibraryIndexPage() {
             <h2>Can&apos;t find your exact topic?</h2>
             <p>Make a deck from your own notes in seconds — your first one&apos;s free, no account needed.</p>
             <div className="final-cta-actions">
-              <Link href="/#generator" className="btn-cta-light">Make my own deck</Link>
+              <Link href="/#generator" className="btn-cta-light"><Zap size={16} /> Make my own deck</Link>
             </div>
           </div>
         </div>

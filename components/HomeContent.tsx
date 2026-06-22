@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Check, ArrowRight, Layers } from 'lucide-react';
+import { Check, ArrowRight, Layers, Zap } from 'lucide-react';
 import HomePageClient from '@/components/HomePageClient';
 import PricingCards from '@/components/PricingCards';
 import ScrollReveal from '@/components/ScrollReveal';
@@ -167,7 +167,7 @@ export default function HomeContent() {
             <h2>Your next revision deck is two seconds away.</h2>
             <p>Paste your notes, upload a PDF, or pick a topic — and start studying. No sign-up to try your first one.</p>
             <div className="final-cta-actions">
-              <Link href="/#generator" className="btn-cta-light">Make my flashcards</Link>
+              <Link href="/#generator" className="btn-cta-light"><Zap size={16} /> Make my flashcards</Link>
               <Link href="/library" className="btn-cta-ghost">Browse the free library</Link>
             </div>
           </div>

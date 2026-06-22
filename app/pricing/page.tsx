@@ -119,7 +119,7 @@ export default function PricingPage() {
               <h2>Try it before you spend a penny.</h2>
               <p>Make your first deck free, then decide. No card needed to start.</p>
               <div className="final-cta-actions">
-                <Link href="/#generator" className="btn-cta-light">Make my flashcards</Link>
+                <Link href="/#generator" className="btn-cta-light"><Zap size={16} /> Make my flashcards</Link>
                 <a href="#plans" className="btn-cta-ghost">Get Plus</a>
               </div>
             </div>

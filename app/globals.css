@@ -234,9 +234,10 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
 /* ── FEATURES ─────────────────────────────── */
-.features { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; margin-bottom: 3rem; }
-.feature { background: var(--light-blue); border: 2px solid var(--cobalt-blue); border-radius: 8px; padding: 1.5rem; transition: all 0.3s; }
-.feature:hover { background: var(--cobalt-blue); color: white; }
+.features { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; }
+.feature { background: white; border: 1px solid var(--line); border-radius: var(--r-lg); padding: 1.625rem; box-shadow: var(--shadow-sm); }
+.bg-band { background: var(--bg); padding: 6rem 0; }
+@media (max-width: 640px) { .bg-band { padding: 4rem 0; } }
 
 /* ── TOOL PANEL ─────────────────────────────── */
 .tool-panel { border: 3px solid var(--cobalt-blue); border-radius: 16px; overflow: hidden; background: white; box-shadow: 0 8px 40px rgba(0,74,173,0.12); }

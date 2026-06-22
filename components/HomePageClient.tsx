@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import NavBar from '@/components/NavBar';
 import Header from '@/components/Header';
+import StatsBand from '@/components/StatsBand';
 import HowItWorksStrip from '@/components/HowItWorksStrip';
 import FlashcardGenerator from '@/components/FlashcardGenerator';
 import FlashboardModal, { FlashboardModalReason } from '@/components/FlashboardModal';
@@ -30,7 +31,12 @@ export default function HomePageClient() {
           </div>
         </div>
       </section>
-      {!hasResults && <HowItWorksStrip />}
+      {!hasResults && (
+        <>
+          <StatsBand />
+          <HowItWorksStrip />
+        </>
+      )}
       <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} reason={modalReason} />
     </>
   );

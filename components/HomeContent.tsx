@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Check, ArrowRight, FileText, File, Image as ImageIcon, Sigma } from 'lucide-react';
 import HomePageClient from '@/components/HomePageClient';
-import StatsBand from '@/components/StatsBand';
 import PricingCards from '@/components/PricingCards';
 import ScrollReveal from '@/components/ScrollReveal';
 import { SUBJECTS, CURRICULA } from '@/lib/subjects';
@@ -22,11 +21,8 @@ for (const deck of LIBRARY_DECKS) {
 export default function HomeContent() {
   return (
     <main>
-      {/* Interactive section — NavBar, Header, FlashcardGenerator, login modal */}
+      {/* Interactive section — NavBar, Header, FlashcardGenerator, Stats, How it works, login modal */}
       <HomePageClient />
-
-      {/* Honest, live-computed stats — no invented numbers */}
-      <StatsBand />
 
       {/* Static content — server-rendered for Google */}
       <div className="container">

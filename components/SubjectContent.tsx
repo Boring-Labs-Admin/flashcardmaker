@@ -82,7 +82,7 @@ export default function SubjectContent({ topic }: SubjectContentProps) {
           <div className="subject-section">
             <div className="eyebrow" style={{ justifyContent: 'center' }}>Keep going</div>
             <h2 className="section-title" style={{ fontSize: '2rem' }}>Other subjects students revise here</h2>
-            <div className="subject-grid">
+            <div className="subject-grid subject-grid-4">
               {otherSubjects.map((s) => (
                 <Link key={s.href} href={s.href} className="subject-card">
                   <div className="subject-icon"><s.icon size={32} strokeWidth={1.75} /></div>

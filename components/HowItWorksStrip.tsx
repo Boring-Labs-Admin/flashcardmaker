@@ -18,13 +18,13 @@ export default function HowItWorksStrip() {
       <ScrollReveal>
         <div className="features">
           {STEPS.map((s) => (
-            <div key={s.title} className="feature" style={{ position: 'relative' }}>
+            <div key={s.title} className="feature" style={{ position: 'relative', background: 'white', border: '1px solid var(--line)' }}>
               <div style={{
-                position: 'absolute', top: '1rem', right: '1rem', width: 28, height: 28, borderRadius: '50%',
-                background: 'var(--yellow-bolt)', color: 'var(--cobalt-blue)', fontFamily: 'var(--mono)',
+                position: 'absolute', top: -14, left: 24, width: 30, height: 30, borderRadius: 9,
+                background: 'var(--navy)', color: 'var(--bolt-deep)', fontFamily: 'var(--mono)',
                 fontWeight: 800, fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>{s.num}</div>
-              <div style={{ marginBottom: '1rem' }}><s.icon size={40} strokeWidth={1.75} /></div>
+              <div style={{ width: 46, height: 46, borderRadius: 12, background: 'var(--sky)', color: 'var(--cobalt-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}><s.icon size={24} strokeWidth={1.75} /></div>
               <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.5rem' }}>{s.title}</div>
               <div style={{ fontSize: '0.9rem', opacity: 0.8, fontFamily: 'var(--sans)' }}>{s.body}</div>
             </div>

@@ -39,7 +39,7 @@ export default function ComparisonTable() {
             <td className="plus-col">{PLANS.plus.fileLimit}</td>
           </tr>
           <tr>
-            <td>Topic-only decks</td>
+            <td>AI topic generation</td>
             <td>—</td>
             <td>—</td>
             <td className="plus-col"><Check size={16} strokeWidth={2.5} /></td>

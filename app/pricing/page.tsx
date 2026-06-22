@@ -63,7 +63,7 @@ const FAQS = [
   },
   {
     q: "What's the difference between credit packs and Plus?",
-    a: 'Credit packs are a one-off top-up — pay once, use those generations whenever, they never expire. Plus is a subscription for unlimited generations, bigger decks, topic-only generation and priority speed. If you generate decks regularly, Plus works out cheaper; if you just need a few extra now and then, a credit pack is simpler.',
+    a: 'Credit packs are a one-off top-up — pay once, use those generations whenever, they never expire. Plus is a subscription for unlimited generations, bigger decks, AI topic generation and priority speed. If you generate decks regularly, Plus works out cheaper; if you just need a few extra now and then, a credit pack is simpler.',
   },
   {
     q: 'Can I cancel Plus any time?',

@@ -17,6 +17,7 @@ interface SubjectPageClientProps {
 export default function SubjectPageClient({ title, subtitle, topic, pill, breadcrumbLabel }: SubjectPageClientProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalReason, setModalReason] = useState<FlashboardModalReason>('generic');
+  const [hasResults, setHasResults] = useState(false);
 
   const openModal = (reason: FlashboardModalReason = 'generic') => {
     setModalReason(reason);
@@ -27,10 +28,12 @@ export default function SubjectPageClient({ title, subtitle, topic, pill, breadc
     <>
       <NavBar onLoginClick={() => openModal('generic')} />
       <section className="header" id="generator">
-        <div className="header-content hero-grid">
-          <Header title={title} subtitle={subtitle} pill={pill} breadcrumbLabel={breadcrumbLabel} />
+        <div className={`header-content hero-grid${hasResults ? ' results-mode' : ''}`}>
+          <div style={hasResults ? { display: 'none' } : undefined}>
+            <Header title={title} subtitle={subtitle} pill={pill} breadcrumbLabel={breadcrumbLabel} />
+          </div>
           <div>
-            <FlashcardGenerator topic={topic} onOpenModal={openModal} hideFeatures />
+            <FlashcardGenerator topic={topic} onOpenModal={openModal} hideFeatures onModeChange={setHasResults} />
           </div>
         </div>
       </section>

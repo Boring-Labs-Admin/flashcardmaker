@@ -100,16 +100,16 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
             Paste text
           </button>
           <button className={`gen-tab${activeTab === 'upload' ? ' active' : ''}`} onClick={() => setActiveTab('upload')}>
-            Upload
+            Upload docs
           </button>
           <button className={`gen-tab${activeTab === 'topic' ? ' active' : ''}`} onClick={() => setActiveTab('topic')}>
-            Topic <span className="gen-tab-badge">PLUS</span>
+            Use AI prompt <span className="gen-tab-badge">PLUS</span>
           </button>
         </div>
 
         {/* Paste text */}
         {activeTab === 'paste' && (
-          <div>
+          <div className="gen-panel">
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -132,7 +132,7 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
                 Add more content — paste at least a paragraph of your study notes for best results ({150 - text.trim().length} characters to go).
               </p>
             )}
-            <button className="btn" onClick={() => onSubmit(text)} disabled={!text.trim() || text.trim().length < 150 || isLoading}>
+            <button className="btn" style={{ marginTop: 'auto' }} onClick={() => onSubmit(text)} disabled={!text.trim() || text.trim().length < 150 || isLoading}>
               <Zap size={18} /> Generate deck
             </button>
           </div>
@@ -140,7 +140,7 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
 
         {/* Upload */}
         {activeTab === 'upload' && (
-          <div>
+          <div className="gen-panel">
             <div
               className={`upload-zone${isDragOver ? ' drag-over' : ''}`}
               onClick={() => fileRef.current?.click()}
@@ -181,7 +181,7 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
               </div>
             )}
             {files.length > 0 && (
-              <button className="btn" onClick={handleSubmitFiles} disabled={isLoading}>
+              <button className="btn" style={{ marginTop: 'auto' }} onClick={handleSubmitFiles} disabled={isLoading}>
                 <Zap size={18} /> Generate deck
               </button>
             )}
@@ -190,7 +190,7 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
 
         {/* Topic — Plus only */}
         {activeTab === 'topic' && (
-          <div>
+          <div className="gen-panel">
             {isPlusUser ? (
               <>
                 <div className="gen-chips">
@@ -206,6 +206,7 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
                 />
                 <button
                   className="btn"
+                  style={{ marginTop: 'auto' }}
                   onClick={() => onPromptSubmit?.(prompt)}
                   disabled={!prompt.trim() || isLoading}
                 >

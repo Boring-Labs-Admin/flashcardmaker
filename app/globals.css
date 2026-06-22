@@ -119,6 +119,7 @@ textarea { font-family: "IBM Plex Mono", monospace; font-weight: 400; }
 }
 .header-content { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
 .hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 3rem; align-items: start; text-align: left; }
+.hero-grid.results-mode { grid-template-columns: 1fr; max-width: 1100px; margin: 0 auto; }
 .hero-text { padding-top: 0.5rem; }
 h1, .header-title { font-size: 3rem; font-weight: 700; line-height: 1.12; margin-bottom: 1.25rem; }
 .tagline { font-size: 1.4rem; color: var(--light-blue); font-weight: 400; font-family: var(--sans); }
@@ -273,7 +274,7 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .flashcard.flipped { transform: rotateY(180deg); }
 .flashcard-face { position: absolute; inset: 0; border: 3px solid var(--cobalt-blue); border-radius: 12px; padding: 2rem; display: flex; flex-direction: column; align-items: center; backface-visibility: hidden; overflow: hidden; }
 .flashcard-face-inner { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; align-items: center; width: 100%; scrollbar-width: thin; scrollbar-color: rgba(0,74,173,0.3) transparent; }
-.flashcard-front { background: white; }
+.flashcard-front { background: white; color: var(--cobalt-blue); }
 .flashcard-back { background: var(--cobalt-blue); color: white; transform: rotateY(180deg); }
 .flashcard-text { font-size: 1.25rem; font-weight: 500; text-align: center; line-height: 1.6; margin: auto; padding: 0.5rem 0; width: 100%; }
 
@@ -287,7 +288,7 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 /* ── SIDE BY SIDE VIEW ─────────────────────────────── */
 .sidebyside-scroll { height: 100%; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; scrollbar-width: thin; scrollbar-color: rgba(0,74,173,0.3) transparent; }
 .card-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; flex-shrink: 0; }
-.question-card { background: white; border: 2px solid var(--cobalt-blue); border-radius: 10px; padding: 1.25rem; }
+.question-card { background: white; color: var(--cobalt-blue); border: 2px solid var(--cobalt-blue); border-radius: 10px; padding: 1.25rem; }
 .answer-card { background: var(--cobalt-blue); color: white; border: 2px solid var(--cobalt-blue); border-radius: 10px; padding: 1.25rem; }
 
 /* ── GRID VIEW ─────────────────────────────── */
@@ -297,7 +298,7 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .grid-card { position: relative; width: 100%; height: 100%; transition: transform 0.5s; transform-style: preserve-3d; }
 .grid-card.flipped { transform: rotateY(180deg); }
 .grid-card-face { position: absolute; inset: 0; border: 2px solid var(--cobalt-blue); border-radius: 10px; padding: 1.25rem; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: space-between; overflow-y: auto; }
-.grid-front { background: white; }
+.grid-front { background: white; color: var(--cobalt-blue); }
 .grid-back  { background: var(--cobalt-blue); color: white; transform: rotateY(180deg); }
 
 /* ── LOADING ─────────────────────────────── */
@@ -620,7 +621,7 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 @media (max-width: 600px) { .dashboard-library-grid { grid-template-columns: 1fr; } }
 .dashboard-study-header { display: flex; align-items: center; gap: 1.5rem; padding: 1.5rem 0; }
 .dashboard-study-title { font-size: 1.5rem; font-weight: 700; flex: 1; min-width: 0; }
-.back-btn { background: var(--light-blue); border: 2px solid var(--cobalt-blue); color: var(--cobalt-blue); padding: 0.5rem 1rem; border-radius: 6px; font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 0.85rem; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+.back-btn { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--light-blue); border: 2px solid var(--cobalt-blue); color: var(--cobalt-blue); padding: 0.5rem 1rem; border-radius: 6px; font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 0.85rem; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
 .back-btn:hover { background: var(--cobalt-blue); color: white; }
 
 /* ── LATEX / MATH RENDERING ─────────────────────── */
@@ -814,6 +815,7 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .gen-tab.active { background: var(--cobalt-blue); color: white; }
 .gen-tab-badge { font-size: 0.6rem; opacity: 0.85; padding: 1px 5px; border-radius: 4px; background: rgba(255,255,255,0.2); }
 .gen-tab:not(.active) .gen-tab-badge { background: #EEF4FF; color: var(--cobalt-blue); }
+.gen-panel { display: flex; flex-direction: column; min-height: 420px; }
 .gen-chips { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.85rem; }
 .gen-chip { background: var(--sky); border: 1.5px solid var(--line); color: var(--cobalt-blue); font-family: var(--sans); font-size: 0.78rem; font-weight: 600; padding: 0.4rem 0.8rem; border-radius: 999px; cursor: pointer; transition: all 0.15s; }
 .gen-chip:hover { background: var(--sky-200); border-color: var(--cobalt-blue); }

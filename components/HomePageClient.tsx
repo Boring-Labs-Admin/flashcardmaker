@@ -10,6 +10,7 @@ import FlashboardModal, { FlashboardModalReason } from '@/components/FlashboardM
 export default function HomePageClient() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalReason, setModalReason] = useState<FlashboardModalReason>('generic');
+  const [hasResults, setHasResults] = useState(false);
 
   const openModal = (reason: FlashboardModalReason = 'generic') => {
     setModalReason(reason);
@@ -20,14 +21,16 @@ export default function HomePageClient() {
     <>
       <NavBar onLoginClick={() => openModal('generic')} />
       <section className="header" id="generator">
-        <div className="header-content hero-grid">
-          <Header />
+        <div className={`header-content hero-grid${hasResults ? ' results-mode' : ''}`}>
+          <div style={hasResults ? { display: 'none' } : undefined}>
+            <Header />
+          </div>
           <div>
-            <FlashcardGenerator onOpenModal={openModal} hideFeatures />
+            <FlashcardGenerator onOpenModal={openModal} hideFeatures onModeChange={setHasResults} />
           </div>
         </div>
       </section>
-      <HowItWorksStrip />
+      {!hasResults && <HowItWorksStrip />}
       <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} reason={modalReason} />
     </>
   );

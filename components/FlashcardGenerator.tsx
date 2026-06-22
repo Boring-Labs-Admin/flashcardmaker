@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import posthog from 'posthog-js';
-import { Check, Save, Lock, ClipboardCheck, Download, Trash2, Files, Zap, Target } from 'lucide-react';
+import { Check, Save, Lock, ClipboardCheck, Download, Trash2, Files, Zap, Target, ArrowLeft } from 'lucide-react';
 import { Flashcard, ViewMode, Deck } from '@/lib/types';
 import { useAuth } from '@/lib/auth-context';
 import { PLANS, UserPlanData } from '@/lib/plans';
@@ -22,11 +22,12 @@ interface FlashcardGeneratorProps {
   topic?: string;
   hideFeatures?: boolean;
   onDeckSaved?: (deck: Deck) => void;
+  onModeChange?: (hasResults: boolean) => void;
 }
 
 type LimitReason = 'daily' | 'generations' | 'chars';
 
-export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, onDeckSaved }: FlashcardGeneratorProps) {
+export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, onDeckSaved, onModeChange }: FlashcardGeneratorProps) {
   const { user, signInWithGoogle } = useAuth();
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -71,6 +72,10 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [flashcards.length, savedDeck]);
+
+  useEffect(() => {
+    onModeChange?.(isLoading || flashcards.length > 0);
+  }, [isLoading, flashcards.length, onModeChange]);
 
   const handleSubmit = async (content: string | string[]) => {
     posthog.capture('generate_clicked', { mode: 'content' });
@@ -285,6 +290,11 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
   if (flashcards.length > 0) {
     return (
       <>
+        {onModeChange && (
+          <button className="back-btn" style={{ marginBottom: '1rem' }} onClick={handleReset}>
+            <ArrowLeft size={15} /> Go back
+          </button>
+        )}
         <div className="tool-panel">
           <div className="tool-toolbar">
             <div className="tool-toolbar-left">

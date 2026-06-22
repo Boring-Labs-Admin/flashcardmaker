@@ -15,16 +15,13 @@ export default function PricingSignUpButton() {
     // Already inside the dashboard — "Go to Flashboard" would link to the page you're already on
     if (pathname?.startsWith('/dashboard')) {
       return (
-        <div style={{ display: 'block', textAlign: 'center', background: '#EEF4FF', color: '#004AAD', border: '2px solid #004AAD', borderRadius: 8, padding: '0.6rem 1rem', fontWeight: 700, fontSize: '0.9rem', marginBottom: '1.5rem' }}>
-          ✓ You're signed up
+        <div className="btn-ghost" style={{ width: '100%', justifyContent: 'center', marginBottom: '1.5rem', cursor: 'default' }}>
+          ✓ You&apos;re signed up
         </div>
       );
     }
     return (
-      <Link
-        href="/dashboard"
-        style={{ display: 'block', textAlign: 'center', background: '#EEF4FF', color: '#004AAD', border: '2px solid #004AAD', borderRadius: 8, padding: '0.6rem 1rem', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none', marginBottom: '1.5rem' }}
-      >
+      <Link href="/dashboard" className="btn-ghost" style={{ width: '100%', justifyContent: 'center', marginBottom: '1.5rem' }}>
         Go to Flashboard →
       </Link>
     );
@@ -32,10 +29,7 @@ export default function PricingSignUpButton() {
 
   return (
     <>
-      <button
-        onClick={() => setShowModal(true)}
-        style={{ display: 'block', width: '100%', textAlign: 'center', background: '#EEF4FF', color: '#004AAD', border: '2px solid #004AAD', borderRadius: 8, padding: '0.6rem 1rem', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer', fontFamily: 'inherit', marginBottom: '1.5rem' }}
-      >
+      <button onClick={() => setShowModal(true)} className="btn-ghost" style={{ width: '100%', justifyContent: 'center', marginBottom: '1.5rem' }}>
         Get started free
       </button>
       <FlashboardModal isOpen={showModal} onClose={() => setShowModal(false)} />

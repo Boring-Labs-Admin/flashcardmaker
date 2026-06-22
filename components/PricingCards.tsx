@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import posthog from 'posthog-js';
-import { Zap } from 'lucide-react';
+import { Check, Zap } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import PricingCheckoutButtons from '@/components/PricingCheckoutButtons';
 import PricingSignUpButton from '@/components/PricingSignUpButton';
@@ -17,27 +17,31 @@ const CREDIT_PACKS = [
 const FREE_FEATURES = [
   '1 free generation per day',
   'Banks up to 5 unused generations',
-  '30 cards per deck',
-  'Save decks to Flashboard',
-  'All 3 view modes',
+  'Up to 30 cards per deck',
+  'Save decks to your Flashboard',
+  'Flip, list & test study modes',
   'Download decks as PDF',
 ];
 
-const CREDIT_FEATURES = [
-  'One-time purchase, no expiry',
-  'Credits stack with free generations',
-  '30 cards per deck',
-];
-
-const PLUS_FEATURES = [
-  'Generate decks from any topic with AI',
-  'Unlimited generations',
-  '60 cards per deck',
+const PLUS_FEATURES: ReactNode[] = [
+  <span key="unlimited"><b>Unlimited</b> generations</span>,
+  <span key="topic">Generate decks from <b>any topic</b> with AI</span>,
+  <span key="cards">Up to <b>60 cards</b> per deck</span>,
   '100,000 character input',
   'Up to 20 files per generation',
   'Priority generation speed',
   'Everything in Free',
 ];
+
+const CREDIT_FEATURES = [
+  'One-time purchase, no expiry',
+  'Stacks with your free daily generation',
+  'Up to 30 cards per deck',
+];
+
+function Tick({ light }: { light?: boolean }) {
+  return <Check size={17} strokeWidth={3} className="tick-icon" color={light ? 'var(--yellow-bolt)' : undefined} />;
+}
 
 export default function PricingCards() {
   const { user } = useAuth();
@@ -70,73 +74,55 @@ export default function PricingCards() {
     <div className="pricing-cards-grid">
 
       {/* Free */}
-      <div style={{ border: '2px solid #004AAD', borderRadius: 14, padding: '1.75rem', background: 'white' }}>
-        <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', opacity: 0.5, textTransform: 'uppercase', marginBottom: '0.5rem' }}>Free</div>
-        <div style={{ fontSize: '2rem', fontWeight: 800, color: '#004AAD', marginBottom: '0.25rem' }}>£0</div>
-        <div style={{ fontSize: '0.82rem', opacity: 0.6, marginBottom: '1.5rem' }}>No card required</div>
+      <div className="tier">
+        <div className="kicker">Free account</div>
+        <div className="price">£0<small> /forever</small></div>
+        <p className="sub">No card required</p>
         <PricingSignUpButton />
-        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+        <ul>
           {FREE_FEATURES.map((f) => (
-            <li key={f} style={{ display: 'flex', gap: '0.5rem', fontSize: '0.85rem' }}>
-              <span style={{ color: '#004AAD', flexShrink: 0 }}>✓</span>{f}
-            </li>
+            <li key={f}><Tick />{f}</li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Plus — highlighted, middle */}
+      <div className="tier pop">
+        <span className="pop-badge">Most popular</span>
+        <div className="kicker"><Zap size={13} /> Flashcard Maker Plus</div>
+        <div className="price">£4.99<small> /month</small></div>
+        <p className="sub">or £39/year — save 35%</p>
+        <PricingCheckoutButtons />
+        <ul>
+          {PLUS_FEATURES.map((f, i) => (
+            <li key={i}><Tick light />{f}</li>
           ))}
         </ul>
       </div>
 
       {/* Credit Packs */}
-      <div style={{ border: '2px solid #004AAD', borderRadius: 14, padding: '1.75rem', background: 'white' }}>
-        <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', opacity: 0.5, textTransform: 'uppercase', marginBottom: '0.5rem' }}>Credit Packs</div>
-        <div style={{ fontSize: '2rem', fontWeight: 800, color: '#004AAD', marginBottom: '0.25rem' }}>From £0.99</div>
-        <div style={{ fontSize: '0.82rem', opacity: 0.6, marginBottom: '1.5rem' }}>Top up from your Flashboard</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem' }}>
+      <div className="tier">
+        <div className="kicker">Credit packs</div>
+        <div className="price">From £0.99</div>
+        <p className="sub">One-off · never expires</p>
+        <div className="packs">
           {CREDIT_PACKS.map((pack) => (
             <button
               key={pack.label}
+              className="pack"
               onClick={() => handleBuyCredits(pack.productKey)}
               disabled={loading === pack.productKey}
-              style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                background: '#EEF4FF', border: 'none', borderRadius: 7, padding: '0.5rem 0.75rem',
-                fontSize: '0.85rem', width: '100%', fontFamily: 'inherit',
-                cursor: loading === pack.productKey ? 'not-allowed' : 'pointer',
-                opacity: loading === pack.productKey ? 0.65 : 1,
-              }}>
+            >
               <span>{pack.label}</span>
-              <span style={{ fontWeight: 800, color: '#004AAD' }}>
-                {loading === pack.productKey ? '…' : pack.price}
-              </span>
+              <b>{loading === pack.productKey ? '…' : pack.price}</b>
             </button>
           ))}
         </div>
-        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+        <ul>
           {CREDIT_FEATURES.map((f) => (
-            <li key={f} style={{ display: 'flex', gap: '0.5rem', fontSize: '0.85rem' }}>
-              <span style={{ color: '#004AAD', flexShrink: 0 }}>✓</span>{f}
-            </li>
+            <li key={f}><Tick />{f}</li>
           ))}
         </ul>
-      </div>
-
-      {/* Plus */}
-      <div style={{ border: '3px solid #004AAD', borderRadius: 14, padding: '1.75rem', background: '#004AAD', color: 'white', position: 'relative' }}>
-        <div style={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', background: '#F5C518', color: '#004AAD', fontSize: '0.7rem', fontWeight: 800, letterSpacing: '0.08em', padding: '0.2rem 0.75rem', borderRadius: 20, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
-          Most popular
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', opacity: 0.7, textTransform: 'uppercase', marginBottom: '0.5rem' }}><Zap size={12} /> Flashcard Maker Plus</div>
-        <div style={{ marginBottom: '0.25rem' }}>
-          <span style={{ fontSize: '2rem', fontWeight: 800 }}>£4.99</span>
-          <span style={{ opacity: 0.7, fontSize: '0.9rem' }}>/month</span>
-        </div>
-        <div style={{ fontSize: '0.82rem', opacity: 0.65, marginBottom: '1.25rem' }}>or £39/year — save 35%</div>
-        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
-          {PLUS_FEATURES.map((f) => (
-            <li key={f} style={{ display: 'flex', gap: '0.5rem', fontSize: '0.85rem' }}>
-              <span style={{ color: '#F5C518', flexShrink: 0 }}>✓</span>{f}
-            </li>
-          ))}
-        </ul>
-        <PricingCheckoutButtons />
       </div>
 
       <FlashboardModal isOpen={showSignIn} onClose={() => setShowSignIn(false)} />

@@ -34,47 +34,25 @@ export default function PricingCheckoutButtons() {
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '1.5rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '0.5rem' }}>
         <button
           onClick={() => handleCheckout('plus_monthly')}
           disabled={!!loading}
-          style={{
-            width: '100%',
-            background: '#F5C518',
-            border: 'none',
-            borderRadius: 8,
-            padding: '0.75rem',
-            fontSize: '0.9rem',
-            fontFamily: '"IBM Plex Mono", monospace',
-            fontWeight: 800,
-            cursor: loading ? 'not-allowed' : 'pointer',
-            color: '#004AAD',
-            opacity: loading ? 0.7 : 1,
-          }}
+          className="btn-cta-light"
+          style={{ width: '100%', justifyContent: 'center', opacity: loading ? 0.7 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
         >
-          {loading === 'plus_monthly' ? 'Opening…' : 'Get Plus — £4.99/month'}
+          {loading === 'plus_monthly' ? 'Opening…' : 'Get Plus — £4.99/mo'}
         </button>
         <button
           onClick={() => handleCheckout('plus_yearly')}
           disabled={!!loading}
-          style={{
-            width: '100%',
-            background: 'rgba(255,255,255,0.12)',
-            border: '1px solid rgba(255,255,255,0.35)',
-            borderRadius: 8,
-            padding: '0.65rem',
-            fontSize: '0.82rem',
-            fontFamily: '"IBM Plex Mono", monospace',
-            fontWeight: 700,
-            cursor: loading ? 'not-allowed' : 'pointer',
-            color: 'white',
-            opacity: loading ? 0.7 : 1,
-          }}
+          className="btn-cta-ghost"
+          style={{ width: '100%', justifyContent: 'center', opacity: loading ? 0.7 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
         >
           {loading === 'plus_yearly' ? 'Opening…' : '£39/year — save 35%'}
         </button>
         {!user && (
-          <p style={{ fontSize: '0.72rem', opacity: 0.55, textAlign: 'center', margin: '0.25rem 0 0' }}>
+          <p style={{ fontSize: '0.72rem', opacity: 0.7, textAlign: 'center', margin: '0.25rem 0 0' }}>
             Sign up free first, then upgrade instantly
           </p>
         )}

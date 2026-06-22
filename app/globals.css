@@ -442,8 +442,26 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 
 /* ── WIDE / SETTINGS MODALS ─────────────────────────────── */
 .modal-wide { max-width: 1140px; width: 95%; max-height: 90vh; overflow-y: auto; }
-.pricing-cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; align-items: start; }
+.pricing-cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; align-items: stretch; }
 @media (max-width: 860px) { .pricing-cards-grid { grid-template-columns: 1fr; } }
+
+/* ── PRICING TIERS ─────────────────────────────── */
+.tier { background: white; border: 1.5px solid var(--line); border-radius: var(--r-lg); padding: 1.875rem; position: relative; display: flex; flex-direction: column; }
+.tier.pop { background: linear-gradient(165deg, var(--cobalt-blue), #013f95); color: white; border-color: var(--cobalt-blue); box-shadow: var(--shadow-lg); }
+.pop-badge { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: var(--yellow-bolt); color: var(--navy); font-family: var(--mono); font-weight: 800; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.3rem 0.9rem; border-radius: 999px; white-space: nowrap; }
+.tier .kicker { font-family: var(--mono); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.6; display: flex; align-items: center; gap: 0.3rem; margin-bottom: 0.5rem; }
+.tier .price { font-family: var(--mono); font-size: 2rem; font-weight: 800; margin-bottom: 0.2rem; }
+.tier .price small { font-size: 0.95rem; font-weight: 600; opacity: 0.7; }
+.tier .sub { font-family: var(--sans); font-size: 0.82rem; opacity: 0.65; margin-bottom: 1.5rem; }
+.tier ul { list-style: none; margin: 1.5rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.55rem; }
+.tier li { display: flex; gap: 0.55rem; align-items: flex-start; font-family: var(--sans); font-size: 0.85rem; }
+.tier li .tick-icon { flex-shrink: 0; margin-top: 0.15rem; color: var(--cobalt-blue); }
+.tier.pop li .tick-icon { color: var(--yellow-bolt); }
+.packs { display: flex; flex-direction: column; gap: 0.5rem; margin: 1rem 0; }
+.pack { display: flex; justify-content: space-between; align-items: center; background: var(--sky); border: none; border-radius: 9px; padding: 0.6rem 0.85rem; font-family: var(--sans); font-size: 0.85rem; width: 100%; cursor: pointer; transition: background 0.15s; }
+.pack:hover:not(:disabled) { background: var(--sky-200); }
+.pack:disabled { opacity: 0.65; cursor: not-allowed; }
+.pack b { font-family: var(--mono); font-weight: 800; color: var(--cobalt-blue); }
 .modal-settings { max-width: 760px; width: 92%; display: flex; padding: 0; text-align: left; max-height: 85vh; overflow: hidden; }
 .modal-settings-tabs { width: 180px; flex-shrink: 0; background: var(--light-blue); border-right: 2px solid var(--cobalt-blue); padding: 1.5rem 0.75rem; display: flex; flex-direction: column; gap: 0.25rem; }
 .modal-settings-tab { background: none; border: none; text-align: left; padding: 0.6rem 0.75rem; border-radius: 8px; font-family: "IBM Plex Mono", monospace; font-size: 0.85rem; font-weight: 700; color: var(--cobalt-blue); opacity: 0.6; cursor: pointer; }

@@ -43,7 +43,7 @@ export default function Footer() {
             <Link href="/">Make flashcards</Link>
             <Link href="/library">Free library</Link>
             <Link href="/pricing">Pricing</Link>
-            <button onClick={() => setIsModalOpen(true)} style={{ background: 'none', border: 'none', padding: 0, textAlign: 'left', cursor: 'pointer' }}>Log in</button>
+            <button onClick={() => setIsModalOpen(true)} style={{ background: 'none', border: 'none', padding: 0, textAlign: 'left', cursor: 'pointer', color: 'var(--yellow-bolt)', fontFamily: 'var(--mono)', fontSize: '0.85rem', fontWeight: 700 }}>Log in</button>
           </div>
         </div>
 

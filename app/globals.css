@@ -446,8 +446,10 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 @media (max-width: 860px) { .pricing-cards-grid { grid-template-columns: 1fr; } }
 
 /* ── PRICING TIERS ─────────────────────────────── */
-.tier { background: white; border: 1.5px solid var(--line); border-radius: var(--r-lg); padding: 1.875rem; position: relative; display: flex; flex-direction: column; }
+.tier { background: white; border: 1.5px solid var(--line); border-radius: var(--r-lg); padding: 1.875rem; position: relative; display: flex; flex-direction: column; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.tier:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
 .tier.pop { background: linear-gradient(165deg, var(--cobalt-blue), #013f95); color: white; border-color: var(--cobalt-blue); box-shadow: var(--shadow-lg); }
+.tier.pop:hover { box-shadow: 0 34px 80px -28px rgba(0,42,102,.55); }
 .pop-badge { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: var(--yellow-bolt); color: var(--navy); font-family: var(--mono); font-weight: 800; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.3rem 0.9rem; border-radius: 999px; white-space: nowrap; }
 .tier .kicker { font-family: var(--mono); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.6; display: flex; align-items: center; gap: 0.3rem; margin-bottom: 0.5rem; }
 .tier .price { font-family: var(--mono); font-size: 2rem; font-weight: 800; margin-bottom: 0.2rem; }
@@ -942,6 +944,8 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .gen-tab-badge { font-size: 0.6rem; opacity: 0.85; padding: 1px 5px; border-radius: 4px; background: rgba(255,255,255,0.2); }
 .gen-tab:not(.active) .gen-tab-badge { background: #EEF4FF; color: var(--cobalt-blue); }
 .gen-panel { display: flex; flex-direction: column; min-height: 420px; }
+.gen-panel textarea { flex: 1; min-height: 0; }
+.gen-panel .upload-zone { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .gen-chips { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.85rem; }
 .gen-chip { background: var(--sky); border: 1.5px solid var(--line); color: var(--cobalt-blue); font-family: var(--sans); font-size: 0.78rem; font-weight: 600; padding: 0.4rem 0.8rem; border-radius: 999px; cursor: pointer; transition: all 0.15s; }
 .gen-chip:hover { background: var(--sky-200); border-color: var(--cobalt-blue); }

@@ -964,11 +964,11 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 
 /* ── COMPARISON TABLE ─────────────────────────────── */
 .compare-table-wrap { overflow-x: auto; }
-.compare-table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: 0.88rem; }
-.compare-table th, .compare-table td { padding: 0.85rem 1rem; text-align: center; border-bottom: 1px solid var(--line); white-space: nowrap; }
-.compare-table th:first-child, .compare-table td:first-child { text-align: left; font-family: var(--mono); font-weight: 700; color: var(--ink); white-space: normal; }
-.compare-table thead th { font-family: var(--mono); font-weight: 700; color: var(--slate); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.06em; }
-.compare-table thead th.plus-col, .compare-table td.plus-col { color: var(--cobalt-blue); font-weight: 700; }
+.compare-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 0.875rem; min-width: 560px; }
+.compare-table th, .compare-table td { padding: 0.875rem 0.625rem; text-align: left; border-top: 1px solid var(--line); }
+.compare-table td:first-child { color: var(--slate); }
+.compare-table thead th { font-family: var(--mono); font-weight: 400; color: var(--mute); text-transform: none; font-size: 0.8125rem; letter-spacing: normal; border-top: none; }
+.compare-table thead th.plus-col, .compare-table td.plus-col { color: var(--cobalt-blue); font-weight: 600; }
 
 /* ── FINAL CTA BAND ─────────────────────────────── */
 .final-cta { background: linear-gradient(135deg, var(--cobalt-blue), var(--navy-900)); color: white; padding: 3.5rem 1.5rem; text-align: center; border-radius: var(--r-xl); }

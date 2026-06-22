@@ -16,8 +16,8 @@ export default function ComparisonTable() {
         <tbody>
           <tr>
             <td>Generations</td>
-            <td>1/day</td>
-            <td>1/day, banks to {PLANS.free.maxBanked}</td>
+            <td>1 / day</td>
+            <td>1 / day, banks to {PLANS.free.maxBanked}</td>
             <td className="plus-col">Unlimited</td>
           </tr>
           <tr>

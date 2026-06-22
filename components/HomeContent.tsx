@@ -112,7 +112,7 @@ export default function HomeContent() {
           </div>
         </div>
 
-        <div className="subject-section">
+        <div className="subject-section" style={{ textAlign: 'center' }}>
           <div className="eyebrow" style={{ justifyContent: 'center' }}>By exam board</div>
           <h2 className="section-title" style={{ fontSize: '2rem' }}>Revising for a specific qualification?</h2>
           <p className="section-subtitle">Jump to decks framed around what your spec actually asks for.</p>

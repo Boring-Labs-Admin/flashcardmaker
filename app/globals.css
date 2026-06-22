@@ -719,6 +719,9 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .lib-col .nm { font-weight: 500; font-family: var(--sans); }
 .lib-col .ct { font-family: var(--mono); font-size: 0.72rem; color: var(--mute); display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
 @media (max-width: 980px) { .lib-grid { grid-template-columns: 1fr; } }
+.lib-grid-wide { margin-top: 0; align-items: start; }
+@media (max-width: 980px) { .lib-grid-wide { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .lib-grid-wide { grid-template-columns: 1fr; } }
 
 @media (max-width: 600px) { .test-options-grid { grid-template-columns: 1fr; } .test-question { font-size: 1.25rem; } }
 

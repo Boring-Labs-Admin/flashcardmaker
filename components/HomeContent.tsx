@@ -3,6 +3,7 @@ import { Check, ArrowRight, FileText, File, Image as ImageIcon, Sigma } from 'lu
 import HomePageClient from '@/components/HomePageClient';
 import PricingCards from '@/components/PricingCards';
 import ScrollReveal from '@/components/ScrollReveal';
+import StudyModesDemo from '@/components/StudyModesDemo';
 import { SUBJECTS, CURRICULA } from '@/lib/subjects';
 import { getDecksBySubject, LIBRARY_DECKS } from '@/lib/library';
 
@@ -46,18 +47,7 @@ export default function HomeContent() {
                 </ul>
               </div>
               <div className="fig">
-                <div className="mock-mode-tabs">
-                  <span className="mock-mode-tab">Flip</span>
-                  <span className="mock-mode-tab">List</span>
-                  <span className="mock-mode-tab active">Test</span>
-                </div>
-                <div className="mock-card">
-                  <div className="mock-card-label">Question</div>
-                  <div className="mock-card-q">What is the main product of photosynthesis?</div>
-                </div>
-                <div className="mock-quiz-opt">A. Carbon dioxide</div>
-                <div className="mock-quiz-opt correct">B. Glucose</div>
-                <div className="mock-quiz-opt">C. Nitrogen</div>
+                <StudyModesDemo />
               </div>
             </div>
           </div>

@@ -328,13 +328,16 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .subject-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
 .subject-grid.subject-grid-4 { grid-template-columns: repeat(4,1fr); gap: 1rem; }
 .subject-card { background: var(--light-blue); border: 3px solid var(--cobalt-blue); border-radius: 12px; padding: 2rem; text-decoration: none; color: var(--cobalt-blue); transition: all 0.3s; text-align: center; display: block; }
-.subject-grid-4 .subject-card { background: white; padding: 1.5rem 1.25rem; border-width: 1.5px; border-color: var(--line); border-radius: var(--r); }
+.subject-grid-4 .subject-card { background: white; padding: 1.25rem; border-width: 1.5px; border-color: var(--line); border-radius: var(--r); display: flex; align-items: center; gap: 0.8rem; text-align: left; }
 .subject-card:hover { background: var(--cobalt-blue); color: white; }
 .subject-grid-4 .subject-card:hover { background: white; color: var(--cobalt-blue); transform: translateY(-3px); box-shadow: var(--shadow); border-color: var(--cobalt-blue); }
 .subject-grid-4 .subject-card:hover .subject-icon { color: var(--cobalt-blue); }
 .subject-icon { display: flex; justify-content: center; margin-bottom: 1rem; color: var(--cobalt-blue); }
-.subject-grid-4 .subject-icon { width: 42px; height: 42px; border-radius: 12px; background: var(--sky); margin: 0 auto 0.85rem; }
+.subject-grid-4 .subject-icon { width: 42px; height: 42px; flex-shrink: 0; border-radius: 12px; background: var(--sky); margin: 0; align-items: center; }
 .subject-card:hover .subject-icon { color: white; }
+.subject-grid-4 .subject-card span { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+.subject-grid-4 .subject-card b { font-family: var(--mono); font-size: 0.92rem; font-weight: 600; }
+.subject-grid-4 .subject-card small { font-family: var(--mono); font-size: 0.75rem; color: var(--mute); }
 @media (max-width: 980px) { .subject-grid-4 { grid-template-columns: repeat(2,1fr); } }
 @media (max-width: 480px) { .subject-grid-4 { grid-template-columns: 1fr; } }
 

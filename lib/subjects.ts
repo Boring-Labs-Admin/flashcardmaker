@@ -1,21 +1,22 @@
 import {
-  Microscope, Dna, FlaskConical, Atom, Brain, Stethoscope, HeartPulse, Pill,
+  Dna, FlaskConical, Atom, Brain, Stethoscope, HeartPulse, Pill,
   Calculator, Briefcase, ScrollText, Globe, BookOpen, GraduationCap, FileText,
 } from 'lucide-react';
 
+// Order matches the reference design's subject grid exactly (Science isn't
+// featured as its own tile there — it's covered by Biology/Chemistry/Physics).
 export const SUBJECTS = [
-  { name: 'Science Flashcards',    icon: Microscope,   href: '/science-flashcards' },
   { name: 'Biology Flashcards',    icon: Dna,          href: '/biology-flashcards' },
   { name: 'Chemistry Flashcards',  icon: FlaskConical,  href: '/chemistry-flashcards' },
   { name: 'Physics Flashcards',    icon: Atom,          href: '/physics-flashcards' },
+  { name: 'Maths Flashcards',      icon: Calculator,    href: '/maths-flashcards' },
   { name: 'Psychology Flashcards', icon: Brain,         href: '/psychology-flashcards' },
   { name: 'Medical Flashcards',    icon: Stethoscope,   href: '/medical-flashcards' },
   { name: 'Anatomy Flashcards',    icon: HeartPulse,    href: '/anatomy-flashcards' },
   { name: 'Nursing Flashcards',    icon: Pill,          href: '/nursing-flashcards' },
-  { name: 'Maths Flashcards',      icon: Calculator,    href: '/maths-flashcards' },
-  { name: 'Business Flashcards',   icon: Briefcase,     href: '/business-flashcards' },
   { name: 'History Flashcards',    icon: ScrollText,    href: '/history-flashcards' },
   { name: 'Geography Flashcards',  icon: Globe,         href: '/geography-flashcards' },
+  { name: 'Business Flashcards',   icon: Briefcase,     href: '/business-flashcards' },
 ];
 
 export const CURRICULA = [

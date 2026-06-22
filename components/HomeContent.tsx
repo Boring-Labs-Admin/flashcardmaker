@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Check, ArrowRight } from 'lucide-react';
+import { Check, ArrowRight, Layers } from 'lucide-react';
 import HomePageClient from '@/components/HomePageClient';
 import PricingCards from '@/components/PricingCards';
 import ScrollReveal from '@/components/ScrollReveal';
@@ -83,21 +83,30 @@ export default function HomeContent() {
           </div>
         </ScrollReveal>
 
-        <div className="subject-section" id="subjects">
-          <h2 className="section-title">Flashcards by Subject</h2>
-          <p className="section-subtitle">Pick a subject and upload your notes — your deck is ready in seconds</p>
+        <div className="subject-section" id="subjects" style={{ textAlign: 'center', borderTop: '1px solid var(--line)', paddingTop: '4rem' }}>
+          <div className="eyebrow" style={{ justifyContent: 'center' }}>Flashcards by subject</div>
+          <h2 className="section-title" style={{ fontSize: '2rem' }}>Pick a subject, drop in your notes</h2>
+          <p className="section-subtitle">Tuned for the way each subject is taught — from cell biology to the Cold War.</p>
           <div className="subject-grid subject-grid-4">
-            {SUBJECTS.map((s) => (
-              <Link key={s.href} href={s.href} className="subject-card">
-                <div className="subject-icon"><s.icon size={32} strokeWidth={1.75} /></div>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 700 }}>{s.name}</h3>
-                {deckCountBySubject[s.name.replace(' Flashcards', '')] > 0 && (
-                  <p style={{ fontSize: '0.8rem', fontFamily: 'var(--sans)', opacity: 0.65, marginTop: '0.35rem' }}>
-                    {deckCountBySubject[s.name.replace(' Flashcards', '')]} free decks
-                  </p>
-                )}
-              </Link>
-            ))}
+            {SUBJECTS.map((s) => {
+              const count = deckCountBySubject[s.name.replace(' Flashcards', '')] ?? 0;
+              return (
+                <Link key={s.href} href={s.href} className="subject-card">
+                  <div className="subject-icon"><s.icon size={20} strokeWidth={1.75} /></div>
+                  <span>
+                    <b>{s.name.replace(' Flashcards', '')}</b>
+                    <small>{count > 0 ? `${count} free decks` : 'Generate from notes'}</small>
+                  </span>
+                </Link>
+              );
+            })}
+            <Link href="/library" className="subject-card">
+              <div className="subject-icon"><Layers size={20} strokeWidth={1.75} /></div>
+              <span>
+                <b>See all</b>
+                <small>browse the library</small>
+              </span>
+            </Link>
           </div>
         </div>
 

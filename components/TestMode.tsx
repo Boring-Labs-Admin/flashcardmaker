@@ -1,50 +1,19 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Deck, TestOptions, TestCard } from '@/lib/types';
-import LatexRenderer from '@/components/LatexRenderer';
+import { Deck, TestOptions, TestQuestionCard, TestSelectionMode } from '@/lib/types';
+import McqQuestion from '@/components/test/McqQuestion';
+import TypedRecallQuestion from '@/components/test/TypedRecallQuestion';
+import ClozeQuestion from '@/components/test/ClozeQuestion';
 
 interface TestModeProps {
   deck: Deck;
+  selectionMode: TestSelectionMode;
   onBack: () => void;
   onTestOptionsGenerated: (deckId: string, options: TestOptions) => void;
 }
 
 type TestPhase = 'testing' | 'complete';
-
-const LABELS = ['A', 'B', 'C', 'D'];
-
-const CORRECT_MESSAGES = [
-  'Nailed it! ⚡',
-  'Correct! Keep going!',
-  'That\'s the one!',
-  'Boom! Right answer.',
-  'You got it!',
-  'Spot on!',
-  'Brilliant!',
-  'Exactly right!',
-  'Yes! That\'s it!',
-  'Perfect!',
-  'On a roll!',
-  'Nice work!',
-];
-
-const INCORRECT_MESSAGES = [
-  'Not quite — check the answer.',
-  'Almost! Review and move on.',
-  'Don\'t worry, keep going!',
-  'Tricky one — you\'ll get it next time.',
-  'Take note of this one.',
-  'That\'s a tough one.',
-  'Close — remember this!',
-  'Everyone misses this sometimes.',
-  'Keep going, you\'ve got this!',
-  'Note it down and move on.',
-];
-
-function randomFrom(arr: string[]): string {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
 
 function shuffle<T>(arr: T[]): T[] {
   const copy = [...arr];
@@ -70,12 +39,30 @@ function generateOptionsFromDeck(deck: Deck): TestOptions {
   return result;
 }
 
-function buildTestCards(deck: Deck, options: TestOptions): TestCard[] {
-  return deck.flashcards.map(card => ({
-    flashcard: card,
-    options: shuffle([card.answer, ...options[card.id]]),
-    correctAnswer: card.answer,
-  }));
+function buildTestQuestionCards(deck: Deck, options: TestOptions, selectionMode: TestSelectionMode): TestQuestionCard[] {
+  return deck.flashcards.map(card => {
+    if (selectionMode === 'mcq') {
+      return {
+        type: 'mcq',
+        flashcard: card,
+        options: shuffle([card.answer, ...options[card.id]]),
+        correctAnswer: card.answer,
+      };
+    }
+    if (card.cloze) {
+      return {
+        type: 'cloze',
+        flashcard: card,
+        clozeSentence: card.cloze,
+        acceptedAnswers: card.acceptedAnswers ?? [card.answer],
+      };
+    }
+    return {
+      type: 'typed',
+      flashcard: card,
+      acceptedAnswers: card.acceptedAnswers ?? [card.answer],
+    };
+  });
 }
 
 function scoreMessage(pct: number): string {
@@ -93,17 +80,15 @@ function initOptions(deck: Deck): TestOptions {
   return generateOptionsFromDeck(deck);
 }
 
-export default function TestMode({ deck, onBack, onTestOptionsGenerated }: TestModeProps) {
+export default function TestMode({ deck, selectionMode, onBack, onTestOptionsGenerated }: TestModeProps) {
   const [testOptions] = useState<TestOptions>(() => initOptions(deck));
-  const [testCards, setTestCards] = useState<TestCard[]>(() => buildTestCards(deck, initOptions(deck)));
+  const [testCards, setTestCards] = useState<TestQuestionCard[]>(() => buildTestQuestionCards(deck, initOptions(deck), selectionMode));
   const [phase, setPhase] = useState<TestPhase>('testing');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [score, setScore] = useState(0);
-  const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
 
   useState(() => {
-    if (!deck.test_options || Object.keys(deck.test_options).length === 0) {
+    if (selectionMode === 'mcq' && (!deck.test_options || Object.keys(deck.test_options).length === 0)) {
       const options = generateOptionsFromDeck(deck);
       onTestOptionsGenerated(deck.id, options);
       fetch('/api/decks/test-options', {
@@ -114,34 +99,24 @@ export default function TestMode({ deck, onBack, onTestOptionsGenerated }: TestM
     }
   });
 
-  const handleOptionSelect = useCallback((option: string) => {
-    if (selectedOption !== null) return;
-    const isCorrect = option === testCards[currentIndex].correctAnswer;
-    setSelectedOption(option);
-    setFeedbackMsg(isCorrect ? randomFrom(CORRECT_MESSAGES) : randomFrom(INCORRECT_MESSAGES));
-    if (isCorrect) setScore(s => s + 1);
-
-    setTimeout(() => {
-      setSelectedOption(null);
-      setFeedbackMsg(null);
-      if (currentIndex < testCards.length - 1) {
-        setCurrentIndex(i => i + 1);
-      } else {
-        setPhase('complete');
-      }
-    }, 1000);
-  }, [selectedOption, testCards, currentIndex]);
+  const handleAnswered = useCallback((correct: boolean) => {
+    if (correct) setScore(s => s + 1);
+    if (currentIndex < testCards.length - 1) {
+      setCurrentIndex(i => i + 1);
+    } else {
+      setPhase('complete');
+    }
+  }, [currentIndex, testCards.length]);
 
   const handleTryAgain = () => {
-    setTestCards(buildTestCards(deck, testOptions));
+    setTestCards(buildTestQuestionCards(deck, testOptions, selectionMode));
     setCurrentIndex(0);
-    setSelectedOption(null);
     setScore(0);
     setPhase('testing');
   };
 
   const total = testCards.length;
-  const progressPct = phase === 'complete' ? 100 : ((currentIndex + (selectedOption !== null ? 1 : 0)) / total) * 100;
+  const progressPct = phase === 'complete' ? 100 : (currentIndex / total) * 100;
 
   // ── COMPLETE ─────────────────────────────────────────
   if (phase === 'complete') {
@@ -192,42 +167,16 @@ export default function TestMode({ deck, onBack, onTestOptionsGenerated }: TestM
           </button>
         </div>
 
-        {/* Question */}
-        <div className="test-question">
-          <LatexRenderer text={card.flashcard.question} />
-        </div>
-
-        {/* Feedback */}
-        {feedbackMsg && (
-          <div className={`test-feedback-msg ${selectedOption === card.correctAnswer ? 'test-feedback-correct' : 'test-feedback-incorrect'}`}>
-            {feedbackMsg}
-          </div>
+        {/* Question — type-specific component */}
+        {card.type === 'mcq' && (
+          <McqQuestion key={currentIndex} card={card} onAnswered={handleAnswered} />
         )}
-
-        {/* Options */}
-        <div className="test-options-grid">
-          {card.options.map((option, i) => {
-            const isCorrect = option === card.correctAnswer;
-            const isSelected = option === selectedOption;
-            let state: 'idle' | 'correct' | 'incorrect' | 'dimmed' = 'idle';
-            if (selectedOption !== null) {
-              if (isCorrect) state = 'correct';
-              else if (isSelected) state = 'incorrect';
-              else state = 'dimmed';
-            }
-            return (
-              <button
-                key={i}
-                className={`test-option-btn test-option-${state}`}
-                onClick={() => handleOptionSelect(option)}
-                disabled={selectedOption !== null}
-              >
-                <span className="test-option-label">{LABELS[i]}</span>
-                <span className="test-option-text"><LatexRenderer text={option} /></span>
-              </button>
-            );
-          })}
-        </div>
+        {card.type === 'typed' && (
+          <TypedRecallQuestion key={currentIndex} card={card} onAnswered={handleAnswered} />
+        )}
+        {card.type === 'cloze' && (
+          <ClozeQuestion key={currentIndex} card={card} onAnswered={handleAnswered} />
+        )}
       </div>
     </div>
   );

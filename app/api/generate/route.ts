@@ -32,6 +32,36 @@ function sanitizeDistractors(rawDistractors: unknown, answer: string): string[] 
   return cleaned.length === 3 ? cleaned : undefined;
 }
 
+const CLOZE_BLANK = '____';
+
+// Trims/dedupes accepted-answer variants and guarantees the canonical answer is present and first
+function sanitizeAcceptedAnswers(rawAnswers: unknown, answer: string): string[] {
+  const trimmedAnswer = answer.trim();
+  const seen = new Set<string>([normalizeForCompare(trimmedAnswer)]);
+  const cleaned: string[] = [trimmedAnswer];
+  if (Array.isArray(rawAnswers)) {
+    for (const a of rawAnswers) {
+      if (typeof a !== 'string') continue;
+      const trimmed = a.trim();
+      if (!trimmed) continue;
+      const normalized = normalizeForCompare(trimmed);
+      if (seen.has(normalized)) continue;
+      seen.add(normalized);
+      cleaned.push(trimmed);
+      if (cleaned.length === 5) break;
+    }
+  }
+  return cleaned;
+}
+
+// Returns the trimmed cloze sentence only if it actually contains the blank token, else null
+function sanitizeCloze(rawCloze: unknown): string | null {
+  if (typeof rawCloze !== 'string') return null;
+  const trimmed = rawCloze.trim();
+  if (!trimmed || !trimmed.includes(CLOZE_BLANK)) return null;
+  return trimmed;
+}
+
 const DOCX_MIME_TYPES = new Set([
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
   'application/msword', // .doc
@@ -274,45 +304,6 @@ export async function POST(request: NextRequest) {
   // 5. Build the Gemini request
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-  const systemPrompt = `You are a flashcard creation assistant. Your job is to create study flashcards based strictly on the content provided by the user.
-
-Rules:
-- Create up to ${cardLimit} flashcards maximum
-- Break the content down into the smallest distinct testable facts, definitions, processes, or equations — do NOT consolidate multiple separate facts into one flashcard. If a paragraph contains several distinct facts, create a separate flashcard for each one.
-- Aim to generate as many flashcards as the content can support, up to the maximum — the distractor requirement below must not cause you to limit the card count.
-- Each flashcard must have a clear, specific question and a concise, accurate answer
-- Questions should test understanding, not just recall
-- Answers should be brief but complete (1-3 sentences)
-- Do not begin answers by restating the question or using prefatory phrases (e.g. "The answer is...", "The reaction for X is:"). State the answer directly.
-- For mathematical expressions, use LaTeX notation: inline math with $...$ and block equations with $$...$$
-- For every flashcard, also write exactly 3 multiple-choice distractors (plausible wrong answers) in the "distractors" field:
-  - Each distractor must be the same type/category as the correct answer (e.g. another date, another organelle, another formula)
-  - Each should reflect a wrong answer a student with a common misconception would actually pick — not a random or absurd answer
-  - Each must be clearly incorrect to someone who knows the material — never ambiguously also-correct
-  - Match the answer's length and grammatical form roughly, so the correct answer isn't always the longest or most detailed option
-  - All 3 distractors must be distinct from each other and from the correct answer
-  - Use UK English spelling throughout
-- Return ONLY a valid JSON array of objects with "question", "answer", and "distractors" fields
-- IMPORTANT: Base every question and answer ONLY on information explicitly present in the provided content. Do NOT use general knowledge or add information not found in the content. If the content is too brief to support meaningful flashcards, return fewer cards.`;
-
-  const flashcardResponseSchema = {
-    type: Type.ARRAY,
-    items: {
-      type: Type.OBJECT,
-      properties: {
-        question: { type: Type.STRING, description: 'The flashcard question.' },
-        answer: { type: Type.STRING, description: 'The concise, accurate answer to the question.' },
-        distractors: {
-          type: Type.ARRAY,
-          description: 'Exactly 3 plausible, misconception-based wrong answers, distinct from each other and from the answer.',
-          items: { type: Type.STRING },
-        },
-      },
-      required: ['question', 'answer', 'distractors'],
-      propertyOrdering: ['question', 'answer', 'distractors'],
-    },
-  };
-
   const instructionText = generationMode === 'prompt'
     ? `Create up to ${cardLimit} flashcards about: ${topic}. Use your knowledge to cover key concepts, definitions, important facts, and common exam questions on this topic comprehensively.`
     : topic
@@ -320,8 +311,10 @@ Rules:
       : `Create flashcards using ONLY the content provided below. Do not add any information beyond what is in the provided content.`;
 
   let contentParts: object[];
+  let targetLine: string;
   if (generationMode === 'prompt') {
     contentParts = [{ text: instructionText }];
+    targetLine = `- Aim for approximately ${cardLimit} flashcards covering this topic comprehensively — do not stop early. Never exceed ${cardLimit}.`;
   } else {
     const fileParts: object[] = [];
     const textChunks: string[] = [];
@@ -360,6 +353,15 @@ Rules:
       }
     }
 
+    // A vague "generate as many as the content supports" instruction measurably caused the model to
+    // stop early (verified in testing) — anchoring it on a concrete number recovers full coverage.
+    // ~110 chars of dense study notes tends to support one single-fact flashcard; files get a flat
+    // per-file estimate since their extracted text length isn't known until Gemini parses them.
+    const textCharCount = textChunks.reduce((sum, t) => sum + t.length, 0);
+    const estimatedCharCount = textCharCount + fileParts.length * 1500;
+    const estimatedTarget = Math.max(8, Math.min(cardLimit, Math.round(estimatedCharCount / 110)));
+    targetLine = `- This content can reasonably support approximately ${estimatedTarget} distinct flashcards. Aim for that many — do not stop early or consolidate facts together just to produce a shorter deck. Never exceed ${cardLimit}. If the content is genuinely too brief to support that many distinct facts, it's fine to return fewer.`;
+
     if (fileParts.length > 0) {
       contentParts = [
         ...fileParts,
@@ -370,6 +372,57 @@ Rules:
       contentParts = [{ text: `${instructionText}\n\n${textChunks.join('\n\n')}` }];
     }
   }
+
+  const systemPrompt = `You are a flashcard creation assistant. Your job is to create study flashcards based strictly on the content provided by the user.
+
+Rules:
+${targetLine}
+- Break the content down into the smallest distinct testable facts, definitions, processes, or equations — do NOT consolidate multiple separate facts into one flashcard. If a paragraph contains several distinct facts, create a separate flashcard for each one.
+- Each flashcard must have a clear, specific question and a concise, accurate answer
+- Questions should test understanding, not just recall
+- Answers should be brief but complete (1-3 sentences)
+- Do not begin answers by restating the question or using prefatory phrases (e.g. "The answer is...", "The reaction for X is:"). State the answer directly.
+- For mathematical expressions, use LaTeX notation: inline math with $...$ and block equations with $$...$$
+- For every flashcard, also write exactly 3 multiple-choice distractors (plausible wrong answers) in the "distractors" field:
+  - Each distractor must be the same type/category as the correct answer (e.g. another date, another organelle, another formula)
+  - Each should reflect a wrong answer a student with a common misconception would actually pick — not a random or absurd answer
+  - Each must be clearly incorrect to someone who knows the material — never ambiguously also-correct
+  - Match the answer's length and grammatical form roughly, so the correct answer isn't always the longest or most detailed option
+  - All 3 distractors must be distinct from each other and from the correct answer
+  - Use UK English spelling throughout
+- For every flashcard, also write a "cloze" sentence and a list of "acceptedAnswers" for typed-recall testing:
+  - cloze: one sentence that states this fact with the single most important term replaced by exactly four underscores (____). Keep enough surrounding context that the blank is answerable but not trivially obvious. If the answer is a long explanation rather than a short term, set cloze to null.
+  - acceptedAnswers: the correct answer plus 2-4 acceptable variants a student might reasonably type instead — synonyms, standard abbreviations, and UK/US spelling variants. List the canonical answer first. UK English spelling first.
+- Return ONLY a valid JSON array of objects with "question", "answer", "distractors", "cloze", and "acceptedAnswers" fields
+- IMPORTANT: Base every question and answer ONLY on information explicitly present in the provided content. Do NOT use general knowledge or add information not found in the content. If the content is too brief to support meaningful flashcards, return fewer cards.`;
+
+  const flashcardResponseSchema = {
+    type: Type.ARRAY,
+    items: {
+      type: Type.OBJECT,
+      properties: {
+        question: { type: Type.STRING, description: 'The flashcard question.' },
+        answer: { type: Type.STRING, description: 'The concise, accurate answer to the question.' },
+        distractors: {
+          type: Type.ARRAY,
+          description: 'Exactly 3 plausible, misconception-based wrong answers, distinct from each other and from the answer.',
+          items: { type: Type.STRING },
+        },
+        cloze: {
+          type: Type.STRING,
+          nullable: true,
+          description: 'One sentence stating the fact with the single most important term replaced by exactly "____". Null if the answer is a long explanation rather than a short clozable term.',
+        },
+        acceptedAnswers: {
+          type: Type.ARRAY,
+          description: 'The canonical answer (first) plus 2-4 acceptable variants: synonyms, standard abbreviations, UK/US spelling.',
+          items: { type: Type.STRING },
+        },
+      },
+      required: ['question', 'answer', 'distractors'],
+      propertyOrdering: ['question', 'answer', 'distractors', 'cloze', 'acceptedAnswers'],
+    },
+  };
 
   try {
     let response;
@@ -386,6 +439,8 @@ Rules:
             // Generous flat ceiling — no cost to unused headroom, and a per-card formula here
             // previously under-budgeted free-plan requests below the old safe baseline.
             maxOutputTokens: 65536,
+            // This is pure extraction, not reasoning — disable thinking so it can't eat into the output budget.
+            thinkingConfig: { thinkingBudget: 0 },
           },
         });
         break; // success
@@ -426,13 +481,17 @@ Rules:
     const validFlashcards = flashcards
       .filter((card: { question?: string; answer?: string }) => card.question && card.answer)
       .slice(0, cardLimit)
-      .map((card: { question: string; answer: string; distractors?: unknown }, index: number) => {
+      .map((card: { question: string; answer: string; distractors?: unknown; cloze?: unknown; acceptedAnswers?: unknown }, index: number) => {
         const distractors = sanitizeDistractors(card.distractors, card.answer);
+        const cloze = sanitizeCloze(card.cloze);
+        const acceptedAnswers = sanitizeAcceptedAnswers(card.acceptedAnswers, card.answer);
         return {
           id: `card-${index}-${Date.now()}`,
           question: card.question,
           answer: card.answer,
           ...(distractors ? { distractors } : {}),
+          ...(cloze ? { cloze } : {}),
+          acceptedAnswers,
         };
       });
 

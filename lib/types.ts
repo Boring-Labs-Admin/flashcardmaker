@@ -4,6 +4,10 @@ export interface Flashcard {
   answer: string;
   // 3 plausible wrong answers generated alongside the card; absent on older decks, which fall back to random distractors in Test mode
   distractors?: string[];
+  // One sentence with the key term replaced by "____"; null when the answer isn't a short clozable term
+  cloze?: string | null;
+  // Canonical answer (always first) plus accepted variants for typed-recall grading; absent on older decks, which fall back to [answer]
+  acceptedAnswers?: string[];
 }
 
 export type ViewMode = 'single' | 'side-by-side' | 'grid';
@@ -11,11 +15,29 @@ export type ViewMode = 'single' | 'side-by-side' | 'grid';
 // Keyed by card ID → exactly 3 wrong answer distractors
 export type TestOptions = Record<string, [string, string, string]>;
 
-export interface TestCard {
+export type TestSelectionMode = 'mcq' | 'recall';
+
+export interface McqQuestionCard {
+  type: 'mcq';
   flashcard: Flashcard;
   options: string[]; // 4 shuffled options (1 correct + 3 wrong)
   correctAnswer: string;
 }
+
+export interface TypedQuestionCard {
+  type: 'typed';
+  flashcard: Flashcard;
+  acceptedAnswers: string[];
+}
+
+export interface ClozeQuestionCard {
+  type: 'cloze';
+  flashcard: Flashcard;
+  clozeSentence: string;
+  acceptedAnswers: string[];
+}
+
+export type TestQuestionCard = McqQuestionCard | TypedQuestionCard | ClozeQuestionCard;
 
 export interface Deck {
   id: string;

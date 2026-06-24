@@ -1,27 +1,62 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Loader2, ClipboardCheck } from 'lucide-react';
 import { useDashboard } from '@/lib/dashboard-context';
 import TestMode from '@/components/TestMode';
+import { TestSelectionMode } from '@/lib/types';
 import Link from 'next/link';
 
 function TestYourselfContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { decks, fetching, handleTestOptionsGenerated } = useDashboard();
+  const [selectionMode, setSelectionMode] = useState<TestSelectionMode>('mcq');
+  const [started, setStarted] = useState(false);
 
   const deckId = searchParams.get('deckId');
   const deck = deckId ? decks.find(d => d.id === deckId) : undefined;
 
-  if (deck) {
+  if (deck && started) {
     return (
       <TestMode
         deck={deck}
-        onBack={() => router.push('/dashboard/test')}
+        selectionMode={selectionMode}
+        onBack={() => { setStarted(false); router.push('/dashboard/test'); }}
         onTestOptionsGenerated={handleTestOptionsGenerated}
       />
+    );
+  }
+
+  if (deck) {
+    return (
+      <div className="container">
+        <div className="test-start-card">
+          <h1 className="dashboard-page-title">{deck.title}</h1>
+          <p className="dashboard-page-subtitle">{deck.flashcards.length} cards</p>
+
+          <div className="test-mode-picker">
+            <button
+              className={`test-mode-picker-option ${selectionMode === 'mcq' ? 'active' : ''}`}
+              onClick={() => setSelectionMode('mcq')}
+            >
+              Multiple choice
+            </button>
+            <button
+              className={`test-mode-picker-option ${selectionMode === 'recall' ? 'active' : ''}`}
+              onClick={() => setSelectionMode('recall')}
+            >
+              Recall (typed + cloze)
+            </button>
+          </div>
+
+          <div className="test-start-actions">
+            <button className="btn" onClick={() => setStarted(true)}>Start Test →</button>
+            <Link href="/dashboard/test" className="btn-outline">← Back</Link>
+          </div>
+        </div>
+      </div>
     );
   }
 

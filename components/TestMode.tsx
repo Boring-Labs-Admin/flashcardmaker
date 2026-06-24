@@ -59,6 +59,10 @@ function generateOptionsFromDeck(deck: Deck): TestOptions {
   const result: TestOptions = {};
   const allAnswers = deck.flashcards.map(c => c.answer);
   for (const card of deck.flashcards) {
+    if (card.distractors && card.distractors.length === 3) {
+      result[card.id] = [card.distractors[0], card.distractors[1], card.distractors[2]];
+      continue;
+    }
     const others = shuffle(allAnswers.filter(a => a !== card.answer));
     while (others.length < 3) others.push(others[others.length - 1] ?? 'N/A');
     result[card.id] = [others[0], others[1], others[2]];

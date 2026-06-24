@@ -2,6 +2,8 @@ export interface Flashcard {
   id: string;
   question: string;
   answer: string;
+  // 3 plausible wrong answers generated alongside the card; absent on older decks, which fall back to random distractors in Test mode
+  distractors?: string[];
 }
 
 export type ViewMode = 'single' | 'side-by-side' | 'grid';

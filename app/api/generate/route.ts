@@ -1,13 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export const maxDuration = 60; // seconds — allows time for file processing + Gemini inference
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, Type } from '@google/genai';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { hashIP, checkRateLimit, recordGeneration } from '@/lib/rateLimit';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { PLANS } from '@/lib/plans';
 import mammoth from 'mammoth';
+
+function normalizeForCompare(s: string): string {
+  return s.trim().toLowerCase().replace(/[^\w\s]/g, '');
+}
+
+// Returns exactly 3 distinct, non-blank distractors that don't match the answer, or undefined if fewer than 3 survive
+function sanitizeDistractors(rawDistractors: unknown, answer: string): string[] | undefined {
+  if (!Array.isArray(rawDistractors)) return undefined;
+  const normalizedAnswer = normalizeForCompare(answer);
+  const seen = new Set<string>();
+  const cleaned: string[] = [];
+  for (const d of rawDistractors) {
+    if (typeof d !== 'string') continue;
+    const trimmed = d.trim();
+    if (!trimmed) continue;
+    const normalized = normalizeForCompare(trimmed);
+    if (normalized === normalizedAnswer || seen.has(normalized)) continue;
+    seen.add(normalized);
+    cleaned.push(trimmed);
+    if (cleaned.length === 3) break;
+  }
+  return cleaned.length === 3 ? cleaned : undefined;
+}
 
 const DOCX_MIME_TYPES = new Set([
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
@@ -261,8 +284,33 @@ Rules:
 - Do not begin answers by restating the question or using prefatory phrases (e.g. "The answer is...", "The reaction for X is:"). State the answer directly.
 - Cover the key concepts from the content
 - For mathematical expressions, use LaTeX notation: inline math with $...$ and block equations with $$...$$
-- Return ONLY a valid JSON array of objects with "question" and "answer" fields
+- For every flashcard, also write exactly 3 multiple-choice distractors (plausible wrong answers) in the "distractors" field:
+  - Each distractor must be the same type/category as the correct answer (e.g. another date, another organelle, another formula)
+  - Each should reflect a wrong answer a student with a common misconception would actually pick — not a random or absurd answer
+  - Each must be clearly incorrect to someone who knows the material — never ambiguously also-correct
+  - Match the answer's length and grammatical form roughly, so the correct answer isn't always the longest or most detailed option
+  - All 3 distractors must be distinct from each other and from the correct answer
+  - Use UK English spelling throughout
+- Return ONLY a valid JSON array of objects with "question", "answer", and "distractors" fields
 - IMPORTANT: Base every question and answer ONLY on information explicitly present in the provided content. Do NOT use general knowledge or add information not found in the content. If the content is too brief to support meaningful flashcards, return fewer cards.`;
+
+  const flashcardResponseSchema = {
+    type: Type.ARRAY,
+    items: {
+      type: Type.OBJECT,
+      properties: {
+        question: { type: Type.STRING, description: 'The flashcard question.' },
+        answer: { type: Type.STRING, description: 'The concise, accurate answer to the question.' },
+        distractors: {
+          type: Type.ARRAY,
+          description: 'Exactly 3 plausible, misconception-based wrong answers, distinct from each other and from the answer.',
+          items: { type: Type.STRING },
+        },
+      },
+      required: ['question', 'answer', 'distractors'],
+      propertyOrdering: ['question', 'answer', 'distractors'],
+    },
+  };
 
   const instructionText = generationMode === 'prompt'
     ? `Create up to ${cardLimit} flashcards about: ${topic}. Use your knowledge to cover key concepts, definitions, important facts, and common exam questions on this topic comprehensively.`
@@ -333,7 +381,9 @@ Rules:
           config: {
             systemInstruction: systemPrompt,
             responseMimeType: 'application/json',
-            maxOutputTokens: 8192,
+            responseSchema: flashcardResponseSchema,
+            // Distractors roughly double the JSON payload per card vs. question+answer alone
+            maxOutputTokens: Math.min(32768, cardLimit * 220 + 1024),
           },
         });
         break; // success
@@ -358,13 +408,8 @@ Rules:
     try {
       flashcards = JSON.parse(responseText);
     } catch {
-      const jsonMatch = responseText.match(/\[[\s\S]*\]/);
-      if (jsonMatch) {
-        flashcards = JSON.parse(jsonMatch[0]);
-      } else {
-        console.error('Failed to parse Gemini response as JSON:', responseText.slice(0, 500));
-        return NextResponse.json({ error: 'Failed to process the flashcards. Please try again.' }, { status: 500 });
-      }
+      console.error('Failed to parse Gemini response as JSON:', responseText.slice(0, 500));
+      return NextResponse.json({ error: 'Failed to process the flashcards. Please try again.' }, { status: 500 });
     }
 
     if (!Array.isArray(flashcards)) {
@@ -375,11 +420,15 @@ Rules:
     const validFlashcards = flashcards
       .filter((card: { question?: string; answer?: string }) => card.question && card.answer)
       .slice(0, cardLimit)
-      .map((card: { question: string; answer: string }, index: number) => ({
-        id: `card-${index}-${Date.now()}`,
-        question: card.question,
-        answer: card.answer,
-      }));
+      .map((card: { question: string; answer: string; distractors?: unknown }, index: number) => {
+        const distractors = sanitizeDistractors(card.distractors, card.answer);
+        return {
+          id: `card-${index}-${Date.now()}`,
+          question: card.question,
+          answer: card.answer,
+          ...(distractors ? { distractors } : {}),
+        };
+      });
 
     // Atomic credit deduction via DB function — prevents race conditions from parallel requests
     try {

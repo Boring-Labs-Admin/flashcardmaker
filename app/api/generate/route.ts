@@ -278,11 +278,12 @@ export async function POST(request: NextRequest) {
 
 Rules:
 - Create up to ${cardLimit} flashcards maximum
+- Break the content down into the smallest distinct testable facts, definitions, processes, or equations — do NOT consolidate multiple separate facts into one flashcard. If a paragraph contains several distinct facts, create a separate flashcard for each one.
+- Aim to generate as many flashcards as the content can support, up to the maximum — the distractor requirement below must not cause you to limit the card count.
 - Each flashcard must have a clear, specific question and a concise, accurate answer
 - Questions should test understanding, not just recall
 - Answers should be brief but complete (1-3 sentences)
 - Do not begin answers by restating the question or using prefatory phrases (e.g. "The answer is...", "The reaction for X is:"). State the answer directly.
-- Cover the key concepts from the content
 - For mathematical expressions, use LaTeX notation: inline math with $...$ and block equations with $$...$$
 - For every flashcard, also write exactly 3 multiple-choice distractors (plausible wrong answers) in the "distractors" field:
   - Each distractor must be the same type/category as the correct answer (e.g. another date, another organelle, another formula)
@@ -382,8 +383,9 @@ Rules:
             systemInstruction: systemPrompt,
             responseMimeType: 'application/json',
             responseSchema: flashcardResponseSchema,
-            // Distractors roughly double the JSON payload per card vs. question+answer alone
-            maxOutputTokens: Math.min(32768, cardLimit * 220 + 1024),
+            // Generous flat ceiling — no cost to unused headroom, and a per-card formula here
+            // previously under-budgeted free-plan requests below the old safe baseline.
+            maxOutputTokens: 65536,
           },
         });
         break; // success
@@ -396,6 +398,10 @@ Rules:
     }
 
     if (!response) throw lastError;
+
+    if (response.candidates?.[0]?.finishReason === 'MAX_TOKENS') {
+      console.error('Gemini response was truncated by maxOutputTokens (cardLimit:', cardLimit, ')');
+    }
 
     const responseText = response.text;
 

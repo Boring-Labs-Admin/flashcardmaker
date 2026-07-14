@@ -26,18 +26,87 @@ type Tab = 'paste' | 'upload' | 'topic';
 
 const TOPIC_CHIPS = ['Photosynthesis', 'The French Revolution', 'Algebra basics'];
 
-function readFile(file: File): Promise<UploadedFile> {
+// Vercel's serverless functions reject request bodies over ~4.5MB before our
+// code ever runs, so every file's base64 payload has to stay comfortably under that.
+const MAX_PAYLOAD_BYTES = 4 * 1024 * 1024;
+const MAX_IMAGE_DIMENSION = 1800;
+
+function readAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = (e) => resolve({ name: file.name, content: e.target?.result as string });
+    reader.onload = (e) => resolve(e.target?.result as string);
     reader.onerror = () => reject(new Error(`Failed to read ${file.name}`));
-    const ext = file.name.split('.').pop()?.toLowerCase();
-    if (ext === 'txt') {
-      reader.readAsText(file);
-    } else {
-      reader.readAsDataURL(file);
-    }
+    reader.readAsDataURL(file);
   });
+}
+
+function loadImage(dataUrl: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('Failed to decode image'));
+    img.src = dataUrl;
+  });
+}
+
+// Downscales and re-compresses an image client-side, stepping quality down
+// until the base64 payload fits under MAX_PAYLOAD_BYTES (or gives up gracefully).
+async function compressImage(file: File): Promise<string> {
+  const original = await readAsDataUrl(file);
+  if (original.length <= MAX_PAYLOAD_BYTES) return original;
+
+  const img = await loadImage(original);
+  let { width, height } = img;
+  if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
+    const scale = MAX_IMAGE_DIMENSION / Math.max(width, height);
+    width = Math.round(width * scale);
+    height = Math.round(height * scale);
+  }
+
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return original;
+  ctx.drawImage(img, 0, 0, width, height);
+
+  let quality = 0.85;
+  let compressed = canvas.toDataURL('image/jpeg', quality);
+  while (compressed.length > MAX_PAYLOAD_BYTES && quality > 0.4) {
+    quality -= 0.15;
+    compressed = canvas.toDataURL('image/jpeg', quality);
+  }
+
+  // Only use the compressed version if it actually helped.
+  return compressed.length < original.length ? compressed : original;
+}
+
+async function readFile(file: File): Promise<UploadedFile> {
+  const ext = file.name.split('.').pop()?.toLowerCase();
+
+  if (file.type.startsWith('image/')) {
+    const content = await compressImage(file);
+    if (content.length > MAX_PAYLOAD_BYTES) {
+      throw new Error(`"${file.name}" is too large even after compression. Try a smaller photo or crop it first.`);
+    }
+    return { name: file.name, content };
+  }
+
+  if (ext === 'txt') {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve({ name: file.name, content: e.target?.result as string });
+      reader.onerror = () => reject(new Error(`Failed to read ${file.name}`));
+      reader.readAsText(file);
+    });
+  }
+
+  // PDFs and Word docs can't be shrunk client-side, so enforce the limit up front.
+  const content = await readAsDataUrl(file);
+  if (content.length > MAX_PAYLOAD_BYTES) {
+    throw new Error(`"${file.name}" is too large (max ~3MB). Try a smaller file or paste the text directly.`);
+  }
+  return { name: file.name, content };
 }
 
 const InputSection = forwardRef<InputSectionHandle, InputSectionProps>(
@@ -60,17 +129,28 @@ function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, 
 
   const handleFiles = async (fileList: FileList) => {
     setFileError('');
+    let totalBytes = files.reduce((sum, f) => sum + f.content.length, 0);
     const newFiles: UploadedFile[] = [];
+    const errors: string[] = [];
+
     for (const file of Array.from(fileList)) {
       try {
         const uploaded = await readFile(file);
+        if (totalBytes + uploaded.content.length > MAX_PAYLOAD_BYTES) {
+          errors.push(`"${file.name}" was skipped — adding it would push the combined upload over the size limit. Remove a file first or upload it on its own.`);
+          continue;
+        }
+        totalBytes += uploaded.content.length;
         newFiles.push(uploaded);
-      } catch {
-        setFileError(`Failed to read "${file.name}". Please try again.`);
+      } catch (err) {
+        errors.push(err instanceof Error ? err.message : `Failed to read "${file.name}". Please try again.`);
       }
     }
     if (newFiles.length > 0) {
       setFiles(prev => [...prev, ...newFiles]);
+    }
+    if (errors.length > 0) {
+      setFileError(errors.join(' '));
     }
   };
 

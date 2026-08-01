@@ -17,8 +17,8 @@ const STEPS = [
   {
     num: 3,
     icon: BookOpen,
-    title: 'Study & test yourself',
-    body: 'Flip through cards, switch to a list, or take a multiple-choice test. Save a free account and your decks are waiting next time.',
+    title: 'Study with spaced repetition',
+    body: 'Flip through cards, switch to a list, or rate your confidence on each one and let the toughest cards resurface sooner. Save a free account and your decks are waiting next time.',
   },
 ];
 
@@ -30,7 +30,7 @@ export default function HowItWorksStrip() {
           <div className="eyebrow" style={{ justifyContent: 'center' }}>How it works</div>
         </div>
         <h2 className="section-title" style={{ fontSize: '2rem' }}>From notes to a finished deck in under a minute</h2>
-        <p className="section-subtitle">Three ways in, one result: a deck you can flip, list and test yourself on straight away.</p>
+        <p className="section-subtitle">Three ways in, one result: a deck you can flip, list and study straight away.</p>
         <ScrollReveal>
           <div className="features">
             {STEPS.map((s) => (

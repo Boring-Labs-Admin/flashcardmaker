@@ -2,12 +2,6 @@ export interface Flashcard {
   id: string;
   question: string;
   answer: string;
-  // 3 plausible wrong answers generated alongside the card; absent on older decks, which fall back to random distractors in Test mode
-  distractors?: string[];
-  // One sentence with the key term replaced by "____"; null when the answer isn't a short clozable term
-  cloze?: string | null;
-  // Canonical answer (always first) plus accepted variants for typed-recall grading; absent on older decks, which fall back to [answer]
-  acceptedAnswers?: string[];
 
   // Advanced editor fields (Phase 4) — all optional, absent on cards created before this shipped
   questionPrompt?: string;
@@ -24,33 +18,6 @@ export interface Flashcard {
 
 export type ViewMode = 'single' | 'side-by-side' | 'grid';
 
-// Keyed by card ID → exactly 3 wrong answer distractors
-export type TestOptions = Record<string, [string, string, string]>;
-
-export type TestSelectionMode = 'mcq' | 'recall';
-
-export interface McqQuestionCard {
-  type: 'mcq';
-  flashcard: Flashcard;
-  options: string[]; // 4 shuffled options (1 correct + 3 wrong)
-  correctAnswer: string;
-}
-
-export interface TypedQuestionCard {
-  type: 'typed';
-  flashcard: Flashcard;
-  acceptedAnswers: string[];
-}
-
-export interface ClozeQuestionCard {
-  type: 'cloze';
-  flashcard: Flashcard;
-  clozeSentence: string;
-  acceptedAnswers: string[];
-}
-
-export type TestQuestionCard = McqQuestionCard | TypedQuestionCard | ClozeQuestionCard;
-
 export interface Deck {
   id: string;
   user_id: string;
@@ -59,7 +26,6 @@ export interface Deck {
   flashcards: Flashcard[];
   created_at: string;
   color?: string;
-  test_options?: TestOptions | null;
   mastery_pct?: number;
   last_studied_at?: string | null;
   class_id?: string | null;

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Zap, Layers, ClipboardCheck, CalendarDays, Library, Sparkles, Settings, HelpCircle, LogOut, Menu, X, Flame, BarChart3, Plus } from 'lucide-react';
+import { Zap, Layers, CalendarDays, Library, Sparkles, Settings, HelpCircle, LogOut, Menu, X, Flame, BarChart3, Plus } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { useDashboard } from '@/lib/dashboard-context';
 import { UserStats } from '@/lib/types';
@@ -17,7 +17,6 @@ const STATS_CACHE_TTL_MS = 5 * 60 * 1000;
 const NAV_ITEMS = [
   { label: 'Create Flashcards', href: '/dashboard', icon: Zap },
   { label: 'Your Flashcards', href: '/dashboard/decks', icon: Layers },
-  { label: 'Test Yourself', href: '/dashboard/test', icon: ClipboardCheck },
   { label: 'Exam Calendar', href: '/dashboard/exam-calendar', icon: CalendarDays },
   { label: 'Free Library', href: '/dashboard/library', icon: Library },
 ];

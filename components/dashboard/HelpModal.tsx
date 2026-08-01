@@ -22,8 +22,8 @@ const FAQS = [
     a: 'Plus adds unlimited generations, AI topic generation (no notes needed), 60 cards per deck, a 100,000 character input limit, up to 20 files per generation, and priority processing speed. See "Upgrade Plan" in the user menu for full details.',
   },
   {
-    q: 'How do I test myself on a deck?',
-    a: 'Click "Test" on any deck in "Your Flashcards" to jump straight into a multiple-choice test, or open "Test Yourself" in the sidebar to pick a deck first.',
+    q: 'How do I study a deck?',
+    a: 'Click "Study" on any deck to start a Confidence-Based Repetition session — rate how well you knew each answer and cards you\'re shakier on resurface sooner.',
   },
   {
     q: 'What file types can I upload?',

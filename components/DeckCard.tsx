@@ -1,7 +1,7 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Pencil, Palette, Trash2, Zap, ClipboardCheck, ListChecks } from 'lucide-react';
+import { Pencil, Palette, Trash2, Zap, ListChecks } from 'lucide-react';
 import { Deck, DeckMastery } from '@/lib/types';
 import MasteryRing from '@/components/MasteryRing';
 import DeckHoverCard from '@/components/DeckHoverCard';
@@ -21,11 +21,10 @@ interface DeckCardProps {
   deck: Deck;
   onDelete: (id: string) => void;
   onStudy: (deck: Deck) => void;
-  onTest: (deck: Deck) => void;
   onUpdate: (id: string, updates: { title?: string; color?: string }) => void;
 }
 
-export default function DeckCard({ deck, onDelete, onStudy, onTest, onUpdate }: DeckCardProps) {
+export default function DeckCard({ deck, onDelete, onStudy, onUpdate }: DeckCardProps) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(deck.title);
@@ -197,7 +196,6 @@ export default function DeckCard({ deck, onDelete, onStudy, onTest, onUpdate }: 
       )}
       <div className="deck-btn-row">
         <button className="btn deck-study-btn" onClick={() => onStudy(deck)}><Zap size={15} /> Study</button>
-        <button className="btn deck-test-btn" onClick={() => onTest(deck)}><ClipboardCheck size={15} /> Test</button>
         <button className="deck-action-btn deck-edit-cards-btn" onClick={() => router.push(`/dashboard/decks/${deck.id}/edit`)} title="Edit cards">
           <ListChecks size={15} />
         </button>

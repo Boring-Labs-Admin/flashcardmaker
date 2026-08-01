@@ -59,7 +59,7 @@ const jsonLd = {
 const FAQS = [
   {
     q: 'Do I need an account to make flashcards?',
-    a: 'No — you can generate one free deck per day with no sign-up at all. Create a free account if you want to save your decks, test yourself, and bank up to 5 unused generations.',
+    a: 'No — you can generate one free deck per day with no sign-up at all. Create a free account if you want to save your decks, study with spaced repetition, and bank up to 5 unused generations.',
   },
   {
     q: "What's the difference between credit packs and Plus?",

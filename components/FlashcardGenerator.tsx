@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import posthog from 'posthog-js';
-import { Check, Save, Lock, ClipboardCheck, Download, Trash2, Files, Zap, Target, ArrowLeft } from 'lucide-react';
+import { Check, Save, Lock, Download, Trash2, Files, Zap, Target, ArrowLeft } from 'lucide-react';
 import { Flashcard, ViewMode, Deck } from '@/lib/types';
 import { useAuth } from '@/lib/auth-context';
 import { PLANS, UserPlanData } from '@/lib/plans';
@@ -276,11 +276,6 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
     }
   };
 
-  const handleTestClick = () => {
-    posthog.capture('save_prompt_shown', { reason: 'test' });
-    openAuthModal('test');
-  };
-
   // ── LOADING ──────────────────────────────────────────
   if (isLoading) {
     return <GeneratingLoader />;
@@ -313,11 +308,6 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
                   <Save size={15} /> Save forever <span className="locked-icon"><Lock size={12} /></span>
                 </button>
               ) : null}
-              {!user && (
-                <button className="locked-btn" onClick={handleTestClick} title="Create a free account to test yourself on this deck">
-                  <ClipboardCheck size={15} /> Test yourself <span className="locked-icon"><Lock size={12} /></span>
-                </button>
-              )}
               <button className="locked-btn" onClick={() => setIsDownloadModalOpen(true)}><Download size={15} /> Download</button>
               <button className="reset-btn" onClick={handleReset}>
                 <Trash2 size={15} /> New deck

@@ -9,59 +9,6 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 import { PLANS } from '@/lib/plans';
 import mammoth from 'mammoth';
 
-function normalizeForCompare(s: string): string {
-  return s.trim().toLowerCase().replace(/[^\w\s]/g, '');
-}
-
-// Returns exactly 3 distinct, non-blank distractors that don't match the answer, or undefined if fewer than 3 survive
-function sanitizeDistractors(rawDistractors: unknown, answer: string): string[] | undefined {
-  if (!Array.isArray(rawDistractors)) return undefined;
-  const normalizedAnswer = normalizeForCompare(answer);
-  const seen = new Set<string>();
-  const cleaned: string[] = [];
-  for (const d of rawDistractors) {
-    if (typeof d !== 'string') continue;
-    const trimmed = d.trim();
-    if (!trimmed) continue;
-    const normalized = normalizeForCompare(trimmed);
-    if (normalized === normalizedAnswer || seen.has(normalized)) continue;
-    seen.add(normalized);
-    cleaned.push(trimmed);
-    if (cleaned.length === 3) break;
-  }
-  return cleaned.length === 3 ? cleaned : undefined;
-}
-
-const CLOZE_BLANK = '____';
-
-// Trims/dedupes accepted-answer variants and guarantees the canonical answer is present and first
-function sanitizeAcceptedAnswers(rawAnswers: unknown, answer: string): string[] {
-  const trimmedAnswer = answer.trim();
-  const seen = new Set<string>([normalizeForCompare(trimmedAnswer)]);
-  const cleaned: string[] = [trimmedAnswer];
-  if (Array.isArray(rawAnswers)) {
-    for (const a of rawAnswers) {
-      if (typeof a !== 'string') continue;
-      const trimmed = a.trim();
-      if (!trimmed) continue;
-      const normalized = normalizeForCompare(trimmed);
-      if (seen.has(normalized)) continue;
-      seen.add(normalized);
-      cleaned.push(trimmed);
-      if (cleaned.length === 5) break;
-    }
-  }
-  return cleaned;
-}
-
-// Returns the trimmed cloze sentence only if it actually contains the blank token, else null
-function sanitizeCloze(rawCloze: unknown): string | null {
-  if (typeof rawCloze !== 'string') return null;
-  const trimmed = rawCloze.trim();
-  if (!trimmed || !trimmed.includes(CLOZE_BLANK)) return null;
-  return trimmed;
-}
-
 const DOCX_MIME_TYPES = new Set([
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
   'application/msword', // .doc
@@ -383,17 +330,7 @@ ${targetLine}
 - Answers should be brief but complete (1-3 sentences)
 - Do not begin answers by restating the question or using prefatory phrases (e.g. "The answer is...", "The reaction for X is:"). State the answer directly.
 - For mathematical expressions, use LaTeX notation: inline math with $...$ and block equations with $$...$$
-- For every flashcard, also write exactly 3 multiple-choice distractors (plausible wrong answers) in the "distractors" field:
-  - Each distractor must be the same type/category as the correct answer (e.g. another date, another organelle, another formula)
-  - Each should reflect a wrong answer a student with a common misconception would actually pick — not a random or absurd answer
-  - Each must be clearly incorrect to someone who knows the material — never ambiguously also-correct
-  - Match the answer's length and grammatical form roughly, so the correct answer isn't always the longest or most detailed option
-  - All 3 distractors must be distinct from each other and from the correct answer
-  - Use UK English spelling throughout
-- For every flashcard, also write a "cloze" sentence and a list of "acceptedAnswers" for typed-recall testing:
-  - cloze: one sentence that states this fact with the single most important term replaced by exactly four underscores (____). Keep enough surrounding context that the blank is answerable but not trivially obvious. If the answer is a long explanation rather than a short term, set cloze to null.
-  - acceptedAnswers: the correct answer plus 2-4 acceptable variants a student might reasonably type instead — synonyms, standard abbreviations, and UK/US spelling variants. List the canonical answer first. UK English spelling first.
-- Return ONLY a valid JSON array of objects with "question", "answer", "distractors", "cloze", and "acceptedAnswers" fields
+- Return ONLY a valid JSON array of objects with "question" and "answer" fields
 - IMPORTANT: Base every question and answer ONLY on information explicitly present in the provided content. Do NOT use general knowledge or add information not found in the content. If the content is too brief to support meaningful flashcards, return fewer cards.`;
 
   const flashcardResponseSchema = {
@@ -403,24 +340,9 @@ ${targetLine}
       properties: {
         question: { type: Type.STRING, description: 'The flashcard question.' },
         answer: { type: Type.STRING, description: 'The concise, accurate answer to the question.' },
-        distractors: {
-          type: Type.ARRAY,
-          description: 'Exactly 3 plausible, misconception-based wrong answers, distinct from each other and from the answer.',
-          items: { type: Type.STRING },
-        },
-        cloze: {
-          type: Type.STRING,
-          nullable: true,
-          description: 'One sentence stating the fact with the single most important term replaced by exactly "____". Null if the answer is a long explanation rather than a short clozable term.',
-        },
-        acceptedAnswers: {
-          type: Type.ARRAY,
-          description: 'The canonical answer (first) plus 2-4 acceptable variants: synonyms, standard abbreviations, UK/US spelling.',
-          items: { type: Type.STRING },
-        },
       },
-      required: ['question', 'answer', 'distractors'],
-      propertyOrdering: ['question', 'answer', 'distractors', 'cloze', 'acceptedAnswers'],
+      required: ['question', 'answer'],
+      propertyOrdering: ['question', 'answer'],
     },
   };
 
@@ -481,19 +403,11 @@ ${targetLine}
     const validFlashcards = flashcards
       .filter((card: { question?: string; answer?: string }) => card.question && card.answer)
       .slice(0, cardLimit)
-      .map((card: { question: string; answer: string; distractors?: unknown; cloze?: unknown; acceptedAnswers?: unknown }, index: number) => {
-        const distractors = sanitizeDistractors(card.distractors, card.answer);
-        const cloze = sanitizeCloze(card.cloze);
-        const acceptedAnswers = sanitizeAcceptedAnswers(card.acceptedAnswers, card.answer);
-        return {
-          id: `card-${index}-${Date.now()}`,
-          question: card.question,
-          answer: card.answer,
-          ...(distractors ? { distractors } : {}),
-          ...(cloze ? { cloze } : {}),
-          acceptedAnswers,
-        };
-      });
+      .map((card: { question: string; answer: string }, index: number) => ({
+        id: `card-${index}-${Date.now()}`,
+        question: card.question,
+        answer: card.answer,
+      }));
 
     // Atomic credit deduction via DB function — prevents race conditions from parallel requests
     try {

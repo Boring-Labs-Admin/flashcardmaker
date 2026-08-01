@@ -37,13 +37,13 @@ export default function HomeContent() {
               <div className="feature-split-text">
                 <div className="eyebrow">Built to revise with</div>
                 <h3>One deck, three ways to study</h3>
-                <p>Different topics stick in different ways. Flip cards to test recall, scan a list to revise fast, or run a quiz to find the gaps.</p>
+                <p>Different topics stick in different ways. Flip cards to test recall, scan a list to revise fast, or study with spaced repetition to find the gaps.</p>
                 <ul className="feat-list">
                   {[
                     'Flip cards one at a time to test recall',
                     'Scan the whole deck as a list to revise fast',
-                    'Run a multiple-choice quiz to find the gaps',
-                    'Instant marking, no waiting for results',
+                    'Rate your confidence and let weak cards resurface sooner',
+                    'No account needed to get started',
                   ].map(f => (
                     <li key={f}><span className="tick"><Check size={14} strokeWidth={3} /></span>{f}</li>
                   ))}

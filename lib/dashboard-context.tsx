@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState, useCallback, ReactNode 
 import { useRouter, useSearchParams } from 'next/navigation';
 import posthog from 'posthog-js';
 import { useAuth } from '@/lib/auth-context';
-import { Deck, TestOptions, ClassSummary } from '@/lib/types';
+import { Deck, ClassSummary } from '@/lib/types';
 import { UserPlanData } from '@/lib/plans';
 
 const ADMIN_EMAIL = 'admin@boringlabs.co.uk';
@@ -30,7 +30,6 @@ interface DashboardContextType {
   handleDeckUpdate: (id: string, updates: { title?: string; color?: string; classId?: string | null }) => Promise<void>;
   handleDeckSaved: (deck: Deck) => void;
   handleDeckLocalUpdate: (deck: Deck) => void;
-  handleTestOptionsGenerated: (deckId: string, options: TestOptions) => void;
   handleCheckout: (productKey: string) => Promise<void>;
   handlePortal: () => Promise<void>;
   handleDeleteAccount: () => Promise<void>;
@@ -162,14 +161,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const handleTestOptionsGenerated = (deckId: string, options: TestOptions) => {
-    setDecks(prev => {
-      const updated = prev.map(d => d.id === deckId ? { ...d, test_options: options } : d);
-      if (user) sessionStorage.setItem(`decks_cache_${user.id}`, JSON.stringify(updated));
-      return updated;
-    });
-  };
-
   const handleDeckSaved = (deck: Deck) => {
     setDecks(prev => {
       const updated = [deck, ...prev];
@@ -256,7 +247,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       handleDeckUpdate,
       handleDeckSaved,
       handleDeckLocalUpdate,
-      handleTestOptionsGenerated,
       handleCheckout,
       handlePortal,
       handleDeleteAccount,

@@ -45,7 +45,7 @@ export default function ComparisonTable() {
             <td className="plus-col"><Check size={16} strokeWidth={2.5} /></td>
           </tr>
           <tr>
-            <td>Save · test · PDF export</td>
+            <td>Save · study · PDF export</td>
             <td>—</td>
             <td><Check size={16} strokeWidth={2.5} /></td>
             <td className="plus-col"><Check size={16} strokeWidth={2.5} /></td>

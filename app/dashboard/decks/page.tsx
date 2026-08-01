@@ -77,14 +77,9 @@ export default function YourFlashcardsPage() {
     dismissMigrationPrompt();
   };
 
-  // Study now launches the Confidence-Based Repetition session at /dashboard/study
+  // Study launches the Confidence-Based Repetition session at /dashboard/study
   const handleStudy = (deck: Deck) => {
     router.push(`/dashboard/study?deckId=${deck.id}`);
-  };
-
-  // Test still launches immediately — Test Yourself is for picking a deck when one isn't already chosen
-  const handleTest = (deck: Deck) => {
-    router.push(`/dashboard/test?deckId=${deck.id}`);
   };
 
   return (
@@ -132,7 +127,7 @@ export default function YourFlashcardsPage() {
               {classes.length > 0 && <h2 className="section-row-title" style={{ marginBottom: '1rem' }}>Uncategorised</h2>}
               <div className="deck-grid">
                 {orphanDecks.map(deck => (
-                  <DeckCard key={deck.id} deck={deck} onDelete={handleDelete} onStudy={handleStudy} onTest={handleTest} onUpdate={handleDeckUpdate} />
+                  <DeckCard key={deck.id} deck={deck} onDelete={handleDelete} onStudy={handleStudy} onUpdate={handleDeckUpdate} />
                 ))}
               </div>
             </section>

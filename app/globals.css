@@ -702,103 +702,8 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .deck-card-title-input { font-size: 1.1rem; font-weight: 700; color: var(--cobalt-blue); line-height: 1.3; border: 2px solid var(--cobalt-blue); border-radius: 6px; padding: 2px 6px; width: 100%; background: white; font-family: inherit; outline: none; }
 .deck-card-meta { display: flex; justify-content: space-between; font-size: 0.8rem; opacity: 0.6; font-weight: 500; }
 .deck-btn-row { display: flex; gap: 0.5rem; margin-top: auto; }
-.deck-study-btn, .deck-test-btn { display: flex; align-items: center; justify-content: center; gap: 0.4rem; }
-.deck-study-btn { flex: 1; padding: 0.7rem 0.75rem; font-size: 0.85rem; }
-.deck-test-btn { flex: 1; padding: 0.7rem 0.75rem; font-size: 0.85rem; background: white; border: 2px solid var(--cobalt-blue); color: var(--cobalt-blue); border-radius: 8px; font-family: "IBM Plex Mono", monospace; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-.deck-test-btn:hover { background: var(--cobalt-blue); color: white; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,74,173,0.25); }
+.deck-study-btn { display: flex; align-items: center; justify-content: center; gap: 0.4rem; flex: 1; padding: 0.7rem 0.75rem; font-size: 0.85rem; }
 
-/* ── TEST YOURSELF DECK PICKER ─────────────────────────────── */
-.test-deck-card {
-  background: var(--light-blue);
-  border: 3px solid var(--cobalt-blue);
-  border-radius: 12px;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  text-align: left;
-  width: 100%;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-.test-deck-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,74,173,0.2); background: var(--cobalt-blue); color: white; }
-.test-deck-icon { display: flex; color: var(--cobalt-blue); }
-.test-deck-card:hover .test-deck-icon { color: white; }
-.test-deck-card-title { font-size: 1.1rem; font-weight: 700; color: var(--cobalt-blue); line-height: 1.3; }
-.test-deck-card:hover .test-deck-card-title { color: white; }
-.test-deck-card-meta { font-size: 0.8rem; opacity: 0.6; font-weight: 500; }
-.test-deck-card-cta { margin-top: auto; padding-top: 0.5rem; font-weight: 700; font-size: 0.85rem; color: var(--cobalt-blue); display: flex; align-items: center; gap: 0.35rem; }
-.test-deck-card:hover .test-deck-card-cta { color: white; }
-
-/* ── TEST MODE ─────────────────────────────────────── */
-.test-fullpage { display: flex; flex-direction: column; min-height: calc(100vh - 64px); }
-
-/* Progress bar */
-.test-progress-bar-track { width: 100%; height: 6px; background: #E0E8F5; }
-.test-progress-bar-fill { height: 100%; background: var(--cobalt-blue); border-radius: 0 3px 3px 0; transition: width 0.4s ease; }
-
-/* Body */
-.test-body { flex: 1; display: flex; flex-direction: column; gap: 2.5rem; max-width: 780px; width: 100%; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
-
-/* Counter */
-.test-counter { display: flex; align-items: baseline; gap: 0.6rem; }
-.test-counter-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.35; }
-.test-counter-num { font-size: 1rem; font-weight: 800; color: var(--cobalt-blue); }
-
-/* Question */
-.test-question { font-size: 1.65rem; font-weight: 700; line-height: 1.45; color: #0a0a0a; }
-
-/* Options */
-.test-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.test-option-btn { display: flex; align-items: flex-start; gap: 1rem; background: white; border: 2px solid #D0DFF5; border-radius: 12px; padding: 1.4rem 1.5rem; min-height: 90px; font-family: "IBM Plex Mono", monospace; font-size: 0.9rem; font-weight: 500; color: #1a1a1a; cursor: pointer; text-align: left; line-height: 1.6; transition: all 0.15s; }
-.test-option-btn:hover:not(:disabled) { border-color: var(--cobalt-blue); background: var(--light-blue); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,74,173,0.1); }
-.test-option-btn:disabled { cursor: default; }
-.test-option-label { flex-shrink: 0; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: #EEF4FF; color: var(--cobalt-blue); font-size: 0.72rem; font-weight: 800; display: flex; align-items: center; justify-content: center; letter-spacing: 0; margin-top: 0.05rem; }
-.test-option-text { flex: 1; }
-.test-option-idle { }
-.test-option-correct { background: #E6F7EF !important; border-color: #1a7a4a !important; color: #1a7a4a !important; }
-.test-option-correct .test-option-label { background: #1a7a4a; color: white; }
-.test-option-incorrect { background: #FFF0F0 !important; border-color: #CC3333 !important; color: #CC3333 !important; }
-.test-option-incorrect .test-option-label { background: #CC3333; color: white; }
-.test-option-dimmed { opacity: 0.3; }
-
-/* Feedback message */
-.test-feedback-msg { font-size: 1rem; font-weight: 700; padding: 0.65rem 1rem; border-radius: 8px; animation: test-feedback-in 0.2s ease; }
-.test-feedback-correct { background: #E6F7EF; color: #1a7a4a; }
-.test-feedback-incorrect { background: #FFF0F0; color: #CC3333; }
-@keyframes test-feedback-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
-
-/* Typed recall + cloze */
-.test-typed-form { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-.test-typed-input { flex: 1; min-width: 200px; border: 2px solid #D0DFF5; border-radius: 10px; padding: 0.85rem 1.1rem; font-family: "IBM Plex Mono", monospace; font-size: 1rem; color: #1a1a1a; transition: border-color 0.15s; }
-.test-typed-input:focus { outline: none; border-color: var(--cobalt-blue); }
-.test-cloze-sentence { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem; }
-.test-cloze-blank-input { border: none; border-bottom: 2px solid var(--cobalt-blue); background: var(--light-blue); border-radius: 4px 4px 0 0; padding: 0.1rem 0.6rem; font-family: "IBM Plex Mono", monospace; font-size: 1.05rem; font-weight: 700; color: var(--cobalt-blue); width: 9rem; }
-.test-cloze-blank-input:focus { outline: none; background: white; }
-.test-cloze-blank-filled { display: inline-block; padding: 0.1rem 0.6rem; border-radius: 6px; font-weight: 700; }
-.test-cloze-blank-correct { background: #E6F7EF; color: #1a7a4a; }
-.test-cloze-blank-incorrect { background: #FFF0F0; color: #CC3333; text-decoration: line-through; }
-.test-reveal-answer { display: flex; flex-direction: column; gap: 0.3rem; background: var(--light-blue); border-radius: 10px; padding: 0.9rem 1.1rem; font-size: 1.05rem; font-weight: 600; color: #0a0a0a; }
-.test-reveal-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.5; }
-.test-override-btn { align-self: flex-start; }
-.test-next-btn { align-self: flex-start; }
-
-/* Test start screen + mode picker */
-.test-start-card { max-width: 480px; margin: 3rem auto; background: white; border: 1.5px solid var(--line); border-radius: var(--r-lg, 14px); padding: 2.5rem; text-align: center; }
-.test-mode-picker { display: flex; gap: 0.6rem; margin: 1.5rem 0; }
-.test-mode-picker-option { flex: 1; background: white; border: 2px solid #D0DFF5; border-radius: 10px; padding: 0.75rem 1rem; font-family: "IBM Plex Mono", monospace; font-size: 0.82rem; font-weight: 700; color: #1a1a1a; cursor: pointer; transition: all 0.15s; }
-.test-mode-picker-option:hover { border-color: var(--cobalt-blue); }
-.test-mode-picker-option.active { background: var(--cobalt-blue); border-color: var(--cobalt-blue); color: white; }
-.test-start-actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-top: 0.5rem; }
-
-/* Complete screen */
-.test-complete-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; padding: 3rem 1.5rem; text-align: center; }
-.test-complete-circle { width: 160px; height: 160px; border-radius: 50%; border: 5px solid; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; }
-.test-complete-pct-big { font-size: 2.4rem; font-weight: 800; line-height: 1; }
-.test-complete-fraction { font-size: 0.85rem; font-weight: 600; opacity: 0.55; }
-.test-complete-msg { font-size: 1.15rem; font-weight: 700; color: #0a0a0a; }
-.test-complete-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; margin-top: 0.5rem; }
 .btn-outline { background: white; border: 2px solid var(--cobalt-blue); color: var(--cobalt-blue); border-radius: 8px; padding: 0.65rem 1.25rem; font-family: "IBM Plex Mono", monospace; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: all 0.15s; }
 .btn-outline:hover { background: var(--light-blue); }
 
@@ -1494,8 +1399,15 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .deck-progress-menu button { display: block; width: 100%; text-align: left; padding: 0.6rem 0.9rem; background: none; border: none; font-size: 0.82rem; color: var(--ink); cursor: pointer; }
 .deck-progress-menu button:hover { background: var(--sky); }
 .deck-progress-menu button.danger { color: #c0392b; }
-.deck-progress-confirm { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; white-space: nowrap; }
-.deck-progress-confirm button { background: none; border: 1px solid var(--line); border-radius: 6px; padding: 0.2rem 0.5rem; cursor: pointer; font-size: 0.72rem; }
+.deck-progress-confirm {
+  position: absolute; top: 100%; right: 0; z-index: 10; margin-top: 0.3rem;
+  display: flex; align-items: center; gap: 0.5rem; white-space: nowrap;
+  background: white; border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow);
+  padding: 0.5rem 0.65rem; font-size: 0.78rem; color: var(--ink);
+}
+.deck-progress-confirm button { background: none; border: 1px solid var(--line); border-radius: 6px; padding: 0.2rem 0.6rem; cursor: pointer; font-size: 0.72rem; }
+.deck-progress-confirm button:first-of-type { border-color: #c0392b; color: #c0392b; }
+.deck-progress-confirm button:hover { background: var(--sky); }
 .deck-progress-play {
   display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%;
   background: var(--cobalt-blue); color: white; border: none; cursor: pointer;
@@ -1715,3 +1627,29 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
   .card-question-field { border-right: none; border-bottom: 1px dashed var(--line); }
   .enhance-compare-cols { grid-template-columns: 1fr; }
 }
+
+/* ── Create Flashcards page (class-aware) ── */
+.class-picker { margin-bottom: 1.5rem; }
+.class-picker-label { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--slate); margin-bottom: 0.5rem; }
+.class-picker-chips { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.25rem; }
+.class-picker-chip {
+  display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; background: white; border: 1.5px solid var(--line);
+  border-radius: 999px; padding: 0.4rem 0.9rem 0.4rem 0.4rem; font-family: var(--sans); font-size: 0.85rem; font-weight: 600;
+  color: var(--ink); cursor: pointer; white-space: nowrap; transition: border-color 0.15s ease, background 0.15s ease;
+}
+.class-picker-chip:hover { border-color: var(--cobalt-blue); }
+.class-picker-chip.active { border-color: var(--cobalt-blue); background: var(--sky); color: var(--cobalt-blue); }
+.class-picker-chip-icon { display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0; }
+.class-picker-chip-icon-none { background: var(--line); color: var(--slate); }
+.class-picker-chip.active .class-picker-chip-icon-none { background: var(--cobalt-blue); color: white; }
+.class-picker-chip-new { border-style: dashed; color: var(--cobalt-blue); background: none; padding: 0.4rem 0.9rem; }
+.class-picker-chip-new:hover { background: var(--sky); }
+
+.create-saved-banner {
+  display: flex; align-items: center; gap: 0.6rem; background: #e8f5e9; border: 1px solid #a5d6a7; color: #1a5e20;
+  border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 0.88rem; flex-wrap: wrap;
+}
+.create-saved-banner svg { flex-shrink: 0; color: #2e7d32; }
+.create-saved-banner span { flex: 1; }
+.create-saved-banner .btn-outline { flex-shrink: 0; padding: 0.45rem 0.9rem; font-size: 0.78rem; }
+

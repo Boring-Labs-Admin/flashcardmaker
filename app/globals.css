@@ -1494,6 +1494,12 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .editor-body { display: flex; gap: 1.25rem; align-items: flex-start; padding-top: 1rem; }
 .editor-cards-area { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.85rem; }
 .editor-add-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0; }
+.editor-add-card-btn {
+  display: flex; align-items: center; gap: 0.4rem; background: var(--sky); border: 1.5px dashed var(--cobalt-blue);
+  border-radius: 8px; padding: 0.5rem 0.9rem; cursor: pointer; color: var(--cobalt-blue);
+  font-family: var(--sans); font-weight: 600; font-size: 0.82rem;
+}
+.editor-add-card-btn:hover { background: var(--light-blue); }
 .editor-tab-hint { font-size: 0.8rem; color: var(--mute); margin-left: 0.5rem; }
 
 /* ── Card navigator sidebar ── */

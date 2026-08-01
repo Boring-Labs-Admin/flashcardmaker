@@ -146,7 +146,7 @@ function EditorContent({ classTitle }: { classTitle: string | null }) {
                     </div>
                   ))}
                   <div className="editor-add-row">
-                    <button className="editor-icon-btn" onClick={handleAddCard} title="Add card"><Plus size={16} /></button>
+                    <button className="editor-add-card-btn" onClick={handleAddCard}><Plus size={16} /> Add Card</button>
                     <button className="editor-icon-btn" onClick={() => setShowImport(true)} title="Import cards"><List size={16} /></button>
                     <span className="editor-tab-hint">Hit TAB to advance to next card</span>
                   </div>

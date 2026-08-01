@@ -62,7 +62,9 @@ export function CardEditorProvider({
   children: ReactNode;
 }) {
   const { handleDeckLocalUpdate, decks } = useDashboard();
-  const [cards, setCards] = useState<Flashcard[]>(initialCards);
+  const [cards, setCards] = useState<Flashcard[]>(
+    initialCards.length === 0 ? [{ id: newCardId(), question: '', answer: '' }] : initialCards
+  );
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedIndices, setSelectedIndices] = useState<Set<number>>(new Set());
   const [mode, setModeState] = useState<EditorMode>('simple');

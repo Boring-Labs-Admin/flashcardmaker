@@ -42,14 +42,8 @@ export default function NavBar({ onLoginClick }: NavBarProps) {
         {/* Desktop buttons */}
         <div className="nav-buttons">
           <div className="nav-links">
-            <Link href="/" style={{ color: 'white', fontSize: '0.85rem', fontWeight: 600, opacity: 0.8, textDecoration: 'none' }}>
-              Make flashcards
-            </Link>
             <Link href="/library" style={{ color: 'white', fontSize: '0.85rem', fontWeight: 600, opacity: 0.8, textDecoration: 'none' }}>
               Free Library
-            </Link>
-            <Link href="/#subjects" style={{ color: 'white', fontSize: '0.85rem', fontWeight: 600, opacity: 0.8, textDecoration: 'none' }}>
-              Subjects
             </Link>
             <Link href="/pricing" style={{ color: 'white', fontSize: '0.85rem', fontWeight: 600, opacity: 0.8, textDecoration: 'none' }}>
               Pricing
@@ -104,14 +98,8 @@ export default function NavBar({ onLoginClick }: NavBarProps) {
                 {user.user_metadata?.full_name || user.email}
               </span>
             )}
-            <Link href="/" className="nav-login-btn" onClick={() => setIsMenuOpen(false)}>
-              Make flashcards
-            </Link>
             <Link href="/library" className="nav-login-btn" onClick={() => setIsMenuOpen(false)}>
               Free Library
-            </Link>
-            <Link href="/#subjects" className="nav-login-btn" onClick={() => setIsMenuOpen(false)}>
-              Subjects
             </Link>
             <Link href="/pricing" className="nav-login-btn" onClick={() => setIsMenuOpen(false)}>
               Pricing

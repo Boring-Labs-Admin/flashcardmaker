@@ -3,11 +3,13 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Zap, Layers, ClipboardCheck, CalendarDays, Library, Sparkles, Settings, HelpCircle, LogOut, Menu, X, Flame, BarChart3 } from 'lucide-react';
+import { Zap, Layers, ClipboardCheck, CalendarDays, Library, Sparkles, Settings, HelpCircle, LogOut, Menu, X, Flame, BarChart3, Plus } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { useDashboard } from '@/lib/dashboard-context';
 import { UserStats } from '@/lib/types';
 import StudyHistoryChart from './StudyHistoryChart';
+import ClassListItem from '@/components/class/ClassListItem';
+import ClassCreationFlow from '@/components/class/ClassCreationFlow';
 
 const STATS_CACHE_KEY = 'user_stats_cache';
 const STATS_CACHE_TTL_MS = 5 * 60 * 1000;
@@ -46,13 +48,14 @@ function SidebarLinks({ pathname, onNavigate }: { pathname: string; onNavigate?:
 
 export default function DashboardSidebar() {
   const { user, signOut } = useAuth();
-  const { setUpgradeOpen, setSettingsOpen, setSettingsTab, setHelpOpen } = useDashboard();
+  const { setUpgradeOpen, setSettingsOpen, setSettingsTab, setHelpOpen, classes, handleClassCreated } = useDashboard();
   const pathname = usePathname();
   const router = useRouter();
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
   const [isMobileOpen, setMobileOpen] = useState(false);
   const [stats, setStats] = useState<UserStats | null>(null);
   const [showHistoryChart, setShowHistoryChart] = useState(false);
+  const [showCreateClass, setShowCreateClass] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -129,6 +132,20 @@ export default function DashboardSidebar() {
 
         <SidebarLinks pathname={pathname} onNavigate={() => setMobileOpen(false)} />
 
+        {classes.length > 0 && (
+          <div className="sidebar-class-section">
+            <div className="sidebar-class-section-title">My Flashcards ({classes.length} class{classes.length === 1 ? '' : 'es'})</div>
+            <div className="sidebar-class-list">
+              {classes.map(cls => (
+                <ClassListItem key={cls.id} cls={cls} onNavigate={() => setMobileOpen(false)} />
+              ))}
+            </div>
+            <button className="sidebar-add-class-btn" onClick={() => setShowCreateClass(true)}>
+              <Plus size={15} /> Add New Class
+            </button>
+          </div>
+        )}
+
         <div className="dashboard-sidebar-user">
           {isUserMenuOpen && (
             <div className="dashboard-user-menu">
@@ -155,6 +172,13 @@ export default function DashboardSidebar() {
       </aside>
 
       {showHistoryChart && <StudyHistoryChart onClose={() => setShowHistoryChart(false)} />}
+
+      {showCreateClass && (
+        <ClassCreationFlow
+          onComplete={(cls) => { handleClassCreated(cls); setShowCreateClass(false); router.push(`/dashboard/classes/${cls.id}`); }}
+          onCancel={() => setShowCreateClass(false)}
+        />
+      )}
     </>
   );
 }

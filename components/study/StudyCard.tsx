@@ -8,7 +8,7 @@ import { Confidence } from '@/lib/types';
 const RATING_ORDER: Confidence[] = [1, 2, 3, 4, 5];
 
 export default function StudyCard() {
-  const { currentCard, isRevealed, revealAnswer, rateCard, cardsShownCount, totalCards, deckTitle } = useStudySession();
+  const { currentCard, isRevealed, revealAnswer, rateCard, cardsShownCount, totalCards, sessionTitle } = useStudySession();
 
   if (!currentCard) return null;
 
@@ -19,7 +19,7 @@ export default function StudyCard() {
   return (
     <>
       <div className="cbr-breadcrumb">
-        Deck: <b>{deckTitle}</b>  Card: <b>{Math.min(cardsShownCount + 1, totalCards)}/{totalCards}</b>  <span className="cbr-see-cards">(See Cards)</span>
+        Deck: <b>{currentCard.deckTitle ?? sessionTitle}</b>  Card: <b>{Math.min(cardsShownCount + 1, totalCards)}/{totalCards}</b>  <span className="cbr-see-cards">(See Cards)</span>
       </div>
 
       <div className="cbr-card">

@@ -1,10 +1,10 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import posthog from 'posthog-js';
 import { useAuth } from '@/lib/auth-context';
-import { Deck, TestOptions } from '@/lib/types';
+import { Deck, TestOptions, ClassSummary } from '@/lib/types';
 import { UserPlanData } from '@/lib/plans';
 
 const ADMIN_EMAIL = 'admin@boringlabs.co.uk';
@@ -14,6 +14,11 @@ export type SettingsTab = 'account' | 'billing' | 'support';
 interface DashboardContextType {
   decks: Deck[];
   fetching: boolean;
+  classes: ClassSummary[];
+  classesFetching: boolean;
+  refetchClasses: () => Promise<void>;
+  handleClassCreated: (cls: ClassSummary) => void;
+  handleClassRemoved: (id: string) => void;
   planData: UserPlanData | null;
   isAdmin: boolean;
   paymentSuccess: boolean;
@@ -22,7 +27,7 @@ interface DashboardContextType {
   deleteError: string | null;
   deleteLoading: boolean;
   handleDelete: (id: string) => Promise<void>;
-  handleDeckUpdate: (id: string, updates: { title?: string; color?: string }) => Promise<void>;
+  handleDeckUpdate: (id: string, updates: { title?: string; color?: string; classId?: string | null }) => Promise<void>;
   handleDeckSaved: (deck: Deck) => void;
   handleTestOptionsGenerated: (deckId: string, options: TestOptions) => void;
   handleCheckout: (productKey: string) => Promise<void>;
@@ -47,6 +52,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
   const [decks, setDecks] = useState<Deck[]>([]);
   const [fetching, setFetching] = useState(true);
+  const [classes, setClasses] = useState<ClassSummary[]>([]);
+  const [classesFetching, setClassesFetching] = useState(true);
   const [planData, setPlanData] = useState<UserPlanData | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
@@ -108,6 +115,27 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         .catch(() => {});
     }
   }, [user]);
+
+  const refetchClasses = useCallback(async () => {
+    try {
+      const res = await fetch('/api/classes');
+      const data = await res.json();
+      setClasses(data.classes ?? []);
+    } catch {
+      // Non-fatal — keep whatever was already loaded
+    } finally {
+      setClassesFetching(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    setClassesFetching(true);
+    refetchClasses();
+  }, [user, refetchClasses]);
+
+  const handleClassCreated = (cls: ClassSummary) => setClasses(prev => [cls, ...prev]);
+  const handleClassRemoved = (id: string) => setClasses(prev => prev.filter(c => c.id !== id));
 
   const handleDelete = async (id: string) => {
     setDeleteError(null);
@@ -181,7 +209,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const handleDeckUpdate = async (id: string, updates: { title?: string; color?: string }) => {
+  const handleDeckUpdate = async (id: string, updates: { title?: string; color?: string; classId?: string | null }) => {
     const res = await fetch('/api/decks', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -201,6 +229,11 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     <DashboardContext.Provider value={{
       decks,
       fetching,
+      classes,
+      classesFetching,
+      refetchClasses,
+      handleClassCreated,
+      handleClassRemoved,
       planData,
       isAdmin,
       paymentSuccess,

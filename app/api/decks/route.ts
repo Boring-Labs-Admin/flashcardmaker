@@ -33,23 +33,24 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  let title: string, topic: string | undefined, flashcards: unknown;
+  let title: string, topic: string | undefined, flashcards: unknown, classId: string | undefined;
   try {
     const body = await request.json();
     title = body.title;
     topic = body.topic;
     flashcards = body.flashcards;
+    classId = body.classId;
   } catch {
     return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
   }
 
-  if (!title || !flashcards) {
+  if (!title || !Array.isArray(flashcards)) {
     return NextResponse.json({ error: 'title and flashcards are required.' }, { status: 400 });
   }
 
   const { data, error } = await supabase
     .from('decks')
-    .insert({ user_id: session.user.id, title, topic: topic || null, flashcards })
+    .insert({ user_id: session.user.id, title, topic: topic || null, flashcards, class_id: classId || null })
     .select()
     .single();
 
@@ -69,12 +70,13 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  let id: string, title: string | undefined, color: string | undefined;
+  let id: string, title: string | undefined, color: string | undefined, classId: string | null | undefined;
   try {
     const body = await request.json();
     id = body.id;
     title = body.title;
     color = body.color;
+    classId = body.classId;
   } catch {
     return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
   }
@@ -83,9 +85,10 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: 'id is required.' }, { status: 400 });
   }
 
-  const updates: Record<string, string> = {};
+  const updates: Record<string, string | null> = {};
   if (title !== undefined) updates.title = title;
   if (color !== undefined) updates.color = color;
+  if (classId !== undefined) updates.class_id = classId;
 
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: 'No fields to update.' }, { status: 400 });

@@ -1343,3 +1343,194 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .history-chart-bar-col:hover .history-chart-bar { background: var(--cobalt-blue); }
 .history-chart-tooltip-row { margin-top: 0.85rem; font-size: 0.8rem; color: var(--ink); min-height: 1.2rem; }
 .history-chart-hint { color: var(--mute); }
+
+/* ═══════════════════════════════════════════════════════════
+   PHASE 3: CLASS HIERARCHY & ORGANISATION
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Modal helpers reused across the new class modals ── */
+.modal { position: relative; }
+.modal-x { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--cobalt-blue); opacity: 0.5; cursor: pointer; }
+.modal-x:hover { opacity: 1; }
+.modal-error { color: #c00; font-size: 0.85rem; margin-bottom: 0.5rem; }
+.modal-field-label { display: block; text-align: left; font-size: 0.78rem; font-weight: 700; color: var(--cobalt-blue); opacity: 0.7; margin-bottom: 0.3rem; }
+.modal-textarea { min-height: 80px; resize: vertical; font-family: var(--sans); }
+.modal-note { font-size: 0.78rem; color: var(--slate); opacity: 0.8; margin: 0.5rem 0 0; text-align: left; }
+.modal-btn-secondary {
+  flex: 1; background: white; color: var(--cobalt-blue); border: 2px solid var(--cobalt-blue); border-radius: 8px;
+  padding: 0.9rem 1rem; font-family: var(--mono); font-size: 0.85rem; font-weight: 700; cursor: pointer;
+}
+.modal-btn-secondary:hover { background: var(--light-blue); }
+.class-created-name { color: var(--yellow-bolt); -webkit-text-stroke: 0.3px var(--cobalt-blue); }
+.role-buttons { display: flex; gap: 0.75rem; }
+.purpose-question { font-size: 0.9rem; color: var(--ink); text-align: left; margin-bottom: 0.75rem; }
+.purpose-options { display: flex; flex-direction: column; gap: 0.15rem; margin-bottom: 1.5rem; text-align: left; }
+.purpose-option { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.25rem; font-size: 0.9rem; color: var(--ink); cursor: pointer; }
+.purpose-option input { accent-color: var(--cobalt-blue); width: 16px; height: 16px; }
+
+/* ── Onboarding modal ── */
+.onboarding-modal { max-width: 560px; }
+.onboarding-options { display: flex; gap: 1rem; margin-top: 1.5rem; }
+.onboarding-option {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.6rem; padding: 1.5rem 1rem;
+  background: var(--sky); border: 2px solid var(--line); border-radius: var(--r); cursor: pointer; color: var(--cobalt-blue);
+  font-family: var(--sans); font-weight: 600; font-size: 0.88rem;
+}
+.onboarding-option:hover { border-color: var(--cobalt-blue); background: var(--light-blue); }
+
+/* ── Make Flashcards modal ── */
+.make-flashcards-columns { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5rem; align-items: stretch; margin: 1.5rem 0 1rem; text-align: left; }
+.make-flashcards-col { display: flex; flex-direction: column; }
+.make-flashcards-col h3 { font-size: 0.95rem; font-weight: 700; color: var(--ink); margin-bottom: 0.85rem; text-align: center; }
+.make-flashcards-divider { display: flex; align-items: center; color: var(--mute); font-size: 0.78rem; font-weight: 700; }
+.make-flashcards-manual-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.6rem;
+  background: linear-gradient(135deg, #ff8a3d, #ff6b00); color: white; border: none; border-radius: var(--r);
+  min-height: 140px; cursor: pointer; font-family: var(--sans); font-weight: 700; font-size: 0.95rem;
+}
+.make-flashcards-manual-btn:hover { filter: brightness(1.05); }
+.make-flashcards-ai-btn {
+  display: flex; align-items: center; gap: 0.75rem; background: var(--sky); border: 1.5px solid var(--line); border-radius: 10px;
+  padding: 0.9rem 1rem; cursor: pointer; color: var(--cobalt-blue); font-family: var(--sans); font-weight: 600; font-size: 0.85rem;
+  margin-bottom: 0.6rem; width: 100%; text-align: left;
+}
+.make-flashcards-ai-btn:hover { background: var(--light-blue); border-color: var(--cobalt-blue); }
+
+@media (max-width: 640px) {
+  .make-flashcards-columns { grid-template-columns: 1fr; }
+  .make-flashcards-divider { justify-content: center; padding: 0.25rem 0; }
+}
+
+/* ── Migration prompt banner ── */
+.migration-prompt {
+  background: var(--sky); border: 1.5px solid var(--cobalt-blue); border-radius: var(--r); padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+}
+.migration-prompt p { margin: 0; font-size: 0.9rem; color: var(--ink); flex: 1; min-width: 220px; }
+.migration-prompt-actions { display: flex; gap: 0.6rem; flex-shrink: 0; }
+
+/* ── Class cover icon ── */
+.class-cover { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+/* ── Class grid (Your Flashcards page) ── */
+.section-row-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap; }
+.section-row-title { font-size: 1.1rem; font-weight: 700; color: var(--cobalt-blue); margin: 0; }
+.class-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+.class-card {
+  display: flex; align-items: center; gap: 0.85rem; background: white; border: 1.5px solid var(--line); border-radius: var(--r);
+  padding: 1rem; cursor: pointer; text-align: left; font-family: inherit; transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.class-card:hover { border-color: var(--cobalt-blue); box-shadow: var(--shadow-sm); }
+.class-card-body { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; flex: 1; }
+.class-card-title { font-weight: 700; color: var(--ink); font-size: 0.95rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.class-card-meta { font-size: 0.75rem; color: var(--slate); }
+.class-card-track { height: 5px; border-radius: 4px; background: var(--line); overflow: hidden; margin-top: 0.15rem; }
+.class-card-fill { height: 100%; border-radius: 4px; }
+
+/* ── Sidebar class list ── */
+.sidebar-class-section { padding: 0.75rem 0.25rem; border-top: 1px solid rgba(255,255,255,0.12); margin-top: 0.5rem; }
+.sidebar-class-section-title { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; color: rgba(255,255,255,0.5); font-weight: 700; padding: 0 0.5rem; margin-bottom: 0.6rem; }
+.sidebar-class-list { display: flex; flex-direction: column; gap: 0.2rem; max-height: 220px; overflow-y: auto; }
+.class-list-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0.5rem; border-radius: 8px; text-decoration: none; }
+.class-list-item:hover { background: rgba(255,255,255,0.08); }
+.class-list-item-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.25rem; }
+.class-list-item-name { display: flex; align-items: center; gap: 0.4rem; font-size: 0.82rem; color: white; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.class-list-item-dot { width: 6px; height: 6px; border-radius: 50%; background: #4caf50; flex-shrink: 0; }
+.class-list-item-track { height: 3px; border-radius: 3px; background: rgba(255,255,255,0.15); overflow: hidden; }
+.class-list-item-fill { height: 100%; border-radius: 3px; }
+.sidebar-add-class-btn {
+  display: flex; align-items: center; gap: 0.4rem; background: none; border: none; color: rgba(255,255,255,0.7);
+  font-size: 0.8rem; font-weight: 600; padding: 0.5rem; cursor: pointer; width: 100%; margin-top: 0.3rem;
+}
+.sidebar-add-class-btn:hover { color: white; }
+
+/* ── Class overview page header ── */
+.class-header { display: flex; align-items: flex-start; gap: 1.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.class-info { flex: 1; min-width: 220px; }
+.class-title { display: flex; align-items: center; gap: 0.6rem; font-size: 1.9rem; font-weight: 800; color: var(--ink); margin: 0 0 0.4rem; }
+.class-title-edit { background: none; border: none; color: var(--slate); opacity: 0.5; cursor: pointer; }
+.class-title-edit:hover { opacity: 1; }
+.class-title-input { font-size: 1.9rem; font-weight: 800; color: var(--ink); border: 2px solid var(--cobalt-blue); border-radius: 8px; padding: 0.1rem 0.5rem; margin-bottom: 0.4rem; font-family: inherit; width: 100%; max-width: 420px; }
+.class-attribution { font-size: 0.85rem; color: var(--slate); margin-bottom: 1rem; }
+.class-actions { display: flex; align-items: center; gap: 0.75rem; }
+
+/* ── Class tabs ── */
+.class-tabs { display: flex; gap: 2rem; border-bottom: 1px solid var(--line); margin-bottom: 1.5rem; }
+.class-tab { background: none; border: none; padding: 0.75rem 0; font-family: var(--sans); font-weight: 600; font-size: 0.9rem; color: var(--slate); cursor: pointer; border-bottom: 2px solid transparent; }
+.class-tab.active { color: var(--cobalt-blue); border-bottom-color: var(--cobalt-blue); }
+.class-intro-tab h4 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--cobalt-blue); margin: 1.25rem 0 0.4rem; }
+.class-intro-tab p { color: var(--ink); font-size: 0.92rem; margin: 0; }
+
+/* ── Decks toolbar + study mode toggle ── */
+.decks-toolbar { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.decks-toolbar-hint { font-size: 0.78rem; color: var(--mute); }
+.study-mode-toggle { display: inline-flex; background: var(--line); border-radius: 20px; padding: 3px; }
+.study-mode-toggle button {
+  background: none; border: none; padding: 0.45rem 1rem; border-radius: 16px; font-family: var(--mono); font-size: 0.72rem;
+  font-weight: 700; letter-spacing: 0.02em; color: var(--slate); cursor: pointer;
+}
+.study-mode-toggle button.active { background: var(--cobalt-blue); color: white; }
+
+/* ── Deck progress rows (class overview Decks tab) ── */
+.deck-progress-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.deck-progress-row {
+  display: grid; grid-template-columns: 24px 44px 1fr 32px 32px; align-items: center; gap: 0.75rem;
+  background: white; border: 1px solid var(--line); border-radius: 10px; padding: 0.75rem 1rem;
+}
+.deck-progress-check { display: flex; }
+.deck-progress-pct { font-size: 0.82rem; font-weight: 700; color: var(--ink); font-family: var(--mono); }
+.deck-progress-main { min-width: 0; display: flex; flex-direction: column; gap: 0.25rem; }
+.deck-progress-name { font-weight: 600; color: var(--ink); font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.deck-progress-count { font-size: 0.72rem; color: var(--mute); }
+.deck-progress-track { height: 5px; border-radius: 4px; background: var(--line); overflow: hidden; margin-top: 0.1rem; }
+.deck-progress-fill { height: 100%; border-radius: 4px; }
+.deck-progress-menu-wrap { position: relative; display: flex; justify-content: center; }
+.deck-progress-menu-btn { background: none; border: none; color: var(--slate); cursor: pointer; padding: 0.3rem; }
+.deck-progress-menu-btn:hover { color: var(--ink); }
+.deck-progress-menu {
+  position: absolute; top: 100%; right: 0; z-index: 10; background: white; border: 1px solid var(--line); border-radius: 8px;
+  box-shadow: var(--shadow); min-width: 120px; overflow: hidden;
+}
+.deck-progress-menu button { display: block; width: 100%; text-align: left; padding: 0.6rem 0.9rem; background: none; border: none; font-size: 0.82rem; color: var(--ink); cursor: pointer; }
+.deck-progress-menu button:hover { background: var(--sky); }
+.deck-progress-menu button.danger { color: #c0392b; }
+.deck-progress-confirm { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; white-space: nowrap; }
+.deck-progress-confirm button { background: none; border: 1px solid var(--line); border-radius: 6px; padding: 0.2rem 0.5rem; cursor: pointer; font-size: 0.72rem; }
+.deck-progress-play {
+  display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--cobalt-blue); color: white; border: none; cursor: pointer;
+}
+.deck-progress-play:hover { background: var(--dark-blue); }
+.deck-progress-add {
+  display: flex; align-items: center; gap: 0.5rem; background: none; border: 1.5px dashed var(--line); border-radius: 10px;
+  padding: 0.85rem 1rem; color: var(--cobalt-blue); font-family: var(--sans); font-weight: 600; font-size: 0.85rem; cursor: pointer;
+}
+.deck-progress-add:hover { border-color: var(--cobalt-blue); background: var(--sky); }
+
+@media (max-width: 640px) {
+  .deck-progress-row { grid-template-columns: 20px 36px 1fr 28px; }
+  .deck-progress-play { display: none; }
+}
+
+/* ── Class more-options menu ── */
+.class-more-menu-wrap { position: relative; }
+.class-more-btn { background: none; border: none; font-size: 1.3rem; color: var(--slate); cursor: pointer; padding: 0.3rem 0.6rem; line-height: 1; }
+.class-more-btn:hover { color: var(--ink); }
+.class-more-menu {
+  position: absolute; top: 100%; left: 0; z-index: 20; background: white; border: 1px solid var(--line); border-radius: 10px;
+  box-shadow: var(--shadow-lg); min-width: 240px; padding: 0.4rem; margin-top: 0.3rem;
+}
+.class-more-menu button {
+  display: flex; align-items: center; gap: 0.4rem; width: 100%; text-align: left; padding: 0.6rem 0.75rem; background: none;
+  border: none; font-size: 0.85rem; color: var(--ink); cursor: pointer; border-radius: 6px; font-family: var(--sans);
+}
+.class-more-menu button:hover:not(:disabled) { background: var(--sky); }
+.class-more-menu button.danger { color: #c0392b; }
+.class-more-menu button.gated { color: var(--slate); }
+.class-more-menu button.disabled { color: var(--mute); cursor: not-allowed; opacity: 0.6; }
+.pro-badge { background: var(--yellow-bolt); color: var(--navy); font-size: 0.6rem; font-weight: 800; padding: 0.1rem 0.4rem; border-radius: 4px; letter-spacing: 0.03em; }
+
+.class-more-confirm-overlay { position: fixed; inset: 0; z-index: 1500; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+.class-more-confirm { background: white; border-radius: var(--r); padding: 1.75rem; max-width: 380px; box-shadow: var(--shadow-lg); }
+.class-more-confirm p { margin: 0 0 1.25rem; font-size: 0.9rem; color: var(--ink); }
+.class-more-confirm-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }

@@ -50,6 +50,7 @@ export interface Deck {
   test_options?: TestOptions | null;
   mastery_pct?: number;
   last_studied_at?: string | null;
+  class_id?: string | null;
 }
 
 export type Confidence = 1 | 2 | 3 | 4 | 5;
@@ -59,6 +60,10 @@ export interface StudyQueueCard {
   question: string;
   answer: string;
   currentConfidence: Confidence | null;
+  // Present on merged (class-level "Study All") queues, where cards come from
+  // several decks — absent on single-deck queues, which imply the session's own deckId.
+  deckId?: string;
+  deckTitle?: string;
 }
 
 export interface StudyQueueResponse {
@@ -111,3 +116,54 @@ export interface ExamDate {
   notes?: string;
   created_at: string;
 }
+
+export type ClassPurpose =
+  | 'job_skills'
+  | 'foreign_languages'
+  | 'professional_certification'
+  | 'standardised_test'
+  | 'school_university'
+  | 'general';
+
+export type ClassRole = 'instructor' | 'student';
+
+export interface ClassRecord {
+  id: string;
+  user_id: string;
+  title: string;
+  description?: string | null;
+  purpose: ClassPurpose | null;
+  role: ClassRole;
+  cover_color: string;
+  cover_emoji: string;
+  is_public: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ClassSummary extends ClassRecord {
+  deckCount: number;
+  totalCards: number;
+  masteryPct: number;
+  cardsStudied: number;
+  studiedToday: boolean;
+}
+
+export interface ClassDeckSummary {
+  id: string;
+  title: string;
+  cardCount: number;
+  masteryPct: number;
+  cardsStudied: number;
+  color: string | null;
+  lastStudiedAt: string | null;
+}
+
+export interface ClassDetail {
+  class: ClassRecord;
+  decks: ClassDeckSummary[];
+  totalCards: number;
+  masteryPct: number;
+}
+
+export type StudyMode = 'progressive' | 'random';

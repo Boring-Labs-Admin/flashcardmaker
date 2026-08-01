@@ -6,22 +6,36 @@ import { CONFIDENCE_REPEAT_FREQUENCY } from './cbrConstants';
 
 const GAUGE_DELTA_BY_CONFIDENCE: Record<Confidence, number> = { 1: -10, 2: -5, 3: 0, 4: 5, 5: 10 };
 
+// Composite key so single-deck and merged (class-wide) sessions share one model —
+// a plain card index isn't unique once cards from several decks share a queue.
+function cardKey(deckId: string, index: number): string {
+  return `${deckId}:${index}`;
+}
+
 interface CoachingMessage {
   id: number;
   text: string;
 }
 
-interface StudySessionContextType {
+interface DeckSessionSummary {
   deckId: string;
-  deckTitle: string;
+  cardsStudied: number;
+  pointsEarned: number;
+  avgConfidence: number;
+}
+
+interface StudySessionContextType {
+  sessionTitle: string;
+  primaryDeckId: string | undefined;
+  classId: string | undefined;
   queue: StudyQueueCard[];
   currentCard: StudyQueueCard | null;
   cardsShownCount: number;
   totalCards: number;
-  initialCardIndexOrder: number[];
+  initialCardKeys: string[];
   isRevealed: boolean;
   roundTimerSeconds: number;
-  sessionRatings: Record<number, Confidence>;
+  sessionRatings: Record<string, Confidence>;
   pointsEarned: number;
   bonusPoints: number;
   masteryPct: number;
@@ -39,26 +53,32 @@ const StudySessionContext = createContext<StudySessionContextType | null>(null);
 let coachingIdCounter = 0;
 
 export function StudySessionProvider({
-  deckId,
-  deckTitle,
+  sessionTitle,
+  primaryDeckId,
+  classId,
   initialQueue,
   initialMasteryPct,
   onSessionComplete,
   children,
 }: {
-  deckId: string;
-  deckTitle: string;
+  sessionTitle: string;
+  // Set for single-deck sessions (Phase 1); omitted for merged class sessions,
+  // where every StudyQueueCard already carries its own deckId.
+  primaryDeckId?: string;
+  // Set for merged class-wide sessions (Phase 3) — used only to fetch the right
+  // "Overall" mastery endpoint in the sidebar, not for per-card rating logic.
+  classId?: string;
   initialQueue: StudyQueueCard[];
   initialMasteryPct: number;
-  onSessionComplete: (summary: { cardsStudied: number; pointsEarned: number; avgConfidence: number }) => void;
+  onSessionComplete: (perDeckSummaries: DeckSessionSummary[]) => void;
   children: ReactNode;
 }) {
   const [queue, setQueue] = useState<StudyQueueCard[]>(initialQueue);
   const [cardsShownCount, setCardsShownCount] = useState(0);
   const [isRevealed, setIsRevealed] = useState(false);
   const [roundTimerSeconds, setRoundTimerSeconds] = useState(0);
-  const [sessionRatings, setSessionRatings] = useState<Record<number, Confidence>>({});
-  const [pointsEarned, setPointsEarned] = useState(0);
+  const [sessionRatings, setSessionRatings] = useState<Record<string, Confidence>>({});
+  const [pointsEarnedByDeck, setPointsEarnedByDeck] = useState<Record<string, number>>({});
   const [bonusPoints, setBonusPoints] = useState(0);
   const [masteryPct, setMasteryPct] = useState(initialMasteryPct);
   const [gaugeValue, setGaugeValue] = useState(0);
@@ -69,12 +89,14 @@ export function StudySessionProvider({
   const [almostDoneShown, setAlmostDoneShown] = useState(false);
 
   const totalCards = initialQueue.length;
-  const initialCardIndexOrder = useRef(initialQueue.map(c => c.index)).current;
-  const previousConfidenceRef = useRef<Record<number, Confidence | null>>(
-    Object.fromEntries(initialQueue.map(c => [c.index, c.currentConfidence]))
+  const initialCardKeys = useRef(initialQueue.map(c => cardKey(c.deckId ?? primaryDeckId!, c.index))).current;
+  const previousConfidenceRef = useRef<Record<string, Confidence | null>>(
+    Object.fromEntries(initialQueue.map(c => [cardKey(c.deckId ?? primaryDeckId!, c.index), c.currentConfidence]))
   );
   const completedRef = useRef(false);
   const gaugeSumRef = useRef(0);
+
+  const pointsEarned = Object.values(pointsEarnedByDeck).reduce((s, p) => s + p, 0);
 
   useEffect(() => {
     const timer = setInterval(() => setRoundTimerSeconds(s => s + 1), 1000);
@@ -103,8 +125,10 @@ export function StudySessionProvider({
   async function rateCard(confidence: Confidence) {
     const card = queue[0];
     if (!card) return;
+    const deckId = card.deckId ?? primaryDeckId!;
+    const key = cardKey(deckId, card.index);
 
-    const previous = previousConfidenceRef.current[card.index] ?? null;
+    const previous = previousConfidenceRef.current[key] ?? null;
     // Base points = the rating itself. Bonuses are mutually exclusive: a first-ever
     // rating earns a small +1 for "getting started"; a later improvement earns +2.
     let bonus = 0;
@@ -116,9 +140,9 @@ export function StudySessionProvider({
     gaugeSumRef.current = Math.max(-50, Math.min(50, gaugeSumRef.current + GAUGE_DELTA_BY_CONFIDENCE[confidence]));
     setGaugeValue(gaugeSumRef.current);
 
-    previousConfidenceRef.current[card.index] = confidence;
-    setSessionRatings(prev => ({ ...prev, [card.index]: confidence }));
-    setPointsEarned(prev => prev + points);
+    previousConfidenceRef.current[key] = confidence;
+    setSessionRatings(prev => ({ ...prev, [key]: confidence }));
+    setPointsEarnedByDeck(prev => ({ ...prev, [deckId]: (prev[deckId] ?? 0) + points }));
     if (bonus > 0) setBonusPoints(prev => prev + bonus);
     setLastRating(confidence);
     setCardsShownCount(n => n + 1);
@@ -132,7 +156,9 @@ export function StudySessionProvider({
       });
       if (res.ok) {
         const data = await res.json();
-        if (typeof data.masteryPct === 'number') setMasteryPct(data.masteryPct);
+        // Single-deck sessions only — a merged session's ring reflects the class's
+        // overall mastery, which the sidebar fetches separately, not any one deck.
+        if (primaryDeckId && typeof data.masteryPct === 'number') setMasteryPct(data.masteryPct);
       }
     } catch {
       // Non-fatal — rating still applies within this session's local state
@@ -155,7 +181,7 @@ export function StudySessionProvider({
 
     setIsRevealed(false);
 
-    const uniqueStudiedSoFar = Object.keys({ ...sessionRatings, [card.index]: confidence }).length;
+    const uniqueStudiedSoFar = Object.keys({ ...sessionRatings, [key]: confidence }).length;
     // Once every unique card has been rated at least once, anything left in the
     // queue is by definition a repeat — that's exactly when "almost done" applies.
     if (!halfwayShown && totalCards > 1 && uniqueStudiedSoFar >= Math.ceil(totalCards / 2)) {
@@ -172,13 +198,24 @@ export function StudySessionProvider({
     if (queue.length === 0 && totalCards > 0 && !completedRef.current) {
       completedRef.current = true;
       setIsComplete(true);
-      const ratings = Object.values(sessionRatings);
-      const avgConfidence = ratings.length > 0 ? ratings.reduce((s, r) => s + r, 0) / ratings.length : 0;
-      onSessionComplete({
-        cardsStudied: Object.keys(sessionRatings).length,
-        pointsEarned,
-        avgConfidence,
+
+      // Group ratings back out by deck so each deck gets its own study_sessions row
+      // (and its own contribution to the streak/points total via complete-session).
+      const byDeck = new Map<string, Confidence[]>();
+      Object.entries(sessionRatings).forEach(([key, confidence]) => {
+        const deckId = key.slice(0, key.lastIndexOf(':'));
+        if (!byDeck.has(deckId)) byDeck.set(deckId, []);
+        byDeck.get(deckId)!.push(confidence);
       });
+
+      const summaries: DeckSessionSummary[] = Array.from(byDeck.entries()).map(([deckId, ratings]) => ({
+        deckId,
+        cardsStudied: ratings.length,
+        pointsEarned: pointsEarnedByDeck[deckId] ?? 0,
+        avgConfidence: ratings.reduce((s, r) => s + r, 0) / ratings.length,
+      }));
+
+      onSessionComplete(summaries);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queue.length]);
@@ -188,13 +225,14 @@ export function StudySessionProvider({
   return (
     <StudySessionContext.Provider
       value={{
-        deckId,
-        deckTitle,
+        sessionTitle,
+        primaryDeckId,
+        classId,
         queue,
         currentCard,
         cardsShownCount,
         totalCards,
-        initialCardIndexOrder,
+        initialCardKeys,
         isRevealed,
         roundTimerSeconds,
         sessionRatings,

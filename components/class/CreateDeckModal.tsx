@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
 import { Deck } from '@/lib/types';
+import { useDashboard } from '@/lib/dashboard-context';
 
 export default function CreateDeckModal({
   classId,
@@ -15,6 +16,7 @@ export default function CreateDeckModal({
   onCancel: () => void;
 }) {
   const router = useRouter();
+  const { handleDeckSaved } = useDashboard();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [saving, setSaving] = useState(false);
@@ -32,6 +34,10 @@ export default function CreateDeckModal({
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || 'Failed to create deck.'); return; }
+      // The editor page reads decks from dashboard-context, not the class page's own
+      // fetch — without this the freshly created deck isn't there yet and the editor
+      // shows "Deck not found." right after creation.
+      handleDeckSaved(data.deck);
       onCreated(data.deck);
       router.push(`/dashboard/decks/${data.deck.id}/edit`);
     } catch {

@@ -6,13 +6,10 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
 
-// All price IDs and modes live server-side — client only passes a productKey string
+// All price IDs live server-side — client only passes a productKey string
 const PRODUCT_MAP = {
-  plus_monthly: { priceId: PRICE_IDS.plusMonthly, mode: 'subscription' as const, credits: 0 },
-  plus_yearly:  { priceId: PRICE_IDS.plusYearly,  mode: 'subscription' as const, credits: 0 },
-  credits_1:    { priceId: PRICE_IDS.credits1,    mode: 'payment' as const,       credits: 1 },
-  credits_5:    { priceId: PRICE_IDS.credits5,    mode: 'payment' as const,       credits: 5 },
-  credits_10:   { priceId: PRICE_IDS.credits10,   mode: 'payment' as const,       credits: 10 },
+  plus_monthly: { priceId: PRICE_IDS.plusMonthly },
+  plus_yearly:  { priceId: PRICE_IDS.plusYearly },
 } as const;
 
 export type ProductKey = keyof typeof PRODUCT_MAP;
@@ -67,14 +64,11 @@ export async function POST(request: NextRequest) {
 
   const checkoutSession = await stripe.checkout.sessions.create({
     customer: customerId,
-    mode: product.mode,
+    mode: 'subscription',
     line_items: [{ price: product.priceId, quantity: 1 }],
     success_url: `${baseUrl}/dashboard?payment=success`,
     cancel_url: `${baseUrl}/dashboard`,
     client_reference_id: userId,
-    ...(product.mode === 'payment' && {
-      metadata: { user_id: userId, credits: String(product.credits) },
-    }),
   });
 
   return NextResponse.json({ url: checkoutSession.url });

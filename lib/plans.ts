@@ -8,7 +8,6 @@ export type PlanType = 'free' | 'plus';
 export interface UserPlanData {
   plan: PlanType;
   free_banked: number;
-  paid_credits: number;
   total_remaining: number | null; // null = unlimited (Plus)
   anonymous?: boolean;
   grant_applied?: boolean;   // true if a daily credit was added on this load

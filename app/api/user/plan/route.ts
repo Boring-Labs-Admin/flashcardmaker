@@ -25,7 +25,6 @@ export async function GET() {
     return NextResponse.json({
       plan: 'free',
       free_banked: 1,
-      paid_credits: 0,
       total_remaining: 1,
     } satisfies UserPlanData);
   }
@@ -44,12 +43,11 @@ export async function GET() {
   }
 
   const totalRemaining =
-    planData.plan === 'plus' ? null : displayBanked + planData.paid_credits;
+    planData.plan === 'plus' ? null : displayBanked;
 
   return NextResponse.json({
     plan: planData.plan,
     free_banked: displayBanked,
-    paid_credits: planData.paid_credits,
     total_remaining: totalRemaining,
     grant_applied: grantAmount > 0,
     grant_amount: grantAmount > 0 ? grantAmount : undefined,

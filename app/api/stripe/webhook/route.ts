@@ -40,16 +40,6 @@ export async function POST(request: NextRequest) {
               updated_at: new Date().toISOString(),
             })
             .eq('user_id', userId);
-
-        } else if (session.mode === 'payment') {
-          // Credit pack purchase — add credits atomically
-          const credits = parseInt(session.metadata?.credits ?? '0', 10);
-          if (credits > 0) {
-            await supabaseAdmin.rpc('add_paid_credits', {
-              p_user_id: userId,
-              p_credits: credits,
-            });
-          }
         }
         break;
       }

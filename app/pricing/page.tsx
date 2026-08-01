@@ -62,10 +62,6 @@ const FAQS = [
     a: 'No — you can generate one free deck per day with no sign-up at all. Create a free account if you want to save your decks, study with spaced repetition, and bank up to 5 unused generations.',
   },
   {
-    q: "What's the difference between credit packs and Plus?",
-    a: 'Credit packs are a one-off top-up — pay once, use those generations whenever, they never expire. Plus is a subscription for unlimited generations, bigger decks, AI topic generation and priority speed. If you generate decks regularly, Plus works out cheaper; if you just need a few extra now and then, a credit pack is simpler.',
-  },
-  {
     q: 'Can I cancel Plus any time?',
     a: 'Yes. Manage or cancel your subscription anytime from your Flashboard — no minimum term, no cancellation fee.',
   },

@@ -24,7 +24,7 @@ const CONTENT: Record<LimitReason, { title: string; body: string; cta: string }>
   },
   generations: {
     title: 'No generations remaining',
-    body: 'You have used all your banked and paid generations. Top up with a credit pack or upgrade to Plus for unlimited access.',
+    body: 'You have used all your banked generations for today. Upgrade to Plus for unlimited access.',
     cta: 'Go to your Flashboard',
   },
   chars: {

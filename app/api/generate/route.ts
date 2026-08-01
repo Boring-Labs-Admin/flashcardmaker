@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
 
       // Early quota check — fast-fail before calling Gemini if definitely out of credits
       // Authoritative deduction happens atomically via DB function after successful generation
-      if (currentBanked > 0 || planData.paid_credits > 0) {
+      if (currentBanked > 0) {
         creditUserId = userId;
       } else {
         return NextResponse.json(

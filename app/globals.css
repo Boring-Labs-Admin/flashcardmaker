@@ -1306,6 +1306,18 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
   .make-flashcards-divider { justify-content: center; padding: 0.25rem 0; }
 }
 
+/* ── Create Flashcards page ── */
+.create-flashcards-card {
+  background: white; border: 1px solid var(--line); border-radius: 16px;
+  padding: 2rem; box-shadow: var(--shadow);
+}
+.create-flashcards-back {
+  display: inline-flex; align-items: center; gap: 0.35rem; background: none; border: none;
+  color: var(--slate); font-family: var(--sans); font-weight: 600; font-size: 0.82rem;
+  cursor: pointer; padding: 0; margin-bottom: 1.25rem;
+}
+.create-flashcards-back:hover { color: var(--cobalt-blue); }
+
 /* ── Migration prompt banner ── */
 .migration-prompt {
   background: var(--sky); border: 1.5px solid var(--cobalt-blue); border-radius: var(--r); padding: 1.25rem 1.5rem;

@@ -5,6 +5,8 @@ import UpgradeModal from '@/components/UpgradeModal';
 import FlashboardModal from '@/components/FlashboardModal';
 import { readAsDataUrl, compressImage, MAX_PAYLOAD_BYTES } from '@/lib/imageCompression';
 
+export type InputSectionTab = 'paste' | 'upload' | 'topic';
+
 interface InputSectionProps {
   onSubmit: (content: string | string[]) => void;
   isLoading: boolean;
@@ -12,6 +14,7 @@ interface InputSectionProps {
   isPlusUser?: boolean;
   isLoggedIn?: boolean;
   onPromptSubmit?: (prompt: string) => void;
+  initialTab?: InputSectionTab;
 }
 
 export interface InputSectionHandle {
@@ -23,7 +26,7 @@ interface UploadedFile {
   content: string;
 }
 
-type Tab = 'paste' | 'upload' | 'topic';
+type Tab = InputSectionTab;
 
 const TOPIC_CHIPS = ['Photosynthesis', 'The French Revolution', 'Algebra basics'];
 
@@ -56,8 +59,8 @@ async function readFile(file: File): Promise<UploadedFile> {
 }
 
 const InputSection = forwardRef<InputSectionHandle, InputSectionProps>(
-function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, onPromptSubmit }, ref) {
-  const [activeTab, setActiveTab] = useState<Tab>('paste');
+function InputSection({ onSubmit, isLoading, charLimit, isPlusUser, isLoggedIn, onPromptSubmit, initialTab }, ref) {
+  const [activeTab, setActiveTab] = useState<Tab>(initialTab ?? 'paste');
   const [text, setText] = useState('');
   const [prompt, setPrompt] = useState('');
   const [files, setFiles] = useState<UploadedFile[]>([]);

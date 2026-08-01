@@ -6,7 +6,7 @@ import { Check, Save, Lock, Download, Trash2, Files, Zap, Target, ArrowLeft } fr
 import { Flashcard, ViewMode, Deck } from '@/lib/types';
 import { useAuth } from '@/lib/auth-context';
 import { PLANS, UserPlanData } from '@/lib/plans';
-import InputSection, { InputSectionHandle } from './InputSection';
+import InputSection, { InputSectionHandle, InputSectionTab } from './InputSection';
 import ViewToggle from './ViewToggle';
 import SingleView from './SingleView';
 import SideBySideView from './SideBySideView';
@@ -23,11 +23,12 @@ interface FlashcardGeneratorProps {
   hideFeatures?: boolean;
   onDeckSaved?: (deck: Deck) => void;
   onModeChange?: (hasResults: boolean) => void;
+  initialTab?: InputSectionTab;
 }
 
 type LimitReason = 'daily' | 'generations' | 'chars';
 
-export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, onDeckSaved, onModeChange }: FlashcardGeneratorProps) {
+export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, onDeckSaved, onModeChange, initialTab }: FlashcardGeneratorProps) {
   const { user, signInWithGoogle } = useAuth();
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -363,6 +364,7 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
         charLimit={charLimit}
         isPlusUser={isPlusUser}
         isLoggedIn={!!user}
+        initialTab={initialTab}
       />
 
       {!hideFeatures && <div className="features">

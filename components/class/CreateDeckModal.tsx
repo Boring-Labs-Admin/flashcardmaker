@@ -11,7 +11,7 @@ export default function CreateDeckModal({
   onCreated,
   onCancel,
 }: {
-  classId: string;
+  classId?: string | null;
   onCreated: (deck: Deck) => void;
   onCancel: () => void;
 }) {

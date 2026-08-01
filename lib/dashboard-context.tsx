@@ -29,6 +29,7 @@ interface DashboardContextType {
   handleDelete: (id: string) => Promise<void>;
   handleDeckUpdate: (id: string, updates: { title?: string; color?: string; classId?: string | null }) => Promise<void>;
   handleDeckSaved: (deck: Deck) => void;
+  handleDeckLocalUpdate: (deck: Deck) => void;
   handleTestOptionsGenerated: (deckId: string, options: TestOptions) => void;
   handleCheckout: (productKey: string) => Promise<void>;
   handlePortal: () => Promise<void>;
@@ -137,6 +138,16 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const handleClassCreated = (cls: ClassSummary) => setClasses(prev => [cls, ...prev]);
   const handleClassRemoved = (id: string) => setClasses(prev => prev.filter(c => c.id !== id));
 
+  // Generic full-deck replace — used by the card editor's autosave so other pages
+  // (class overview, deck grid) reflect edited card counts without a full refetch.
+  const handleDeckLocalUpdate = (deck: Deck) => {
+    setDecks(prev => {
+      const updated = prev.map(d => d.id === deck.id ? deck : d);
+      if (user) sessionStorage.setItem(`decks_cache_${user.id}`, JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   const handleDelete = async (id: string) => {
     setDeleteError(null);
     const res = await fetch(`/api/decks?id=${id}`, { method: 'DELETE' });
@@ -244,6 +255,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       handleDelete,
       handleDeckUpdate,
       handleDeckSaved,
+      handleDeckLocalUpdate,
       handleTestOptionsGenerated,
       handleCheckout,
       handlePortal,

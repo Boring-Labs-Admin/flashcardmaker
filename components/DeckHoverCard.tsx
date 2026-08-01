@@ -9,6 +9,8 @@ interface DeckHoverCardProps {
   onStudy: () => void;
 }
 
+// "Select" opens the card editor — the Brainscape-equivalent action for a deck's
+// detail/edit view (see components/DeckCard.tsx for the wiring).
 export default function DeckHoverCard({ deck, mastery, onSelect, onStudy }: DeckHoverCardProps) {
   return (
     <div className="deck-hover-card" onClick={e => e.stopPropagation()}>

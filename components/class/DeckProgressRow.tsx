@@ -2,6 +2,7 @@
 
 import { Check, Play, MoreHorizontal } from 'lucide-react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { ClassDeckSummary } from '@/lib/types';
 
 export function getMasteryColour(pct: number): string {
@@ -22,6 +23,7 @@ export default function DeckProgressRow({
   onStudy: () => void;
   onDelete: () => void;
 }) {
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const color = getMasteryColour(deck.masteryPct);
@@ -33,7 +35,9 @@ export default function DeckProgressRow({
       </span>
       <span className="deck-progress-pct">{deck.masteryPct.toFixed(0)}%</span>
       <div className="deck-progress-main">
-        <span className="deck-progress-name">{deck.title}</span>
+        <button className="deck-progress-name deck-progress-name-link" onClick={() => router.push(`/dashboard/decks/${deck.id}/edit`)}>
+          {deck.title}
+        </button>
         <span className="deck-progress-count">{deck.cardsStudied} of {deck.cardCount} unique cards studied</span>
         <div className="deck-progress-track">
           <div className="deck-progress-fill" style={{ width: `${Math.min(100, deck.masteryPct)}%`, background: color }} />

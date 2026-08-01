@@ -8,6 +8,18 @@ export interface Flashcard {
   cloze?: string | null;
   // Canonical answer (always first) plus accepted variants for typed-recall grading; absent on older decks, which fall back to [answer]
   acceptedAnswers?: string[];
+
+  // Advanced editor fields (Phase 4) — all optional, absent on cards created before this shipped
+  questionPrompt?: string;
+  questionClarifier?: string;
+  questionFootnote?: string;
+  answerPrompt?: string;
+  answerClarifier?: string;
+  answerFootnote?: string;
+  questionImage?: string;
+  answerImage?: string;
+  questionAudio?: string;
+  answerAudio?: string;
 }
 
 export type ViewMode = 'single' | 'side-by-side' | 'grid';

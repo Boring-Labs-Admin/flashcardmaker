@@ -1,6 +1,7 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { Flashcard } from '@/lib/types';
 
 // GET /api/decks — fetch all decks for the logged-in user
 export async function GET() {
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({ deck: data });
 }
 
-// PATCH /api/decks — update deck title or color
+// PATCH /api/decks — update deck title, color, class, or its flashcards (editor autosave)
 export async function PATCH(request: NextRequest) {
   const supabase = createRouteHandlerClient({ cookies });
   const { data: { session } } = await supabase.auth.getSession();
@@ -70,13 +71,14 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  let id: string, title: string | undefined, color: string | undefined, classId: string | null | undefined;
+  let id: string, title: string | undefined, color: string | undefined, classId: string | null | undefined, flashcards: Flashcard[] | undefined;
   try {
     const body = await request.json();
     id = body.id;
     title = body.title;
     color = body.color;
     classId = body.classId;
+    flashcards = body.flashcards;
   } catch {
     return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
   }
@@ -85,10 +87,16 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: 'id is required.' }, { status: 400 });
   }
 
-  const updates: Record<string, string | null> = {};
+  const updates: Record<string, unknown> = {};
   if (title !== undefined) updates.title = title;
   if (color !== undefined) updates.color = color;
   if (classId !== undefined) updates.class_id = classId;
+  if (flashcards !== undefined) {
+    if (!Array.isArray(flashcards)) {
+      return NextResponse.json({ error: 'flashcards must be an array.' }, { status: 400 });
+    }
+    updates.flashcards = flashcards;
+  }
 
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: 'No fields to update.' }, { status: 400 });

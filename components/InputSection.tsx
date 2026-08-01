@@ -3,6 +3,7 @@ import { useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import { UploadCloud, FileText, X, Zap, Sparkles } from 'lucide-react';
 import UpgradeModal from '@/components/UpgradeModal';
 import FlashboardModal from '@/components/FlashboardModal';
+import { readAsDataUrl, compressImage, MAX_PAYLOAD_BYTES } from '@/lib/imageCompression';
 
 interface InputSectionProps {
   onSubmit: (content: string | string[]) => void;
@@ -25,61 +26,6 @@ interface UploadedFile {
 type Tab = 'paste' | 'upload' | 'topic';
 
 const TOPIC_CHIPS = ['Photosynthesis', 'The French Revolution', 'Algebra basics'];
-
-// Vercel's serverless functions reject request bodies over ~4.5MB before our
-// code ever runs, so every file's base64 payload has to stay comfortably under that.
-const MAX_PAYLOAD_BYTES = 4 * 1024 * 1024;
-const MAX_IMAGE_DIMENSION = 1800;
-
-function readAsDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e) => resolve(e.target?.result as string);
-    reader.onerror = () => reject(new Error(`Failed to read ${file.name}`));
-    reader.readAsDataURL(file);
-  });
-}
-
-function loadImage(dataUrl: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error('Failed to decode image'));
-    img.src = dataUrl;
-  });
-}
-
-// Downscales and re-compresses an image client-side, stepping quality down
-// until the base64 payload fits under MAX_PAYLOAD_BYTES (or gives up gracefully).
-async function compressImage(file: File): Promise<string> {
-  const original = await readAsDataUrl(file);
-  if (original.length <= MAX_PAYLOAD_BYTES) return original;
-
-  const img = await loadImage(original);
-  let { width, height } = img;
-  if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
-    const scale = MAX_IMAGE_DIMENSION / Math.max(width, height);
-    width = Math.round(width * scale);
-    height = Math.round(height * scale);
-  }
-
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return original;
-  ctx.drawImage(img, 0, 0, width, height);
-
-  let quality = 0.85;
-  let compressed = canvas.toDataURL('image/jpeg', quality);
-  while (compressed.length > MAX_PAYLOAD_BYTES && quality > 0.4) {
-    quality -= 0.15;
-    compressed = canvas.toDataURL('image/jpeg', quality);
-  }
-
-  // Only use the compressed version if it actually helped.
-  return compressed.length < original.length ? compressed : original;
-}
 
 async function readFile(file: File): Promise<UploadedFile> {
   const ext = file.name.split('.').pop()?.toLowerCase();

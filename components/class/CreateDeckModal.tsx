@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
 import { Deck } from '@/lib/types';
 
@@ -13,6 +14,7 @@ export default function CreateDeckModal({
   onCreated: (deck: Deck) => void;
   onCancel: () => void;
 }) {
+  const router = useRouter();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [saving, setSaving] = useState(false);
@@ -31,6 +33,7 @@ export default function CreateDeckModal({
       const data = await res.json();
       if (!res.ok) { setError(data.error || 'Failed to create deck.'); return; }
       onCreated(data.deck);
+      router.push(`/dashboard/decks/${data.deck.id}/edit`);
     } catch {
       setError('Failed to create deck. Please try again.');
     } finally {
@@ -67,9 +70,8 @@ export default function CreateDeckModal({
         {error && <div className="modal-error">{error}</div>}
 
         <button className="modal-btn" onClick={handleCreate} disabled={saving || !title.trim()}>
-          {saving ? 'Creating…' : 'CREATE DECK'}
+          {saving ? 'Creating…' : 'TYPE CARDS IN A NEW DECK'}
         </button>
-        <p className="modal-note">Manual card typing is coming soon — for now, generate cards for this deck from Create Flashcards or the AI prompt.</p>
         <button className="modal-close" onClick={onCancel}>Cancel</button>
       </div>
     </div>

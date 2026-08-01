@@ -48,6 +48,29 @@ export interface Deck {
   created_at: string;
   color?: string;
   test_options?: TestOptions | null;
+  mastery_pct?: number;
+  last_studied_at?: string | null;
+}
+
+export type Confidence = 1 | 2 | 3 | 4 | 5;
+
+export interface StudyQueueCard {
+  index: number;
+  question: string;
+  answer: string;
+  currentConfidence: Confidence | null;
+}
+
+export interface StudyQueueResponse {
+  queue: StudyQueueCard[];
+  totalCards: number;
+  dueCards: number;
+}
+
+export interface RateCardResponse {
+  success: boolean;
+  masteryPct: number;
+  nextReview: string | null;
 }
 
 export interface GenerationResponse {

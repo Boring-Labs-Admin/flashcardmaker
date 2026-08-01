@@ -142,6 +142,15 @@ export default function DeckCard({ deck, onDelete, onStudy, onTest, onUpdate }: 
         <span>{deck.flashcards.length} cards</span>
         <span>{date}</span>
       </div>
+
+      {!!deck.mastery_pct && deck.mastery_pct > 0 && (
+        <div className="deck-mastery">
+          <div className="deck-mastery-track">
+            <div className="deck-mastery-fill" style={{ width: `${Math.min(100, deck.mastery_pct)}%` }} />
+          </div>
+          <span className="deck-mastery-pct">{deck.mastery_pct.toFixed(0)}% mastery</span>
+        </div>
+      )}
       <div className="deck-btn-row">
         <button className="btn deck-study-btn" onClick={() => onStudy(deck)}><Zap size={15} /> Study</button>
         <button className="btn deck-test-btn" onClick={() => onTest(deck)}><ClipboardCheck size={15} /> Test</button>

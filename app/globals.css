@@ -1083,3 +1083,175 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.5s ease, transform 0.5s ease; }
 .reveal.in { opacity: 1; transform: translateY(0); }
 @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+
+/* ── DECK CARD MASTERY BAR ─────────────────────────────── */
+.deck-mastery { display: flex; align-items: center; gap: 0.6rem; margin: 0.6rem 0; }
+.deck-mastery-track { flex: 1; height: 6px; border-radius: 4px; background: rgba(0,74,173,0.12); overflow: hidden; }
+.deck-mastery-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #00bcd4, #4caf50); }
+.deck-mastery-pct { font-size: 0.72rem; font-weight: 700; color: var(--cobalt-blue); white-space: nowrap; }
+
+/* ═══════════════════════════════════════════════════════════
+   CBR STUDY SESSION (Confidence-Based Repetition)
+   ═══════════════════════════════════════════════════════════ */
+
+.cbr-page-root { position: fixed; inset: 0; z-index: 1000; background: var(--bg); overflow-y: auto; }
+
+.cbr-fullscreen-status {
+  height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1rem; color: var(--slate); font-family: var(--sans); text-align: center; padding: 2rem;
+}
+.cbr-spin { animation: cbr-spin 1s linear infinite; }
+@keyframes cbr-spin { to { transform: rotate(360deg); } }
+
+/* ── Layout: sidebar + main study area ── */
+.cbr-layout { display: flex; min-height: 100vh; }
+
+.cbr-sidebar {
+  width: 260px; flex-shrink: 0; background: var(--navy-900); color: white;
+  display: flex; flex-direction: column; padding: 1.5rem 1.25rem; font-family: var(--sans);
+}
+.cbr-sidebar-top { margin-bottom: 1.5rem; }
+.cbr-sidebar-deck-name { font-weight: 700; font-size: 1.05rem; text-align: center; margin-bottom: 0.9rem; }
+.cbr-sidebar-tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,0.15); }
+.cbr-tab {
+  flex: 1; background: none; border: none; color: rgba(255,255,255,0.55); font-family: var(--sans);
+  font-size: 0.8rem; font-weight: 600; padding: 0.5rem 0.25rem; cursor: pointer; border-bottom: 2px solid transparent;
+}
+.cbr-tab.active { color: white; border-bottom-color: #4d8fe8; }
+
+.cbr-gauge-wrap { display: flex; flex-direction: column; align-items: center; margin-bottom: 2rem; }
+.cbr-gauge-svg { width: 100%; max-width: 200px; color: white; }
+.cbr-gauge-scale { display: flex; justify-content: space-between; width: 100%; max-width: 160px; font-size: 0.72rem; color: rgba(255,255,255,0.6); margin-top: -0.5rem; }
+.cbr-gauge-label { font-size: 0.8rem; color: rgba(255,255,255,0.75); margin-top: 0.4rem; }
+
+.cbr-overall-wrap { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 2rem; padding: 1rem 0; }
+.cbr-overall-mastery { font-size: 2.2rem; font-weight: 800; color: #4dd0e1; }
+.cbr-overall-label { font-size: 0.78rem; color: rgba(255,255,255,0.6); margin-bottom: 0.75rem; }
+.cbr-overall-stat { font-size: 0.78rem; color: rgba(255,255,255,0.75); }
+
+.cbr-dots { display: flex; flex-direction: column; align-items: center; gap: 0.9rem; flex: 1; }
+.cbr-dot { width: 14px; height: 14px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15); }
+
+.cbr-round-timer { font-size: 0.78rem; color: rgba(255,255,255,0.6); text-align: center; line-height: 1.5; }
+
+.cbr-main { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; padding: 2rem clamp(1rem, 4vw, 3rem); }
+
+/* ── Breadcrumb + card ── */
+.cbr-breadcrumb { width: 100%; max-width: 720px; font-family: var(--sans); font-size: 0.82rem; color: var(--slate); margin-bottom: 0.75rem; }
+.cbr-see-cards { text-decoration: underline; cursor: pointer; }
+
+.cbr-card {
+  width: 100%; max-width: 720px; background: white; border-radius: var(--r); overflow: hidden;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--line); display: flex; flex-direction: column;
+}
+.cbr-card-bar { height: 10px; }
+.cbr-card-body { position: relative; padding: 3rem 2.5rem; min-height: 260px; display: flex; flex-direction: column; }
+.cbr-card-icon { position: absolute; top: 1rem; left: 1.25rem; font-size: 1.4rem; font-weight: 700; color: var(--line); }
+.cbr-card-icon-a { top: auto; }
+.cbr-card-question {
+  font-family: var(--sans); font-size: 1.4rem; font-weight: 500; color: var(--ink); text-align: center;
+  flex: 1; display: flex; align-items: center; justify-content: center; min-height: 120px;
+}
+.cbr-card-divider { border-top: 1px solid var(--line); margin: 1rem 0; }
+.cbr-card-answer {
+  font-family: var(--sans); font-size: 1.6rem; font-weight: 700; color: var(--ink); text-align: center;
+  flex: 1; display: flex; align-items: center; justify-content: center; min-height: 100px;
+}
+
+.cbr-reveal-btn {
+  border: none; color: white; font-family: var(--sans); font-weight: 700; font-size: 0.9rem;
+  letter-spacing: 0.03em; padding: 1.1rem; cursor: pointer; text-transform: uppercase;
+}
+
+.cbr-rating-panel { border-top: 1px solid var(--line); padding: 1.25rem 1.5rem; text-align: center; }
+.cbr-rating-prompt { font-family: var(--sans); font-size: 0.85rem; color: var(--slate); margin-bottom: 0.85rem; }
+.cbr-info-icon { opacity: 0.6; }
+.cbr-rating-row { display: flex; justify-content: center; gap: 1.1rem; }
+.cbr-rating-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 0.3rem; border: none; cursor: pointer;
+  background: none; font-family: var(--sans);
+}
+.cbr-rating-num {
+  width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 700; font-size: 1rem;
+}
+.cbr-rating-label { font-size: 0.68rem; color: var(--slate); font-weight: 600; }
+
+/* ── Coaching tooltip (bottom-right quarter-circle) ── */
+.cbr-coaching-tooltip {
+  position: fixed; bottom: 0; right: 0; width: min(420px, 90vw); background: #1c5fae; color: white;
+  border-radius: 50% 0 0 0 / 60% 0 0 0; padding: 3.5rem 3rem 2.5rem 4rem; z-index: 1200;
+  animation: cbr-tooltip-in 0.25s ease;
+}
+@keyframes cbr-tooltip-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.cbr-coaching-tooltip p { font-family: var(--sans); font-size: 1.15rem; font-weight: 500; line-height: 1.4; max-width: 240px; margin-left: auto; }
+.cbr-coaching-close { position: absolute; top: 1rem; right: 1.25rem; background: none; border: none; color: white; cursor: pointer; opacity: 0.8; }
+.cbr-coaching-close:hover { opacity: 1; }
+.cbr-coaching-help { position: fixed; bottom: 1.25rem; right: 1.25rem; display: flex; align-items: center; gap: 0.35rem; background: #12b3b3; color: white; padding: 0.5rem 0.9rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+
+/* ── Full-screen overlays: intro / feedback / round complete ── */
+.cbr-overlay {
+  position: fixed; inset: 0; z-index: 1300; background: var(--navy-900); color: white;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  padding: 2rem; font-family: var(--sans);
+}
+
+.cbr-intro-cards { position: relative; width: 320px; height: 200px; margin-bottom: 2rem; }
+.cbr-intro-card {
+  position: absolute; width: 240px; height: 150px; background: white; color: var(--ink); border-radius: 10px;
+  padding: 1.25rem; font-size: 0.95rem; box-shadow: var(--shadow); transform: rotate(-6deg);
+  display: flex; align-items: flex-start;
+}
+.cbr-intro-card-1 { left: 0; top: 40px; transform: rotate(-8deg); z-index: 2; }
+.cbr-intro-card-2 { right: 0; top: 0; transform: rotate(6deg); z-index: 1; }
+.cbr-intro-card-reveal { position: absolute; bottom: 0; left: 0; right: 0; color: white; font-size: 0.7rem; font-weight: 700; text-align: center; padding: 0.4rem; border-radius: 0 0 10px 10px; }
+.cbr-intro-heading { font-size: clamp(1.3rem, 3vw, 1.8rem); font-weight: 600; max-width: 640px; line-height: 1.4; margin-bottom: 2rem; }
+
+.cbr-outline-btn {
+  background: none; border: 2px solid white; color: white; font-family: var(--sans); font-weight: 700;
+  font-size: 0.85rem; letter-spacing: 0.04em; padding: 0.9rem 2rem; border-radius: 30px; cursor: pointer;
+  text-transform: uppercase;
+}
+.cbr-outline-btn:hover { background: rgba(255,255,255,0.1); }
+
+.cbr-solid-btn {
+  background: rgba(255,255,255,0.25); border: none; color: white; font-family: var(--sans); font-weight: 700;
+  font-size: 0.85rem; letter-spacing: 0.04em; padding: 0.9rem 2rem; border-radius: 30px; cursor: pointer;
+  text-transform: uppercase;
+}
+.cbr-solid-btn:hover { background: rgba(255,255,255,0.35); }
+
+.cbr-feedback-panel { max-width: 560px; text-align: left; }
+.cbr-feedback-panel h2 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700; margin-bottom: 0.75rem; }
+.cbr-feedback-panel > p { font-size: 1.1rem; color: rgba(255,255,255,0.85); margin-bottom: 2rem; }
+.cbr-feedback-scale { display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-bottom: 1rem; }
+.cbr-feedback-scale-arrow { flex: 1; text-align: center; opacity: 0.5; }
+.cbr-feedback-dots { display: flex; gap: 1.25rem; margin-bottom: 2rem; }
+.cbr-feedback-dot-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+.cbr-feedback-dot { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; font-size: 1.1rem; }
+.cbr-feedback-dot-label { font-size: 0.7rem; color: rgba(255,255,255,0.7); font-weight: 600; }
+
+.cbr-round-complete h1 { font-size: clamp(2rem, 5vw, 2.75rem); font-weight: 800; margin-bottom: 2rem; }
+.cbr-points-ring {
+  width: 220px; height: 220px; border-radius: 50%; border: 10px solid #26c6da; display: flex;
+  align-items: center; justify-content: center; margin-bottom: 2rem;
+}
+.cbr-points-ring-inner { display: flex; flex-direction: column; align-items: center; }
+.cbr-points-label { font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-bottom: 0.4rem; }
+.cbr-points-value { font-size: 3rem; font-weight: 800; }
+.cbr-round-complete-subtext { font-size: 1rem; color: rgba(255,255,255,0.85); max-width: 420px; margin-bottom: 2rem; }
+
+@media (max-width: 860px) {
+  .cbr-layout { flex-direction: column; }
+  .cbr-sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 1rem; padding: 1rem; }
+  .cbr-sidebar-top { margin-bottom: 0; }
+  .cbr-dots { flex-direction: row; flex-wrap: wrap; flex: none; }
+  .cbr-gauge-wrap, .cbr-overall-wrap { margin-bottom: 0; }
+  .cbr-round-timer { margin-left: auto; }
+  .cbr-coaching-tooltip { border-radius: 20px 20px 0 0; padding: 1.5rem; width: 100%; }
+  .cbr-card-body { padding: 2rem 1.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cbr-coaching-tooltip { animation: none; }
+}

@@ -1,66 +1,24 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, Layers } from 'lucide-react';
-import { Deck, ViewMode } from '@/lib/types';
+import { Deck } from '@/lib/types';
 import { useDashboard } from '@/lib/dashboard-context';
 import DeckCard from '@/components/DeckCard';
-import SingleView from '@/components/SingleView';
-import SideBySideView from '@/components/SideBySideView';
-import GridView from '@/components/GridView';
-import ViewToggle from '@/components/ViewToggle';
 
 export default function YourFlashcardsPage() {
   const router = useRouter();
   const { decks, fetching, deleteError, handleDelete, handleDeckUpdate } = useDashboard();
-  const [studyingDeck, setStudyingDeck] = useState<Deck | null>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [viewMode, setViewMode] = useState<ViewMode>('single');
 
+  // Study now launches the Confidence-Based Repetition session at /dashboard/study
   const handleStudy = (deck: Deck) => {
-    setStudyingDeck(deck);
-    setCurrentIndex(0);
-    setViewMode('single');
+    router.push(`/dashboard/study?deckId=${deck.id}`);
   };
 
   // Test still launches immediately — Test Yourself is for picking a deck when one isn't already chosen
   const handleTest = (deck: Deck) => {
     router.push(`/dashboard/test?deckId=${deck.id}`);
   };
-
-  if (studyingDeck) {
-    return (
-      <div className="container">
-        <div className="dashboard-study-header">
-          <button className="back-btn" onClick={() => setStudyingDeck(null)}>← Back to Your Flashcards</button>
-          <h2 className="dashboard-study-title">{studyingDeck.title}</h2>
-        </div>
-        <div className="tool-panel">
-          <div className="tool-toolbar">
-            <div className="tool-toolbar-left">
-              <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
-              {viewMode === 'single' && (
-                <span className="progress">Card {currentIndex + 1} of {studyingDeck.flashcards.length}</span>
-              )}
-            </div>
-          </div>
-          <div className="tool-viewport">
-            {viewMode === 'single' && (
-              <SingleView
-                flashcards={studyingDeck.flashcards}
-                currentIndex={currentIndex}
-                onNext={() => setCurrentIndex(i => Math.min(i + 1, studyingDeck.flashcards.length - 1))}
-                onPrevious={() => setCurrentIndex(i => Math.max(i - 1, 0))}
-              />
-            )}
-            {viewMode === 'side-by-side' && <SideBySideView flashcards={studyingDeck.flashcards} />}
-            {viewMode === 'grid' && <GridView flashcards={studyingDeck.flashcards} />}
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="container">

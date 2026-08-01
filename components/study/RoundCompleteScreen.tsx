@@ -2,10 +2,12 @@
 
 export default function RoundCompleteScreen({
   pointsEarned,
+  bonusPoints,
   showExplainer,
   onDismiss,
 }: {
   pointsEarned: number;
+  bonusPoints: number;
   showExplainer: boolean;
   onDismiss: () => void;
 }) {
@@ -19,6 +21,10 @@ export default function RoundCompleteScreen({
           <span className="cbr-points-value">{pointsEarned}</span>
         </div>
       </div>
+
+      {bonusPoints > 0 && (
+        <p className="cbr-bonus-breakdown">+{bonusPoints} improvement bonus</p>
+      )}
 
       {showExplainer && (
         <p className="cbr-round-complete-subtext">

@@ -73,6 +73,28 @@ export interface RateCardResponse {
   nextReview: string | null;
 }
 
+export interface UserStats {
+  streak: number;
+  longestStreak: number;
+  studiedToday: boolean;
+  avgPerDay: number;
+  totalPoints: number;
+}
+
+export interface StudyHistoryDay {
+  date: string;
+  sessions: number;
+  cardsStudied: number;
+}
+
+export interface DeckMastery {
+  masteryPct: number;
+  cardsStudied: number;
+  totalCards: number;
+  uniqueCardsStudied: number;
+  avgConfidence: number;
+}
+
 export interface GenerationResponse {
   success: boolean;
   flashcards?: Flashcard[];

@@ -1,7 +1,11 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { Pencil, Palette, Trash2, Zap, ClipboardCheck } from 'lucide-react';
-import { Deck } from '@/lib/types';
+import { Deck, DeckMastery } from '@/lib/types';
+import MasteryRing from '@/components/MasteryRing';
+import DeckHoverCard from '@/components/DeckHoverCard';
+
+const HOVER_DELAY_MS = 300;
 
 const COLORS = [
   { hex: '#EBF0FA', label: 'Blue' },
@@ -25,7 +29,10 @@ export default function DeckCard({ deck, onDelete, onStudy, onTest, onUpdate }: 
   const [editTitle, setEditTitle] = useState(deck.title);
   const [showColors, setShowColors] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [showHoverCard, setShowHoverCard] = useState(false);
+  const [hoverMastery, setHoverMastery] = useState<DeckMastery | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const date = new Date(deck.created_at).toLocaleDateString('en-GB', {
     day: 'numeric', month: 'short', year: 'numeric',
@@ -70,8 +77,34 @@ export default function DeckCard({ deck, onDelete, onStudy, onTest, onUpdate }: 
     setIsEditing(false);
   };
 
+  const handleMouseEnter = () => {
+    hoverTimerRef.current = setTimeout(() => {
+      setShowHoverCard(true);
+      if (!hoverMastery) {
+        fetch(`/api/decks/${deck.id}/mastery`)
+          .then(r => r.json())
+          .then(data => { if (!data.error) setHoverMastery(data); })
+          .catch(() => {});
+      }
+    }, HOVER_DELAY_MS);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
+    setShowHoverCard(false);
+  };
+
   return (
-    <div className="deck-card" style={{ backgroundColor: bgColor }}>
+    <div
+      className="deck-card"
+      style={{ backgroundColor: bgColor }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {!!deck.mastery_pct && deck.mastery_pct > 0 && (
+        <div className="deck-mastery-ring-corner"><MasteryRing pct={deck.mastery_pct} size={40} strokeWidth={4} /></div>
+      )}
+
       <div className="deck-card-top">
         {deck.topic && <span className="deck-topic-badge">{deck.topic}</span>}
         <div className="deck-card-actions">
@@ -92,6 +125,15 @@ export default function DeckCard({ deck, onDelete, onStudy, onTest, onUpdate }: 
           ><Trash2 size={15} /></button>
         </div>
       </div>
+
+      {showHoverCard && !isEditing && !showColors && !confirmDelete && (
+        <DeckHoverCard
+          deck={deck}
+          mastery={hoverMastery}
+          onSelect={() => setShowHoverCard(false)}
+          onStudy={() => { setShowHoverCard(false); onStudy(deck); }}
+        />
+      )}
 
       {confirmDelete && (
         <div className="deck-confirm-delete">

@@ -1,11 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Zap, Layers, ClipboardCheck, CalendarDays, Library, Sparkles, Settings, HelpCircle, LogOut, Menu, X } from 'lucide-react';
+import { Zap, Layers, ClipboardCheck, CalendarDays, Library, Sparkles, Settings, HelpCircle, LogOut, Menu, X, Flame, BarChart3 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { useDashboard } from '@/lib/dashboard-context';
+import { UserStats } from '@/lib/types';
+import StudyHistoryChart from './StudyHistoryChart';
+
+const STATS_CACHE_KEY = 'user_stats_cache';
+const STATS_CACHE_TTL_MS = 5 * 60 * 1000;
 
 const NAV_ITEMS = [
   { label: 'Create Flashcards', href: '/dashboard', icon: Zap },
@@ -46,6 +51,31 @@ export default function DashboardSidebar() {
   const router = useRouter();
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
   const [isMobileOpen, setMobileOpen] = useState(false);
+  const [stats, setStats] = useState<UserStats | null>(null);
+  const [showHistoryChart, setShowHistoryChart] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const cached = sessionStorage.getItem(STATS_CACHE_KEY);
+    if (cached) {
+      try {
+        const { data, cachedAt } = JSON.parse(cached);
+        if (Date.now() - cachedAt < STATS_CACHE_TTL_MS) {
+          setStats(data);
+          return;
+        }
+      } catch { /* ignore corrupt cache */ }
+    }
+
+    fetch('/api/user/stats')
+      .then(r => r.json())
+      .then((data: UserStats) => {
+        setStats(data);
+        sessionStorage.setItem(STATS_CACHE_KEY, JSON.stringify({ data, cachedAt: Date.now() }));
+      })
+      .catch(() => {});
+  }, [user]);
 
   const displayName = user?.user_metadata?.full_name || user?.email || '';
   const initial = displayName.charAt(0).toUpperCase();
@@ -77,6 +107,26 @@ export default function DashboardSidebar() {
       <aside className={`dashboard-sidebar${isMobileOpen ? ' open' : ''}`}>
         <div className="dashboard-sidebar-logo">Flashcard Maker</div>
 
+        {stats && (
+          <div className="sidebar-stats-row">
+            <div className="sidebar-stat">
+              <span className="sidebar-stat-value"><Flame size={13} /> {stats.streak}</span>
+              <span className="sidebar-stat-label">Days Streak</span>
+            </div>
+            <div className="sidebar-stat">
+              <span className="sidebar-stat-value">{stats.studiedToday ? '✓' : '--'}</span>
+              <span className="sidebar-stat-label">Studied Today</span>
+            </div>
+            <div className="sidebar-stat">
+              <span className="sidebar-stat-value">{stats.avgPerDay > 0 ? stats.avgPerDay : '--'}</span>
+              <span className="sidebar-stat-label">Avg. Studied /Day</span>
+            </div>
+            <button className="sidebar-stat-chart-btn" onClick={() => setShowHistoryChart(true)} title="Study history" aria-label="View study history">
+              <BarChart3 size={16} />
+            </button>
+          </div>
+        )}
+
         <SidebarLinks pathname={pathname} onNavigate={() => setMobileOpen(false)} />
 
         <div className="dashboard-sidebar-user">
@@ -103,6 +153,8 @@ export default function DashboardSidebar() {
           </button>
         </div>
       </aside>
+
+      {showHistoryChart && <StudyHistoryChart onClose={() => setShowHistoryChart(false)} />}
     </>
   );
 }

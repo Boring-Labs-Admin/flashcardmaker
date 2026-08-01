@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useStudySession } from './StudySessionProvider';
 import { CONFIDENCE_COLORS, UNRATED_COLOR, formatRoundTimer } from './cbrConstants';
+import MasteryRing from '@/components/MasteryRing';
+import { DeckMastery } from '@/lib/types';
 
 // Semicircle speedometer, -50 (top-left) to +50 (top-right), needle rotates around a fixed pivot.
 function ConfidenceGauge({ value }: { value: number }) {
@@ -29,6 +31,7 @@ function ConfidenceGauge({ value }: { value: number }) {
 
 export default function StudySidebar() {
   const {
+    deckId,
     deckTitle,
     currentCard,
     sessionRatings,
@@ -36,11 +39,19 @@ export default function StudySidebar() {
     gaugeValue,
     masteryPct,
     roundTimerSeconds,
-    cardsShownCount,
     totalCards,
   } = useStudySession();
 
   const [tab, setTab] = useState<'round' | 'overall'>('round');
+  const [deckMastery, setDeckMastery] = useState<DeckMastery | null>(null);
+
+  useEffect(() => {
+    if (tab !== 'overall' || deckMastery) return;
+    fetch(`/api/decks/${deckId}/mastery`)
+      .then(r => r.json())
+      .then(data => { if (!data.error) setDeckMastery(data); })
+      .catch(() => {});
+  }, [tab, deckId, deckMastery]);
 
   return (
     <aside className="cbr-sidebar">
@@ -63,9 +74,10 @@ export default function StudySidebar() {
         </div>
       ) : (
         <div className="cbr-overall-wrap">
-          <div className="cbr-overall-mastery">{masteryPct.toFixed(1)}%</div>
-          <div className="cbr-overall-label">Mastery</div>
-          <div className="cbr-overall-stat">{cardsShownCount} of {totalCards} cards studied this round</div>
+          <MasteryRing pct={masteryPct} size={110} strokeWidth={8} />
+          <div className="cbr-overall-stat">
+            {deckMastery ? `${deckMastery.uniqueCardsStudied} of ${deckMastery.totalCards}` : `… of ${totalCards}`} unique cards studied
+          </div>
         </div>
       )}
 

@@ -2,6 +2,7 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
+import { calculateMasteryPct } from '@/lib/mastery';
 
 const NEXT_REVIEW_BY_CONFIDENCE: Record<number, number> = {
   1: 10 * 60 * 1000,
@@ -59,18 +60,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: rpcError.message }, { status: 500 });
   }
 
-  // Recalculate mastery % — average confidence across all rated cards / 5 * 100
-  const { data: confidenceRows, error: confError } = await supabaseAdmin
-    .from('card_confidence')
-    .select('confidence')
-    .eq('user_id', userId)
-    .eq('deck_id', deckId);
-
-  let masteryPct = 0;
-  if (!confError && confidenceRows && confidenceRows.length > 0) {
-    const avg = confidenceRows.reduce((sum, r) => sum + r.confidence, 0) / confidenceRows.length;
-    masteryPct = Math.round((avg / 5) * 10000) / 100;
-  }
+  // Recalculate mastery % — unrated cards count as 0, so mastery only nears 100%
+  // once every card in the deck has been rated, not just the ones the user picked.
+  const totalCards = Array.isArray(deck.flashcards) ? deck.flashcards.length : 0;
+  const { masteryPct } = await calculateMasteryPct(supabaseAdmin, userId, deckId, totalCards);
 
   await supabaseAdmin
     .from('decks')

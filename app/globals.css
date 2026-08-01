@@ -1255,3 +1255,91 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 @media (prefers-reduced-motion: reduce) {
   .cbr-coaching-tooltip { animation: none; }
 }
+
+.cbr-bonus-breakdown { font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-top: -1.25rem; margin-bottom: 1.5rem; }
+
+/* ═══════════════════════════════════════════════════════════
+   PHASE 2: MASTERY, PROGRESS & GAMIFICATION
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Mastery ring (shared: deck cards, study sidebar, hover card) ── */
+.mastery-ring { position: relative; }
+.mastery-ring svg { display: block; }
+.mastery-ring-text {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-family: var(--sans); line-height: 1.1;
+}
+.mastery-ring-pct { font-weight: 800; color: var(--ink); }
+.mastery-ring-label { font-size: 0.65em; color: var(--slate); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.15em; }
+
+/* Study sidebar Overall tab uses a light-on-dark ring */
+.cbr-overall-wrap .mastery-ring-pct { color: white; }
+.cbr-overall-wrap .mastery-ring-label { color: rgba(255,255,255,0.7); }
+.cbr-overall-stat { font-size: 0.78rem; color: rgba(255,255,255,0.75); margin-top: 0.75rem; text-align: center; }
+
+/* ── Deck card mastery ring (top-right corner) + hover card ── */
+.deck-card { position: relative; }
+.deck-mastery-ring-corner { position: absolute; top: 0.75rem; right: 0.75rem; z-index: 1; }
+
+.deck-hover-card {
+  position: absolute; top: 0; left: 100%; margin-left: 0.6rem; width: 240px; z-index: 20;
+  background: var(--navy-900); color: white; border-radius: 12px; padding: 1.1rem 1.15rem;
+  box-shadow: var(--shadow-lg); font-family: var(--sans);
+}
+.deck-hover-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.2rem; }
+.deck-hover-by { font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-bottom: 0.9rem; }
+.deck-hover-stats { display: flex; justify-content: space-between; margin-bottom: 1rem; }
+.deck-hover-stat { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; }
+.deck-hover-stat-value { font-weight: 800; font-size: 1.05rem; }
+.deck-hover-stat-label { font-size: 0.62rem; color: rgba(255,255,255,0.6); text-align: center; }
+.deck-hover-actions { display: flex; gap: 0.5rem; }
+.deck-hover-select, .deck-hover-study {
+  flex: 1; padding: 0.5rem; border-radius: 8px; font-size: 0.78rem; font-weight: 700; cursor: pointer; font-family: var(--sans);
+}
+.deck-hover-select { background: none; border: 1.5px solid rgba(255,255,255,0.35); color: white; }
+.deck-hover-select:hover { background: rgba(255,255,255,0.1); }
+.deck-hover-study { background: #00bcd4; border: none; color: white; }
+.deck-hover-study:hover { background: #00a5bb; }
+
+@media (max-width: 900px) {
+  .deck-hover-card { left: auto; right: 0; top: 100%; margin-left: 0; margin-top: 0.5rem; }
+}
+
+/* ── Dashboard sidebar stats row ── */
+.sidebar-stats-row {
+  display: grid; grid-template-columns: repeat(3, 1fr) auto; align-items: center; gap: 0.5rem;
+  padding: 0.9rem 0.25rem; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.sidebar-stat { display: flex; flex-direction: column; align-items: flex-start; gap: 0.15rem; }
+.sidebar-stat-value { display: flex; align-items: center; gap: 0.25rem; font-weight: 800; font-size: 0.95rem; color: white; }
+.sidebar-stat-value svg { color: #ff9800; }
+.sidebar-stat-label { font-size: 0.6rem; color: rgba(255,255,255,0.55); font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; line-height: 1.2; }
+.sidebar-stat-chart-btn {
+  background: rgba(255,255,255,0.08); border: none; color: rgba(255,255,255,0.8); border-radius: 8px;
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.sidebar-stat-chart-btn:hover { background: rgba(255,255,255,0.16); color: white; }
+
+/* ── Study history chart modal ── */
+.history-chart-overlay {
+  position: fixed; inset: 0; z-index: 1400; background: rgba(0,20,50,0.55);
+  display: flex; align-items: center; justify-content: center; padding: 1.5rem;
+}
+.history-chart-panel {
+  background: white; border-radius: var(--r-lg); padding: 1.75rem; width: min(560px, 100%);
+  box-shadow: var(--shadow-lg); font-family: var(--sans);
+}
+.history-chart-header { display: flex; align-items: center; justify-content: space-between; }
+.history-chart-header h3 { font-size: 1.15rem; font-weight: 700; color: var(--ink); margin: 0; }
+.history-chart-close { background: none; border: none; cursor: pointer; color: var(--slate); padding: 0.25rem; }
+.history-chart-subtitle { font-size: 0.8rem; color: var(--slate); margin: 0.25rem 0 1.5rem; }
+.history-chart-loading { display: flex; justify-content: center; padding: 3rem 0; color: var(--cobalt-blue); }
+.history-chart-bars {
+  display: flex; align-items: flex-end; gap: 2px; height: 140px; border-bottom: 1px solid var(--line); padding-bottom: 2px;
+}
+.history-chart-bar-col { flex: 1; height: 100%; display: flex; align-items: flex-end; cursor: pointer; }
+.history-chart-bar { width: 100%; min-height: 2px; border-radius: 2px 2px 0 0; background: var(--line); transition: background 0.15s ease; }
+.history-chart-bar.active { background: #00bcd4; }
+.history-chart-bar-col:hover .history-chart-bar { background: var(--cobalt-blue); }
+.history-chart-tooltip-row { margin-top: 0.85rem; font-size: 0.8rem; color: var(--ink); min-height: 1.2rem; }
+.history-chart-hint { color: var(--mute); }

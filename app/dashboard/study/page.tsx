@@ -18,7 +18,7 @@ import { CBR_INTRO_SEEN_KEY, CBR_RATING_EXPLAINED_KEY } from '@/components/study
 const CBR_ROUND_EXPLAINED_KEY = 'cbr_round_complete_explained';
 
 function StudySessionScreens({ onExit }: { onExit: () => void }) {
-  const { isComplete, pointsEarned, lastRating } = useStudySession();
+  const { isComplete, pointsEarned, bonusPoints, lastRating } = useStudySession();
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackRating, setFeedbackRating] = useState<Confidence | null>(null);
   const [ratedOnce, setRatedOnce] = useState(false);
@@ -63,6 +63,7 @@ function StudySessionScreens({ onExit }: { onExit: () => void }) {
       {isComplete && !showFeedback && (
         <RoundCompleteScreen
           pointsEarned={pointsEarned}
+          bonusPoints={bonusPoints}
           showExplainer={!roundExplainerShown}
           onDismiss={dismissRoundComplete}
         />

@@ -62,5 +62,13 @@ export async function POST(request: NextRequest) {
     .update({ last_studied_at: now })
     .eq('id', deckId);
 
+  const { error: streakError } = await supabaseAdmin.rpc('update_study_streak', {
+    p_user_id: userId,
+    p_points: pointsEarned,
+  });
+  if (streakError) {
+    console.error('Failed to update study streak:', streakError.message);
+  }
+
   return NextResponse.json({ success: true });
 }

@@ -3,48 +3,22 @@
 import { useMemo, useState } from 'react';
 import { X } from 'lucide-react';
 import { useCardEditor } from './CardEditorProvider';
+import { parseImportText, ImportDelimiter } from '@/lib/importParser';
 
-type Delimiter = 'tab' | 'comma' | 'newline-pair';
-
-const DELIMITER_OPTIONS: { value: Delimiter; label: string }[] = [
+const DELIMITER_OPTIONS: { value: ImportDelimiter; label: string }[] = [
   { value: 'tab', label: 'Tab-separated (Question [TAB] Answer)' },
   { value: 'comma', label: 'Comma-separated (Question, Answer)' },
   { value: 'newline-pair', label: 'Paragraph pairs (Question [blank line] Answer)' },
 ];
 
-function parsePreview(text: string, delimiter: Delimiter): { question: string; answer: string }[] {
-  const pairs: { question: string; answer: string }[] = [];
-
-  if (delimiter === 'newline-pair') {
-    const blocks = text.split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
-    for (let i = 0; i < blocks.length - 1; i += 2) {
-      const question = blocks[i].trim();
-      const answer = blocks[i + 1].trim();
-      if (question && answer) pairs.push({ question, answer });
-    }
-    return pairs;
-  }
-
-  const sep = delimiter === 'tab' ? '\t' : ',';
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-  for (const line of lines) {
-    const idx = line.indexOf(sep);
-    if (idx === -1) continue;
-    const question = line.slice(0, idx).trim();
-    const answer = line.slice(idx + 1).trim();
-    if (question && answer) pairs.push({ question, answer });
-  }
-  return pairs;
-}
-
 export default function ImportCardsModal({ onClose }: { onClose: () => void }) {
   const { deckId, appendCards } = useCardEditor();
-  const [delimiter, setDelimiter] = useState<Delimiter>('tab');
+  const [delimiter, setDelimiter] = useState<ImportDelimiter>('tab');
   const [importText, setImportText] = useState('');
   const [importing, setImporting] = useState(false);
   const [error, setError] = useState('');
 
-  const parsedCards = useMemo(() => parsePreview(importText, delimiter), [importText, delimiter]);
+  const parsedCards = useMemo(() => parseImportText(importText, delimiter), [importText, delimiter]);
 
   const handleImport = async () => {
     setImporting(true);
@@ -74,7 +48,7 @@ export default function ImportCardsModal({ onClose }: { onClose: () => void }) {
         <p className="modal-note" style={{ marginBottom: '1rem' }}>Paste your flashcards below. One card per line.</p>
 
         <label className="modal-field-label">Format</label>
-        <select className="deck-name-input" value={delimiter} onChange={e => setDelimiter(e.target.value as Delimiter)}>
+        <select className="deck-name-input" value={delimiter} onChange={e => setDelimiter(e.target.value as ImportDelimiter)}>
           {DELIMITER_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
         </select>
 

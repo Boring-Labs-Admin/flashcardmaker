@@ -2,33 +2,7 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { Flashcard } from '@/lib/types';
-
-type Delimiter = 'tab' | 'comma' | 'newline-pair';
-
-export function parseImportText(text: string, delimiter: Delimiter): { question: string; answer: string }[] {
-  const pairs: { question: string; answer: string }[] = [];
-
-  if (delimiter === 'newline-pair') {
-    const blocks = text.split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
-    for (let i = 0; i < blocks.length - 1; i += 2) {
-      const question = blocks[i].trim();
-      const answer = blocks[i + 1].trim();
-      if (question && answer) pairs.push({ question, answer });
-    }
-    return pairs;
-  }
-
-  const sep = delimiter === 'tab' ? '\t' : ',';
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-  for (const line of lines) {
-    const idx = line.indexOf(sep);
-    if (idx === -1) continue;
-    const question = line.slice(0, idx).trim();
-    const answer = line.slice(idx + 1).trim();
-    if (question && answer) pairs.push({ question, answer });
-  }
-  return pairs;
-}
+import { parseImportText, ImportDelimiter } from '@/lib/importParser';
 
 // POST /api/decks/[id]/cards/import — bulk-append cards parsed from pasted text
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
@@ -39,7 +13,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  let text: string, delimiter: Delimiter;
+  let text: string, delimiter: ImportDelimiter;
   try {
     const body = await request.json();
     text = body.text;

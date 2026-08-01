@@ -50,7 +50,7 @@ export default function ClassOverviewPage() {
         setDetail(data);
         setTitleDraft(data.class.title);
       })
-      .catch(() => setError('Failed to load class.'))
+      .catch(() => setError('Failed to load set.'))
       .finally(() => setLoading(false));
   }, [classId]);
 
@@ -90,7 +90,7 @@ export default function ClassOverviewPage() {
     setActionError('');
     const res = await fetch(`/api/classes/${classId}/duplicate`, { method: 'POST' });
     const data = await res.json();
-    if (!res.ok) { setActionError(data.error || 'Failed to duplicate class.'); return; }
+    if (!res.ok) { setActionError(data.error || 'Failed to duplicate set.'); return; }
     refetchClasses();
     router.push(`/dashboard/classes/${data.class.id}`);
   };
@@ -117,7 +117,7 @@ export default function ClassOverviewPage() {
   if (error || !detail) {
     return (
       <div className="container">
-        <p className="error-message">{error || 'Class not found.'}</p>
+        <p className="error-message">{error || 'Set not found.'}</p>
         <Link href="/dashboard/decks" className="btn-outline">← Back to Your Flashcards</Link>
       </div>
     );
@@ -143,7 +143,7 @@ export default function ClassOverviewPage() {
           ) : (
             <h1 className="class-title">
               {cls.title}
-              <button className="class-title-edit" onClick={() => setIsEditingTitle(true)} aria-label="Rename class"><Pencil size={16} /></button>
+              <button className="class-title-edit" onClick={() => setIsEditingTitle(true)} aria-label="Rename set"><Pencil size={16} /></button>
             </h1>
           )}
           <div className="class-attribution">
@@ -192,7 +192,7 @@ export default function ClassOverviewPage() {
           {decks.length === 0 ? (
             <div className="dashboard-empty">
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem', color: 'var(--cobalt-blue)', opacity: 0.5 }}><Layers size={64} strokeWidth={1.5} /></div>
-              <h2 style={{ marginBottom: '0.5rem' }}>No decks in this class yet</h2>
+              <h2 style={{ marginBottom: '0.5rem' }}>No decks in this set yet</h2>
               <button className="btn" onClick={() => setShowMakeFlashcards(true)}><Plus size={15} /> Import/Make Flashcards</button>
             </div>
           ) : (

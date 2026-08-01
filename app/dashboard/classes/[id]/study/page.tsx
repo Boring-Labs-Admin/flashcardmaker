@@ -17,7 +17,7 @@ function ClassStudyContent() {
   const mode = searchParams.get('mode') === 'random' ? 'random' : 'progressive';
 
   const [queue, setQueue] = useState<StudyQueueCard[] | null>(null);
-  const [classTitle, setClassTitle] = useState('Class');
+  const [classTitle, setClassTitle] = useState('Set');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [introSeen, setIntroSeen] = useState(true);
@@ -70,8 +70,8 @@ function ClassStudyContent() {
   if (error || !queue) {
     return (
       <div className="cbr-fullscreen-status">
-        <p>{error || 'This class has no cards to study.'}</p>
-        <Link href={`/dashboard/classes/${classId}`} className="btn-outline">← Back to class</Link>
+        <p>{error || 'This set has no cards to study.'}</p>
+        <Link href={`/dashboard/classes/${classId}`} className="btn-outline">← Back to set</Link>
       </div>
     );
   }
@@ -80,7 +80,7 @@ function ClassStudyContent() {
     return (
       <div className="cbr-fullscreen-status">
         <p>You&apos;re all caught up — no cards are due for review right now.</p>
-        <Link href={`/dashboard/classes/${classId}`} className="btn-outline">← Back to class</Link>
+        <Link href={`/dashboard/classes/${classId}`} className="btn-outline">← Back to set</Link>
       </div>
     );
   }

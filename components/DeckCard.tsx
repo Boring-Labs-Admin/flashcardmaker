@@ -1,10 +1,11 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Pencil, Palette, Trash2, Zap, ListChecks } from 'lucide-react';
-import { Deck, DeckMastery } from '@/lib/types';
+import { Pencil, Palette, Trash2, Zap, ListChecks, FolderInput } from 'lucide-react';
+import { Deck, DeckMastery, ClassSummary } from '@/lib/types';
 import MasteryRing from '@/components/MasteryRing';
 import DeckHoverCard from '@/components/DeckHoverCard';
+import ClassCoverIcon from '@/components/class/ClassCoverIcon';
 
 const HOVER_DELAY_MS = 300;
 
@@ -21,14 +22,16 @@ interface DeckCardProps {
   deck: Deck;
   onDelete: (id: string) => void;
   onStudy: (deck: Deck) => void;
-  onUpdate: (id: string, updates: { title?: string; color?: string }) => void;
+  onUpdate: (id: string, updates: { title?: string; color?: string; classId?: string | null }) => void;
+  sets?: ClassSummary[];
 }
 
-export default function DeckCard({ deck, onDelete, onStudy, onUpdate }: DeckCardProps) {
+export default function DeckCard({ deck, onDelete, onStudy, onUpdate, sets }: DeckCardProps) {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(deck.title);
   const [showColors, setShowColors] = useState(false);
+  const [showSetPicker, setShowSetPicker] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [showHoverCard, setShowHoverCard] = useState(false);
   const [hoverMastery, setHoverMastery] = useState<DeckMastery | null>(null);
@@ -50,6 +53,7 @@ export default function DeckCard({ deck, onDelete, onStudy, onUpdate }: DeckCard
     setEditTitle(deck.title);
     setIsEditing(true);
     setShowColors(false);
+    setShowSetPicker(false);
   };
 
   const saveTitle = () => {
@@ -71,10 +75,17 @@ export default function DeckCard({ deck, onDelete, onStudy, onUpdate }: DeckCard
     setShowColors(false);
   };
 
+  const handleAssignSet = (e: React.MouseEvent, classId: string | null) => {
+    e.stopPropagation();
+    onUpdate(deck.id, { classId });
+    setShowSetPicker(false);
+  };
+
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     setConfirmDelete(true);
     setShowColors(false);
+    setShowSetPicker(false);
     setIsEditing(false);
   };
 
@@ -116,9 +127,16 @@ export default function DeckCard({ deck, onDelete, onStudy, onUpdate }: DeckCard
           ><Pencil size={15} /></button>
           <button
             className="deck-action-btn"
-            onClick={(e) => { e.stopPropagation(); setShowColors(s => !s); setIsEditing(false); }}
+            onClick={(e) => { e.stopPropagation(); setShowColors(s => !s); setIsEditing(false); setShowSetPicker(false); }}
             title="Change colour"
           ><Palette size={15} /></button>
+          {sets && (
+            <button
+              className="deck-action-btn"
+              onClick={(e) => { e.stopPropagation(); setShowSetPicker(s => !s); setIsEditing(false); setShowColors(false); }}
+              title="Assign to a set"
+            ><FolderInput size={15} /></button>
+          )}
           <button
             className="deck-delete-btn"
             onClick={handleDelete}
@@ -127,7 +145,25 @@ export default function DeckCard({ deck, onDelete, onStudy, onUpdate }: DeckCard
         </div>
       </div>
 
-      {showHoverCard && !isEditing && !showColors && !confirmDelete && (
+      {showSetPicker && sets && (
+        <div className="deck-set-picker" onClick={e => e.stopPropagation()}>
+          <span className="deck-set-picker-label">Assign to a set</span>
+          <div className="deck-set-picker-list">
+            {deck.class_id && (
+              <button className="deck-set-picker-item" onClick={e => handleAssignSet(e, null)}>Uncategorised</button>
+            )}
+            {sets.filter(s => s.id !== deck.class_id).map(s => (
+              <button key={s.id} className="deck-set-picker-item" onClick={e => handleAssignSet(e, s.id)}>
+                <ClassCoverIcon coverColor={s.cover_color} coverEmoji={s.cover_emoji} size={18} />
+                {s.title}
+              </button>
+            ))}
+            {sets.length === 0 && <p className="deck-set-picker-empty">No sets yet — create one first.</p>}
+          </div>
+        </div>
+      )}
+
+      {showHoverCard && !isEditing && !showColors && !showSetPicker && !confirmDelete && (
         <DeckHoverCard
           deck={deck}
           mastery={hoverMastery}

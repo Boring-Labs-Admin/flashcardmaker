@@ -87,7 +87,7 @@ export default function YourFlashcardsPage() {
       <div style={{ marginBottom: '2rem' }}>
         <h1 className="dashboard-page-title">Your Flashcards</h1>
         <p className="dashboard-page-subtitle">
-          {fetching ? 'Loading your decks...' : `${classes.length} class${classes.length !== 1 ? 'es' : ''} · ${decks.length} deck${decks.length !== 1 ? 's' : ''}`}
+          {fetching ? 'Loading your decks...' : `${classes.length} set${classes.length !== 1 ? 's' : ''} · ${decks.length} deck${decks.length !== 1 ? 's' : ''}`}
         </p>
       </div>
 
@@ -107,8 +107,8 @@ export default function YourFlashcardsPage() {
           {classes.length > 0 && (
             <section style={{ marginBottom: '2.5rem' }}>
               <div className="section-row-header">
-                <h2 className="section-row-title">Classes</h2>
-                <button className="btn-outline" onClick={() => setShowCreateClass(true)}><Plus size={15} /> Add New Class</button>
+                <h2 className="section-row-title">Sets</h2>
+                <button className="btn-outline" onClick={() => setShowCreateClass(true)}><Plus size={15} /> Add New Set</button>
               </div>
               <div className="class-grid">
                 {classes.map(cls => <ClassCard key={cls.id} cls={cls} />)}
@@ -118,7 +118,7 @@ export default function YourFlashcardsPage() {
 
           {classes.length === 0 && decks.length > 0 && (
             <div style={{ marginBottom: '1.5rem' }}>
-              <button className="btn-outline" onClick={() => setShowCreateClass(true)}><Plus size={15} /> Add New Class</button>
+              <button className="btn-outline" onClick={() => setShowCreateClass(true)}><Plus size={15} /> Add New Set</button>
             </div>
           )}
 
@@ -127,7 +127,7 @@ export default function YourFlashcardsPage() {
               {classes.length > 0 && <h2 className="section-row-title" style={{ marginBottom: '1rem' }}>Uncategorised</h2>}
               <div className="deck-grid">
                 {orphanDecks.map(deck => (
-                  <DeckCard key={deck.id} deck={deck} onDelete={handleDelete} onStudy={handleStudy} onUpdate={handleDeckUpdate} />
+                  <DeckCard key={deck.id} deck={deck} onDelete={handleDelete} onStudy={handleStudy} onUpdate={handleDeckUpdate} sets={classes} />
                 ))}
               </div>
             </section>
@@ -138,7 +138,7 @@ export default function YourFlashcardsPage() {
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem', color: 'var(--cobalt-blue)', opacity: 0.5 }}><Layers size={64} strokeWidth={1.5} /></div>
               <h2 style={{ marginBottom: '0.5rem' }}>No decks saved yet</h2>
               <p style={{ opacity: 0.7, marginBottom: '1rem' }}>Generate a deck under Create Flashcards to get started.</p>
-              <button className="btn-outline" onClick={() => setShowCreateClass(true)}><Plus size={15} /> Add New Class</button>
+              <button className="btn-outline" onClick={() => setShowCreateClass(true)}><Plus size={15} /> Add New Set</button>
             </div>
           )}
         </>

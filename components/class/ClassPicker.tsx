@@ -37,7 +37,7 @@ export default function ClassPicker({
           </button>
         ))}
         <button className="class-picker-chip class-picker-chip-new" onClick={onCreateNew}>
-          <Plus size={14} /> New Class
+          <Plus size={14} /> New Set
         </button>
       </div>
     </div>

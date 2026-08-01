@@ -40,11 +40,11 @@ export default function ClassCreationFlow({
         body: JSON.stringify({ title: title.trim() }),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || 'Failed to create class.'); return; }
+      if (!res.ok) { setError(data.error || 'Failed to create set.'); return; }
       setCreatedClass(data.class);
       setStep('role');
     } catch {
-      setError('Failed to create class. Please try again.');
+      setError('Failed to create set. Please try again.');
     } finally {
       setCreating(false);
     }
@@ -101,15 +101,15 @@ export default function ClassCreationFlow({
       <div className="modal-overlay active" onClick={onCancel}>
         <div className="modal" onClick={e => e.stopPropagation()}>
           <button className="modal-x" onClick={onCancel} aria-label="Close"><X size={18} /></button>
-          <div className="modal-title">First, Create A Class</div>
-          <div className="modal-subtitle">Classes keep your flashcards organised.</div>
+          <div className="modal-title">First, Create A Set</div>
+          <div className="modal-subtitle">Sets keep your flashcards organised.</div>
           <input
             className="deck-name-input"
             type="text"
             value={title}
             onChange={e => setTitle(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleCreate()}
-            placeholder="Class title"
+            placeholder="Set title"
             disabled={creating}
             autoFocus
           />
@@ -128,7 +128,7 @@ export default function ClassCreationFlow({
       <div className="modal-overlay active">
         <div className="modal">
           <div className="modal-title">
-            <span className="class-created-name">{createdClass.title}</span> class created!
+            <span className="class-created-name">{createdClass.title}</span> set created!
           </div>
           <div className="modal-subtitle">What&apos;s your role?</div>
           <div className="role-buttons">
@@ -144,9 +144,9 @@ export default function ClassCreationFlow({
     return (
       <div className="modal-overlay active">
         <div className="modal">
-          <div className="modal-title">Customize your Class</div>
-          <div className="modal-subtitle">Class Purpose</div>
-          <p className="purpose-question">What best describes the purpose of this class?</p>
+          <div className="modal-title">Customize your Set</div>
+          <div className="modal-subtitle">Set Purpose</div>
+          <p className="purpose-question">What best describes the purpose of this set?</p>
           <div className="purpose-options">
             {PURPOSE_OPTIONS.map(opt => (
               <label key={opt.value} className="purpose-option">

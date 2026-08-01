@@ -24,7 +24,7 @@ export default function MigrationPrompt({
   return (
     <div className="migration-prompt">
       <p>
-        We&apos;ve updated how flashcards are organised. Would you like to group your existing decks into a class
+        We&apos;ve updated how flashcards are organised. Would you like to group your existing decks into a set
         {orphanTopic ? ` called "${orphanTopic}"` : ''}?
       </p>
       <div className="migration-prompt-actions">

@@ -133,14 +133,14 @@ export default function DashboardSidebar() {
 
         {classes.length > 0 && (
           <div className="sidebar-class-section">
-            <div className="sidebar-class-section-title">My Flashcards ({classes.length} class{classes.length === 1 ? '' : 'es'})</div>
+            <div className="sidebar-class-section-title">My Flashcards ({classes.length} set{classes.length === 1 ? '' : 's'})</div>
             <div className="sidebar-class-list">
               {classes.map(cls => (
                 <ClassListItem key={cls.id} cls={cls} onNavigate={() => setMobileOpen(false)} />
               ))}
             </div>
             <button className="sidebar-add-class-btn" onClick={() => setShowCreateClass(true)}>
-              <Plus size={15} /> Add New Class
+              <Plus size={15} /> Add New Set
             </button>
           </div>
         )}

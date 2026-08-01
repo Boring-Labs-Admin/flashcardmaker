@@ -36,17 +36,17 @@ export default function ClassMoreMenu({
         <div className="class-more-menu" onMouseLeave={() => setOpen(false)}>
           <button onClick={() => { setOpen(false); onImportMakeFlashcards(); }}>Import/Make Flashcards</button>
           <button className={!isPlusOrAdmin ? 'gated' : ''} onClick={proAction(onDuplicate)}>
-            Duplicate Class {!isPlusOrAdmin && <span className="pro-badge">PRO</span>}
+            Duplicate Set {!isPlusOrAdmin && <span className="pro-badge">PRO</span>}
           </button>
           <button className="disabled" disabled title="Coming soon">
-            Mirror Decks to New Class <span className="pro-badge">PRO</span>
+            Mirror Decks to New Set <span className="pro-badge">PRO</span>
           </button>
           <button className={!isPlusOrAdmin ? 'gated' : ''} onClick={proAction(() => setConfirmReset(true))}>
-            Reset Class Stats {!isPlusOrAdmin && <span className="pro-badge">PRO</span>}
+            Reset Set Stats {!isPlusOrAdmin && <span className="pro-badge">PRO</span>}
           </button>
-          <button className="danger" onClick={() => { setOpen(false); setConfirmRemove(true); }}>Remove from your Classes</button>
-          <button className="disabled" disabled title="Coming soon">Make Class Private <span className="pro-badge">PRO</span></button>
-          <button className="disabled" disabled title="Coming soon">Preview Public Class Page</button>
+          <button className="danger" onClick={() => { setOpen(false); setConfirmRemove(true); }}>Remove from your Sets</button>
+          <button className="disabled" disabled title="Coming soon">Make Set Private <span className="pro-badge">PRO</span></button>
+          <button className="disabled" disabled title="Coming soon">Preview Public Set Page</button>
           <button className="disabled" disabled title="Coming soon">Edit Suggestions Dashboard</button>
         </div>
       )}
@@ -54,7 +54,7 @@ export default function ClassMoreMenu({
       {confirmReset && (
         <div className="class-more-confirm-overlay" onClick={() => setConfirmReset(false)}>
           <div className="class-more-confirm" onClick={e => e.stopPropagation()}>
-            <p>This will reset all your progress for this class. Are you sure?</p>
+            <p>This will reset all your progress for this set. Are you sure?</p>
             <div className="class-more-confirm-actions">
               <button className="btn-outline" onClick={() => setConfirmReset(false)}>Cancel</button>
               <button className="btn" onClick={() => { setConfirmReset(false); onResetStats(); }}>Reset Stats</button>
@@ -66,7 +66,7 @@ export default function ClassMoreMenu({
       {confirmRemove && (
         <div className="class-more-confirm-overlay" onClick={() => setConfirmRemove(false)}>
           <div className="class-more-confirm" onClick={e => e.stopPropagation()}>
-            <p>Remove this class? Its decks will become uncategorised, not deleted.</p>
+            <p>Remove this set? Its decks will become uncategorised, not deleted.</p>
             <div className="class-more-confirm-actions">
               <button className="btn-outline" onClick={() => setConfirmRemove(false)}>Cancel</button>
               <button className="btn" onClick={() => { setConfirmRemove(false); onRemove(); }}>Remove</button>

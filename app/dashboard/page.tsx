@@ -113,7 +113,7 @@ function CreateFlashcardsContent() {
             <b>{savedTo.deckTitle}</b> saved{savedTo.className ? <> to <b>{savedTo.className}</b></> : ' — uncategorised'}.
           </span>
           {selectedClassId ? (
-            <button className="btn-outline" onClick={() => router.push(`/dashboard/classes/${selectedClassId}`)}>View Class</button>
+            <button className="btn-outline" onClick={() => router.push(`/dashboard/classes/${selectedClassId}`)}>View Set</button>
           ) : (
             <button className="btn-outline" onClick={() => router.push('/dashboard/decks')}>View Your Flashcards</button>
           )}

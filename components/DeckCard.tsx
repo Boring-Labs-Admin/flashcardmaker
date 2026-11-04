@@ -2,12 +2,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Pencil, Palette, Trash2, Zap, ListChecks, FolderInput } from 'lucide-react';
-import { Deck, DeckMastery, ClassSummary } from '@/lib/types';
+import { Deck, ClassSummary } from '@/lib/types';
 import MasteryRing from '@/components/MasteryRing';
-import DeckHoverCard from '@/components/DeckHoverCard';
 import ClassCoverIcon from '@/components/class/ClassCoverIcon';
-
-const HOVER_DELAY_MS = 300;
 
 const COLORS = [
   { hex: '#EBF0FA', label: 'Blue' },
@@ -33,10 +30,8 @@ export default function DeckCard({ deck, onDelete, onStudy, onUpdate, sets }: De
   const [showColors, setShowColors] = useState(false);
   const [showSetPicker, setShowSetPicker] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [showHoverCard, setShowHoverCard] = useState(false);
-  const [hoverMastery, setHoverMastery] = useState<DeckMastery | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const parentSet = sets?.find(s => s.id === deck.class_id) ?? null;
 
   const date = new Date(deck.created_at).toLocaleDateString('en-GB', {
     day: 'numeric', month: 'short', year: 'numeric',
@@ -89,29 +84,10 @@ export default function DeckCard({ deck, onDelete, onStudy, onUpdate, sets }: De
     setIsEditing(false);
   };
 
-  const handleMouseEnter = () => {
-    hoverTimerRef.current = setTimeout(() => {
-      setShowHoverCard(true);
-      if (!hoverMastery) {
-        fetch(`/api/decks/${deck.id}/mastery`)
-          .then(r => r.json())
-          .then(data => { if (!data.error) setHoverMastery(data); })
-          .catch(() => {});
-      }
-    }, HOVER_DELAY_MS);
-  };
-
-  const handleMouseLeave = () => {
-    if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
-    setShowHoverCard(false);
-  };
-
   return (
     <div
       className="deck-card"
       style={{ backgroundColor: bgColor }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       {!!deck.mastery_pct && deck.mastery_pct > 0 && (
         <div className="deck-mastery-ring-corner"><MasteryRing pct={deck.mastery_pct} size={40} strokeWidth={4} /></div>
@@ -150,7 +126,7 @@ export default function DeckCard({ deck, onDelete, onStudy, onUpdate, sets }: De
           <span className="deck-set-picker-label">Assign to a set</span>
           <div className="deck-set-picker-list">
             {deck.class_id && (
-              <button className="deck-set-picker-item" onClick={e => handleAssignSet(e, null)}>Uncategorised</button>
+              <button className="deck-set-picker-item" onClick={e => handleAssignSet(e, null)}>Remove from set</button>
             )}
             {sets.filter(s => s.id !== deck.class_id).map(s => (
               <button key={s.id} className="deck-set-picker-item" onClick={e => handleAssignSet(e, s.id)}>
@@ -161,15 +137,6 @@ export default function DeckCard({ deck, onDelete, onStudy, onUpdate, sets }: De
             {sets.length === 0 && <p className="deck-set-picker-empty">No sets yet — create one first.</p>}
           </div>
         </div>
-      )}
-
-      {showHoverCard && !isEditing && !showColors && !showSetPicker && !confirmDelete && (
-        <DeckHoverCard
-          deck={deck}
-          mastery={hoverMastery}
-          onSelect={() => { setShowHoverCard(false); router.push(`/dashboard/decks/${deck.id}/edit`); }}
-          onStudy={() => { setShowHoverCard(false); onStudy(deck); }}
-        />
       )}
 
       {confirmDelete && (
@@ -221,6 +188,13 @@ export default function DeckCard({ deck, onDelete, onStudy, onUpdate, sets }: De
         <span>{deck.flashcards.length} cards</span>
         <span>{date}</span>
       </div>
+
+      {parentSet && (
+        <div className="deck-set-tag" title={`In set: ${parentSet.title}`}>
+          <ClassCoverIcon coverColor={parentSet.cover_color} coverEmoji={parentSet.cover_emoji} size={16} />
+          <span>{parentSet.title}</span>
+        </div>
+      )}
 
       {!!deck.mastery_pct && deck.mastery_pct > 0 && (
         <div className="deck-mastery">

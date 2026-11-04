@@ -1184,33 +1184,11 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .cbr-overall-wrap .mastery-ring-label { color: rgba(255,255,255,0.7); }
 .cbr-overall-stat { font-size: 0.78rem; color: rgba(255,255,255,0.75); margin-top: 0.75rem; text-align: center; }
 
-/* ── Deck card mastery ring (top-right corner) + hover card ── */
+/* ── Deck card mastery ring (top-right corner) + Set tag ── */
 .deck-card { position: relative; }
 .deck-mastery-ring-corner { position: absolute; top: 0.75rem; right: 0.75rem; z-index: 1; }
-
-.deck-hover-card {
-  position: absolute; top: 0; left: 100%; margin-left: 0.6rem; width: 240px; z-index: 20;
-  background: var(--navy-900); color: white; border-radius: 12px; padding: 1.1rem 1.15rem;
-  box-shadow: var(--shadow-lg); font-family: var(--sans);
-}
-.deck-hover-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.2rem; }
-.deck-hover-by { font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-bottom: 0.9rem; }
-.deck-hover-stats { display: flex; justify-content: space-between; margin-bottom: 1rem; }
-.deck-hover-stat { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; }
-.deck-hover-stat-value { font-weight: 800; font-size: 1.05rem; }
-.deck-hover-stat-label { font-size: 0.62rem; color: rgba(255,255,255,0.6); text-align: center; }
-.deck-hover-actions { display: flex; gap: 0.5rem; }
-.deck-hover-select, .deck-hover-study {
-  flex: 1; padding: 0.5rem; border-radius: 8px; font-size: 0.78rem; font-weight: 700; cursor: pointer; font-family: var(--sans);
-}
-.deck-hover-select { background: none; border: 1.5px solid rgba(255,255,255,0.35); color: white; }
-.deck-hover-select:hover { background: rgba(255,255,255,0.1); }
-.deck-hover-study { background: #00bcd4; border: none; color: white; }
-.deck-hover-study:hover { background: #00a5bb; }
-
-@media (max-width: 900px) {
-  .deck-hover-card { left: auto; right: 0; top: 100%; margin-left: 0; margin-top: 0.5rem; }
-}
+.deck-set-tag { display: inline-flex; align-items: center; gap: 0.4rem; align-self: flex-start; max-width: 100%; background: white; border: 1px solid var(--line); border-radius: 999px; padding: 0.15rem 0.6rem 0.15rem 0.2rem; font-size: 0.72rem; font-weight: 600; color: var(--cobalt-blue); }
+.deck-set-tag span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ── Dashboard sidebar stats row ── */
 .sidebar-stats-row {
@@ -1351,6 +1329,16 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 /* ── Class grid (Your Flashcards page) ── */
 .section-row-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; gap: 1rem; flex-wrap: wrap; }
 .section-row-title { font-size: 1.1rem; font-weight: 700; color: var(--cobalt-blue); margin: 0; }
+.add-decks-list { display: flex; flex-direction: column; gap: 0.5rem; max-height: 320px; overflow-y: auto; margin: 1rem 0; text-align: left; }
+.add-decks-item { display: flex; align-items: center; gap: 0.75rem; background: white; border: 1.5px solid var(--line); border-radius: 10px; padding: 0.7rem 0.85rem; cursor: pointer; font-family: var(--sans); text-align: left; }
+.add-decks-item:hover { border-color: var(--cobalt-blue); }
+.add-decks-item.selected { border-color: var(--cobalt-blue); background: var(--sky); }
+.add-decks-check { width: 20px; height: 20px; flex-shrink: 0; border: 2px solid var(--line); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; }
+.add-decks-item.selected .add-decks-check { background: var(--cobalt-blue); border-color: var(--cobalt-blue); }
+.add-decks-info { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+.add-decks-info b { font-size: 0.88rem; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.add-decks-info span { font-size: 0.74rem; color: var(--mute); }
+.section-empty-hint { font-size: 0.85rem; color: var(--mute); margin: 0 0 1rem; }
 .class-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
 .class-card {
   display: flex; align-items: center; gap: 0.85rem; background: white; border: 1.5px solid var(--line); border-radius: var(--r);

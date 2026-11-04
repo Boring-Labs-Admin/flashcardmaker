@@ -13,6 +13,7 @@ import StudyModeToggle, { getStoredStudyMode } from '@/components/class/StudyMod
 import DeckProgressRow from '@/components/class/DeckProgressRow';
 import MakeFlashcardsModal from '@/components/class/MakeFlashcardsModal';
 import CreateDeckModal from '@/components/class/CreateDeckModal';
+import AddDecksToSetModal from '@/components/class/AddDecksToSetModal';
 
 const PURPOSE_LABELS: Record<string, string> = {
   job_skills: 'Job Skills',
@@ -39,6 +40,7 @@ export default function ClassOverviewPage() {
   const [studyMode, setStudyMode] = useState<StudyMode>('progressive');
   const [showMakeFlashcards, setShowMakeFlashcards] = useState(false);
   const [showCreateDeck, setShowCreateDeck] = useState(false);
+  const [showAddDecks, setShowAddDecks] = useState(false);
   const [actionError, setActionError] = useState('');
 
   const loadDetail = useCallback(() => {
@@ -186,13 +188,17 @@ export default function ClassOverviewPage() {
           <div className="decks-toolbar">
             <StudyModeToggle classId={classId} mode={studyMode} onChange={setStudyMode} />
             <span className="decks-toolbar-hint">Progressive uses spaced repetition. Random shuffles cards.</span>
+            <button className="btn-outline" style={{ marginLeft: 'auto' }} onClick={() => setShowAddDecks(true)}><Plus size={15} /> Add existing decks</button>
           </div>
 
           {decks.length === 0 ? (
             <div className="dashboard-empty">
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem', color: 'var(--cobalt-blue)', opacity: 0.5 }}><Layers size={64} strokeWidth={1.5} /></div>
               <h2 style={{ marginBottom: '0.5rem' }}>No decks in this set yet</h2>
-              <button className="btn" onClick={() => setShowMakeFlashcards(true)}><Plus size={15} /> Import/Make Flashcards</button>
+              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <button className="btn" onClick={() => setShowMakeFlashcards(true)}><Plus size={15} /> Create a deck</button>
+                <button className="btn-outline" onClick={() => setShowAddDecks(true)}>Add existing decks</button>
+              </div>
             </div>
           ) : (
             <div className="deck-progress-list">
@@ -217,6 +223,14 @@ export default function ClassOverviewPage() {
           classId={classId}
           onTypeManually={() => setShowCreateDeck(true)}
           onClose={() => setShowMakeFlashcards(false)}
+        />
+      )}
+
+      {showAddDecks && (
+        <AddDecksToSetModal
+          classId={classId}
+          onDone={() => { setShowAddDecks(false); loadDetail(); refetchClasses(); }}
+          onClose={() => setShowAddDecks(false)}
         />
       )}
 

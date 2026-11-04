@@ -33,7 +33,7 @@ export default function ClassOverviewPage() {
   const [detail, setDetail] = useState<ClassDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [tab, setTab] = useState<'intro' | 'decks' | 'learners'>('decks');
+  const [tab, setTab] = useState<'intro' | 'decks'>('decks');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState('');
   const [studyMode, setStudyMode] = useState<StudyMode>('progressive');
@@ -170,7 +170,6 @@ export default function ClassOverviewPage() {
       <div className="class-tabs">
         <button className={`class-tab${tab === 'intro' ? ' active' : ''}`} onClick={() => setTab('intro')}>Intro</button>
         <button className={`class-tab${tab === 'decks' ? ' active' : ''}`} onClick={() => setTab('decks')}>Decks ({decks.length})</button>
-        <button className={`class-tab${tab === 'learners' ? ' active' : ''}`} onClick={() => setTab('learners')}>Learners (1)</button>
       </div>
 
       {tab === 'intro' && (
@@ -211,12 +210,6 @@ export default function ClassOverviewPage() {
             </div>
           )}
         </>
-      )}
-
-      {tab === 'learners' && (
-        <div className="class-intro-tab">
-          <p>Learner rosters are coming in a future update.</p>
-        </div>
       )}
 
       {showMakeFlashcards && (

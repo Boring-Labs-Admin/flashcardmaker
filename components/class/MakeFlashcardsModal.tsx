@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { X, Plus, FileText, Sparkles, Wand2 } from 'lucide-react';
+import { X, Plus, FileText, UploadCloud, Wand2 } from 'lucide-react';
 
 export default function MakeFlashcardsModal({
   classId,
@@ -14,9 +14,9 @@ export default function MakeFlashcardsModal({
 }) {
   const router = useRouter();
 
-  const goToGenerator = () => {
+  const goTo = (start: 'notes' | 'topic') => {
     onClose();
-    router.push(`/dashboard?classId=${classId}`);
+    router.push(`/dashboard?classId=${classId}&start=${start}`);
   };
 
   return (
@@ -25,35 +25,28 @@ export default function MakeFlashcardsModal({
         <button className="modal-x" onClick={onClose} aria-label="Close"><X size={18} /></button>
         <div className="modal-title" style={{ textAlign: 'center' }}>Make Flashcards</div>
 
-        <div className="make-flashcards-columns">
-          <div className="make-flashcards-col">
-            <h3>Manual</h3>
-            <button className="make-flashcards-manual-btn" onClick={() => { onClose(); onTypeManually(); }}>
-              <Plus size={22} />
-              <span>Type Flashcards</span>
-            </button>
-          </div>
-
-          <div className="make-flashcards-divider">— OR —</div>
-
-          <div className="make-flashcards-col make-flashcards-col-ai">
-            <h3>AI-Powered</h3>
-            <button className="make-flashcards-ai-btn" onClick={goToGenerator}>
-              <FileText size={18} />
-              <span>Import/Paste Flashcards</span>
-            </button>
-            <button className="make-flashcards-ai-btn" onClick={goToGenerator}>
-              <Sparkles size={18} />
-              <span>Summarise From Content</span>
-            </button>
-            <button className="make-flashcards-ai-btn" onClick={goToGenerator}>
-              <Wand2 size={18} />
-              <span>Just Tell AI What I Want</span>
-            </button>
-          </div>
+        <div className="make-options">
+          <button className="make-option make-option-manual" onClick={() => { onClose(); onTypeManually(); }}>
+            <Plus size={26} />
+            <b>Type them yourself</b>
+            <span>Start a blank deck and write your own cards.</span>
+          </button>
+          <button className="make-option" onClick={() => goTo('notes')}>
+            <FileText size={26} />
+            <b>Paste your notes</b>
+            <span>Drop in a big batch of text and we&apos;ll turn it into cards.</span>
+          </button>
+          <button className="make-option" onClick={() => goTo('notes')}>
+            <UploadCloud size={26} />
+            <b>Upload documents</b>
+            <span>PDFs, Word docs, text files or photos of your notes.</span>
+          </button>
+          <button className="make-option" onClick={() => goTo('topic')}>
+            <Wand2 size={26} />
+            <b>Generate from a topic <span className="gen-tab-badge">PLUS</span></b>
+            <span>Type a topic and a full deck is written for you.</span>
+          </button>
         </div>
-
-        <p className="modal-note">💡 You can always switch between manual and automatic creation once you are in Edit mode.</p>
       </div>
     </div>
   );

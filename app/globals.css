@@ -1308,6 +1308,23 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
   .make-flashcards-divider { justify-content: center; padding: 0.25rem 0; }
 }
 
+/* ── Make options (Create Flashcards page + Make Flashcards modal) ── */
+.make-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.85rem; margin: 1.5rem 0 1rem; text-align: left; }
+.make-option {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 0.4rem; padding: 1.1rem 1.2rem;
+  background: var(--sky); border: 1.5px solid var(--line); border-radius: var(--r); cursor: pointer;
+  color: var(--cobalt-blue); font-family: var(--sans); text-align: left;
+}
+.make-option b { font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; }
+.make-option span { font-size: 0.8rem; font-weight: 500; color: var(--slate); line-height: 1.4; }
+.make-option:hover { background: var(--light-blue); border-color: var(--cobalt-blue); }
+.make-option-manual { background: linear-gradient(135deg, #ff8a3d, #ff6b00); border-color: transparent; color: white; }
+.make-option-manual span { color: rgba(255,255,255,0.9); }
+.make-option-manual:hover { background: linear-gradient(135deg, #ff8a3d, #ff6b00); filter: brightness(1.05); border-color: transparent; }
+.source-hint { text-align: right; font-size: 0.75rem; opacity: 0.6; margin: -0.35rem 0 0.25rem; }
+.make-link { background: none; border: none; padding: 0; color: var(--cobalt-blue); font: inherit; font-weight: 700; cursor: pointer; text-decoration: underline; }
+@media (max-width: 640px) { .make-options { grid-template-columns: 1fr; } }
+
 /* ── Create Flashcards page ── */
 .create-flashcards-card {
   background: white; border: 1px solid var(--line); border-radius: 16px;
@@ -1649,21 +1666,10 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 }
 
 /* ── Create Flashcards page (class-aware) ── */
-.class-picker { margin-bottom: 1.5rem; }
-.class-picker-label { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--slate); margin-bottom: 0.5rem; }
-.class-picker-chips { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 0.25rem; }
-.class-picker-chip {
   display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; background: white; border: 1.5px solid var(--line);
   border-radius: 999px; padding: 0.4rem 0.9rem 0.4rem 0.4rem; font-family: var(--sans); font-size: 0.85rem; font-weight: 600;
   color: var(--ink); cursor: pointer; white-space: nowrap; transition: border-color 0.15s ease, background 0.15s ease;
 }
-.class-picker-chip:hover { border-color: var(--cobalt-blue); }
-.class-picker-chip.active { border-color: var(--cobalt-blue); background: var(--sky); color: var(--cobalt-blue); }
-.class-picker-chip-icon { display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0; }
-.class-picker-chip-icon-none { background: var(--line); color: var(--slate); }
-.class-picker-chip.active .class-picker-chip-icon-none { background: var(--cobalt-blue); color: white; }
-.class-picker-chip-new { border-style: dashed; color: var(--cobalt-blue); background: none; padding: 0.4rem 0.9rem; }
-.class-picker-chip-new:hover { background: var(--sky); }
 
 .create-saved-banner {
   display: flex; align-items: center; gap: 0.6rem; background: #e8f5e9; border: 1px solid #a5d6a7; color: #1a5e20;

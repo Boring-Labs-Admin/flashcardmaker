@@ -2,16 +2,14 @@
 
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { CheckCircle2, ArrowLeft, Plus, FileText, Sparkles, Wand2 } from 'lucide-react';
-import FlashcardGenerator from '@/components/FlashcardGenerator';
-import ClassPicker from '@/components/class/ClassPicker';
-import ClassCreationFlow from '@/components/class/ClassCreationFlow';
+import { CheckCircle2, ArrowLeft, Plus, FileText, UploadCloud, Wand2, Sparkles, X } from 'lucide-react';
+import CreateFromSource from '@/components/dashboard/CreateFromSource';
 import CreateDeckModal from '@/components/class/CreateDeckModal';
 import { useDashboard } from '@/lib/dashboard-context';
 import { Deck } from '@/lib/types';
 import { parseImportText, ImportDelimiter } from '@/lib/importParser';
 
-type View = 'chooser' | 'import' | 'ai-content' | 'ai-topic';
+type View = 'chooser' | 'import' | 'paste' | 'upload' | 'topic';
 
 const DELIMITER_OPTIONS: { value: ImportDelimiter; label: string }[] = [
   { value: 'tab', label: 'Tab-separated (Question [TAB] Answer)' },
@@ -20,15 +18,18 @@ const DELIMITER_OPTIONS: { value: ImportDelimiter; label: string }[] = [
 ];
 
 function CreateFlashcardsContent() {
-  const { handleDeckSaved, handleClassCreated, classes, refetchClasses } = useDashboard();
+  const { handleDeckSaved, classes, refetchClasses, planData, setUpgradeOpen } = useDashboard();
   const searchParams = useSearchParams();
   const router = useRouter();
   const urlClassId = searchParams.get('classId');
+  const startParam = searchParams.get('start');
+  const isPlus = planData?.plan === 'plus';
 
-  const [selectedClassId, setSelectedClassId] = useState<string | null>(urlClassId);
-  const [showCreateClass, setShowCreateClass] = useState(false);
+  // The Set (if any) comes from the URL, e.g. when arriving from a Set page.
+  const selectedClassId = urlClassId;
   const [showManualModal, setShowManualModal] = useState(false);
-  const [view, setView] = useState<View>('chooser');
+  const [showTopicUpgrade, setShowTopicUpgrade] = useState(false);
+  const [view, setView] = useState<View>(startParam === 'notes' ? 'paste' : 'chooser');
   const [savedTo, setSavedTo] = useState<{ deckTitle: string; className: string | null } | null>(null);
 
   const [importTitle, setImportTitle] = useState('');
@@ -39,9 +40,18 @@ function CreateFlashcardsContent() {
 
   const parsedCards = useMemo(() => parseImportText(importText, importDelimiter), [importText, importDelimiter]);
 
+  // Free users get an upgrade card instead of the topic generator.
+  const openTopic = () => {
+    if (isPlus) setView('topic');
+    else setShowTopicUpgrade(true);
+  };
+
   useEffect(() => {
-    if (urlClassId) setSelectedClassId(urlClassId);
-  }, [urlClassId]);
+    // Plan data loads asynchronously — if it turns out the user is Plus, drop the upgrade card.
+    if (isPlus) setShowTopicUpgrade(false);
+    if (startParam === 'topic') openTopic();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startParam, isPlus]);
 
   const attachToClass = async (deck: Deck) => {
     if (selectedClassId) {
@@ -58,13 +68,6 @@ function CreateFlashcardsContent() {
     }
     const className = selectedClassId ? classes.find(c => c.id === selectedClassId)?.title ?? null : null;
     setSavedTo({ deckTitle: deck.title, className });
-  };
-
-  const handleSaved = async (deck: Deck) => {
-    handleDeckSaved(deck);
-    setSavedTo(null);
-    await attachToClass(deck);
-    setView('chooser');
   };
 
   const handleImportCreate = async () => {
@@ -96,15 +99,8 @@ function CreateFlashcardsContent() {
     <div className="container">
       <div style={{ marginBottom: '1.5rem' }}>
         <h1 className="dashboard-page-title">Create Flashcards</h1>
-        <p className="dashboard-page-subtitle">Type your own cards, import a list, or let AI build the deck for you.</p>
+        <p className="dashboard-page-subtitle">Type your own cards, turn your notes into a deck, or generate one from a topic.</p>
       </div>
-
-      <ClassPicker
-        classes={classes}
-        selectedId={selectedClassId}
-        onSelect={setSelectedClassId}
-        onCreateNew={() => setShowCreateClass(true)}
-      />
 
       {savedTo && (
         <div className="create-saved-banner">
@@ -122,29 +118,33 @@ function CreateFlashcardsContent() {
 
       {view === 'chooser' && (
         <div className="create-flashcards-card">
-          <div className="modal-title" style={{ textAlign: 'center' }}>Make Flashcards</div>
-          <div className="make-flashcards-columns">
-            <div className="make-flashcards-col">
-              <h3>Manual</h3>
-              <button className="make-flashcards-manual-btn" onClick={() => setShowManualModal(true)}>
-                <Plus size={22} /><span>Type Flashcards</span>
-              </button>
-            </div>
-            <div className="make-flashcards-divider">— OR —</div>
-            <div className="make-flashcards-col make-flashcards-col-ai">
-              <h3>AI-Powered</h3>
-              <button className="make-flashcards-ai-btn" onClick={() => setView('import')}>
-                <FileText size={18} /><span>Import/Paste Flashcards</span>
-              </button>
-              <button className="make-flashcards-ai-btn" onClick={() => setView('ai-content')}>
-                <Sparkles size={18} /><span>Summarise From Content</span>
-              </button>
-              <button className="make-flashcards-ai-btn" onClick={() => setView('ai-topic')}>
-                <Wand2 size={18} /><span>Just Tell AI What I Want</span>
-              </button>
-            </div>
+          <div className="modal-title" style={{ textAlign: 'center' }}>How do you want to make your cards?</div>
+          <div className="make-options">
+            <button className="make-option make-option-manual" onClick={() => setShowManualModal(true)}>
+              <Plus size={26} />
+              <b>Type them yourself</b>
+              <span>Start a blank deck and write your own cards.</span>
+            </button>
+            <button className="make-option" onClick={() => setView('paste')}>
+              <FileText size={26} />
+              <b>Paste your notes</b>
+              <span>Drop in a big batch of text and we&apos;ll turn it into cards.</span>
+            </button>
+            <button className="make-option" onClick={() => setView('upload')}>
+              <UploadCloud size={26} />
+              <b>Upload documents</b>
+              <span>PDFs, Word docs, text files or photos of your notes.</span>
+            </button>
+            <button className="make-option" onClick={openTopic}>
+              <Wand2 size={26} />
+              <b>Generate from a topic {!isPlus && <span className="gen-tab-badge">PLUS</span>}</b>
+              <span>Type a topic and a full deck is written for you.</span>
+            </button>
           </div>
-          <p className="modal-note">💡 You can always switch between manual and automatic creation once you are in Edit mode.</p>
+          <p className="modal-note">
+            Already have a list of questions and answers?{' '}
+            <button className="make-link" onClick={() => setView('import')}>Import it as a list</button>
+          </p>
         </div>
       )}
 
@@ -200,10 +200,25 @@ function CreateFlashcardsContent() {
         </div>
       )}
 
-      {(view === 'ai-content' || view === 'ai-topic') && (
+      {(view === 'paste' || view === 'upload' || view === 'topic') && (
         <div className="create-flashcards-card">
           <button className="create-flashcards-back" onClick={() => setView('chooser')}><ArrowLeft size={16} /> Back</button>
-          <FlashcardGenerator hideFeatures onDeckSaved={handleSaved} initialTab={view === 'ai-content' ? 'paste' : 'topic'} />
+          <CreateFromSource mode={view} classId={selectedClassId} />
+        </div>
+      )}
+
+      {showTopicUpgrade && (
+        <div className="modal-overlay active" onClick={() => setShowTopicUpgrade(false)}>
+          <div className="modal" style={{ textAlign: 'center' }} onClick={e => e.stopPropagation()}>
+            <button className="modal-x" onClick={() => setShowTopicUpgrade(false)} aria-label="Close"><X size={18} /></button>
+            <div style={{ display: 'flex', justifyContent: 'center', color: 'var(--cobalt-blue)', marginBottom: '0.75rem' }}><Sparkles size={36} strokeWidth={1.75} /></div>
+            <div className="modal-title">Generating from a topic is a Plus feature</div>
+            <p className="modal-note" style={{ marginBottom: '1.25rem' }}>
+              Upgrade to Plus to type any topic and get a full deck written for you. You can still type cards yourself, paste notes or upload documents for free.
+            </p>
+            <button className="modal-btn" onClick={() => { setShowTopicUpgrade(false); setUpgradeOpen(true); }}>Upgrade to Plus</button>
+            <button className="modal-close" onClick={() => setShowTopicUpgrade(false)}>Maybe later</button>
+          </div>
         </div>
       )}
 
@@ -215,12 +230,6 @@ function CreateFlashcardsContent() {
         />
       )}
 
-      {showCreateClass && (
-        <ClassCreationFlow
-          onComplete={(cls) => { handleClassCreated(cls); setSelectedClassId(cls.id); setShowCreateClass(false); }}
-          onCancel={() => setShowCreateClass(false)}
-        />
-      )}
     </div>
   );
 }

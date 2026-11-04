@@ -21,7 +21,7 @@ export interface InputSectionHandle {
   trimToLimit: () => void;
 }
 
-interface UploadedFile {
+export interface UploadedFile {
   name: string;
   content: string;
 }
@@ -30,7 +30,7 @@ type Tab = InputSectionTab;
 
 const TOPIC_CHIPS = ['Photosynthesis', 'The French Revolution', 'Algebra basics'];
 
-async function readFile(file: File): Promise<UploadedFile> {
+export async function readFile(file: File): Promise<UploadedFile> {
   const ext = file.name.split('.').pop()?.toLowerCase();
 
   if (file.type.startsWith('image/')) {

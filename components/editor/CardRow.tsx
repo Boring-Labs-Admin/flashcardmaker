@@ -31,8 +31,8 @@ function MediaTools({
   onEnhance?: () => void;
 }) {
   const { deckId, updateCard } = useCardEditor();
-  const { isAdmin, planData } = useDashboard();
-  const isPlus = isAdmin || planData?.plan === 'plus';
+  const { planData } = useDashboard();
+  const isPlus = planData?.plan === 'plus';
   const [plusPrompt, setPlusPrompt] = useState<PlusFeature | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);

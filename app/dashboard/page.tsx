@@ -11,11 +11,11 @@ import { useDashboard } from '@/lib/dashboard-context';
 type View = 'chooser' | 'paste' | 'upload' | 'topic';
 
 function CreateFlashcardsContent() {
-  const { planData, isAdmin } = useDashboard();
+  const { planData } = useDashboard();
   const searchParams = useSearchParams();
   const urlClassId = searchParams.get('classId');
   const startParam = searchParams.get('start');
-  const isPlus = isAdmin || planData?.plan === 'plus';
+  const isPlus = planData?.plan === 'plus';
 
   // The Set (if any) comes from the URL, e.g. when arriving from a Set page.
   const selectedClassId = urlClassId;

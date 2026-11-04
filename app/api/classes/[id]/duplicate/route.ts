@@ -1,7 +1,7 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { isPlusOrAdmin } from '@/lib/planCheck';
+import { isPlusUser } from '@/lib/planCheck';
 
 // POST /api/classes/[id]/duplicate — Pro only. Clones the class and its decks
 // (title/description/flashcards/color), but never card_confidence — the copy
@@ -16,7 +16,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
   const userId = session.user.id;
 
-  if (!(await isPlusOrAdmin(userId, session.user.email))) {
+  if (!(await isPlusUser(userId))) {
     return NextResponse.json({ error: 'Duplicate Class is a Plus feature.', upgradeRequired: true }, { status: 403 });
   }
 

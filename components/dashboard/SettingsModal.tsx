@@ -17,7 +17,7 @@ export default function SettingsModal() {
   const { user } = useAuth();
   const {
     isSettingsOpen, setSettingsOpen, settingsTab, setSettingsTab,
-    planData, isAdmin, checkoutLoading, handlePortal,
+    planData, checkoutLoading, handlePortal,
     deleteError, deleteLoading, handleDeleteAccount,
     setHelpOpen,
   } = useDashboard();
@@ -110,7 +110,7 @@ export default function SettingsModal() {
             <div style={{ ...mono, textAlign: 'left' }}>
               <h3 style={{ marginBottom: '1.5rem' }}>Billing</h3>
 
-              {(isPlus || isAdmin) ? (
+              {isPlus ? (
                 <div style={{
                   border: '2px solid #004AAD', borderRadius: 12, padding: '1.5rem',
                   background: '#004AAD', color: 'white', maxWidth: 480,

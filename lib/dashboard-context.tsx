@@ -7,7 +7,6 @@ import { useAuth } from '@/lib/auth-context';
 import { Deck, ClassSummary } from '@/lib/types';
 import { UserPlanData } from '@/lib/plans';
 
-const ADMIN_EMAIL = 'admin@boringlabs.co.uk';
 
 export type SettingsTab = 'account' | 'billing' | 'support';
 
@@ -20,7 +19,6 @@ interface DashboardContextType {
   handleClassCreated: (cls: ClassSummary) => void;
   handleClassRemoved: (id: string) => void;
   planData: UserPlanData | null;
-  isAdmin: boolean;
   paymentSuccess: boolean;
   dismissPaymentSuccess: () => void;
   checkoutLoading: string | null;
@@ -65,8 +63,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const [settingsTab, setSettingsTab] = useState<SettingsTab>('account');
   const [isHelpOpen, setHelpOpen] = useState(false);
 
-  const isAdmin = user?.email === ADMIN_EMAIL;
-
   // Detect ?payment=success after returning from Stripe Checkout
   useEffect(() => {
     if (searchParams.get('payment') === 'success') {
@@ -108,12 +104,10 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       .catch(() => {})
       .finally(() => setFetching(false));
 
-    if (user.email !== ADMIN_EMAIL) {
-      fetch('/api/user/plan')
-        .then(r => r.json())
-        .then(data => { if (!data.anonymous) setPlanData(data); })
-        .catch(() => {});
-    }
+    fetch('/api/user/plan')
+      .then(r => r.json())
+      .then(data => { if (!data.anonymous) setPlanData(data); })
+      .catch(() => {});
   }, [user]);
 
   const refetchClasses = useCallback(async () => {
@@ -206,7 +200,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       await signOut();
       router.push('/');
     } else {
-      setDeleteError('Failed to delete account. Please try again or contact support@flashcardmaker.co.uk');
+      const data = await res.json().catch(() => null);
+      setDeleteError(`Failed to delete account${data?.error ? ` (${data.error})` : ''}. Please try again or contact support@flashcardmaker.co.uk`);
       setDeleteLoading(false);
     }
   };
@@ -237,7 +232,6 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       handleClassCreated,
       handleClassRemoved,
       planData,
-      isAdmin,
       paymentSuccess,
       dismissPaymentSuccess: () => setPaymentSuccess(false),
       checkoutLoading,

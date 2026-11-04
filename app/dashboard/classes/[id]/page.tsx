@@ -28,8 +28,8 @@ export default function ClassOverviewPage() {
   const params = useParams();
   const router = useRouter();
   const classId = params.id as string;
-  const { isAdmin, planData, handleClassRemoved, refetchClasses } = useDashboard();
-  const isPlusOrAdmin = isAdmin || planData?.plan === 'plus';
+  const { planData, handleClassRemoved, refetchClasses } = useDashboard();
+  const isPlus = planData?.plan === 'plus';
 
   const [detail, setDetail] = useState<ClassDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -156,7 +156,7 @@ export default function ClassOverviewPage() {
               <Zap size={15} /> Study
             </button>
             <ClassMoreMenu
-              isPlusOrAdmin={isPlusOrAdmin}
+              isPlusOrAdmin={isPlus}
               onImportMakeFlashcards={() => setShowMakeFlashcards(true)}
               onDuplicate={handleDuplicate}
               onResetStats={handleResetStats}

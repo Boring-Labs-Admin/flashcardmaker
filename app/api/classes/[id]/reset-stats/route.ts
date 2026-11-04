@@ -2,7 +2,7 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-import { isPlusOrAdmin } from '@/lib/planCheck';
+import { isPlusUser } from '@/lib/planCheck';
 
 // POST /api/classes/[id]/reset-stats — Pro only. Deletes all card_confidence
 // rows for this user's decks in this class, and zeroes their cached mastery_pct.
@@ -16,7 +16,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
   const userId = session.user.id;
 
-  if (!(await isPlusOrAdmin(userId, session.user.email))) {
+  if (!(await isPlusUser(userId))) {
     return NextResponse.json({ error: 'Reset Class Stats is a Plus feature.', upgradeRequired: true }, { status: 403 });
   }
 

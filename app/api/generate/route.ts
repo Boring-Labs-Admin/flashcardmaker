@@ -20,7 +20,6 @@ const SUPPORTED_INLINE_MIME_TYPES = new Set([
   'image/webp', 'image/heic', 'image/heif',
 ]);
 
-const ADMIN_EMAIL = 'admin@boringlabs.co.uk';
 const PLUS_REQUESTS_PER_MINUTE = 10;
 const MAX_FILE_BYTES = 20 * 1024 * 1024; // 20MB total base64 payload
 
@@ -43,7 +42,6 @@ export async function POST(request: NextRequest) {
   // 2. Get session
   const supabase = createRouteHandlerClient({ cookies });
   const { data: { session } } = await supabase.auth.getSession();
-  const isAdmin = session?.user?.email === ADMIN_EMAIL;
 
   // IP identifier (used for anonymous rate limiting)
   const forwarded = request.headers.get('x-forwarded-for');
@@ -56,18 +54,14 @@ export async function POST(request: NextRequest) {
   let fileLimit: number = PLANS.free.fileLimit;
   let isAnonymous = false;
 
-  // User ID to deduct from — set for free-plan users, null for admin/plus/anonymous
+  // User ID to deduct from — set for free-plan users, null for plus/anonymous
   let creditUserId: string | null = null;
   // User ID for generation logging and rate limiting — set for all logged-in users
   let loggedInUserId: string | null = null;
   // Whether this user can use Plus-only features
-  let isPlusOrAdmin = isAdmin;
+  let isPlus = false;
 
-  if (isAdmin) {
-    cardLimit = PLANS.plus.cardLimit;
-    charLimit = PLANS.plus.charLimit;
-    fileLimit = PLANS.plus.fileLimit;
-  } else if (session?.user) {
+  if (session?.user) {
     // Logged-in user — use user_plans
     const userId = session.user.id;
     loggedInUserId = userId;
@@ -93,7 +87,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (planData.plan === 'plus') {
-      isPlusOrAdmin = true;
+      isPlus = true;
       cardLimit = PLANS.plus.cardLimit;
       charLimit = PLANS.plus.charLimit;
       fileLimit = PLANS.plus.fileLimit;
@@ -169,7 +163,7 @@ export async function POST(request: NextRequest) {
 
   // Prompt-only generation — Plus/admin only, skip content validation
   if (generationMode === 'prompt') {
-    if (!isPlusOrAdmin) {
+    if (!isPlus) {
       return NextResponse.json(
         { error: 'Generating from a prompt is a Plus feature. Upgrade to unlock it.' },
         { status: 403 }

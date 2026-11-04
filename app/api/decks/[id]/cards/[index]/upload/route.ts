@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { Flashcard } from '@/lib/types';
-import { hasPlusAccess } from '@/lib/plusAccess';
+import { isPlusUser } from '@/lib/planCheck';
 
 export const maxDuration = 30;
 
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  if (!(await hasPlusAccess(session.user.id, session.user.email))) {
+  if (!(await isPlusUser(session.user.id))) {
     return NextResponse.json({ error: 'Adding images and sound is a Plus feature.', upgradeRequired: true }, { status: 403 });
   }
 

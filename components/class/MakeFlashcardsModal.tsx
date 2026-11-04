@@ -26,7 +26,7 @@ export default function MakeFlashcardsModal({
         <div className="modal-title" style={{ textAlign: 'center' }}>Make Flashcards</div>
 
         <div className="make-options">
-          <button className="make-option make-option-manual" onClick={() => { onClose(); onTypeManually(); }}>
+          <button className="make-option" onClick={() => { onClose(); onTypeManually(); }}>
             <Plus size={26} />
             <b>Type them yourself</b>
             <span>Start a blank deck and write your own cards.</span>
@@ -41,7 +41,7 @@ export default function MakeFlashcardsModal({
             <b>Upload documents</b>
             <span>PDFs, Word docs, text files or photos of your notes.</span>
           </button>
-          <button className="make-option" onClick={() => goTo('topic')}>
+          <button className="make-option make-option-featured" onClick={() => goTo('topic')}>
             <Wand2 size={26} />
             <b>Generate from a topic <span className="gen-tab-badge">PLUS</span></b>
             <span>Type a topic and a full deck is written for you.</span>

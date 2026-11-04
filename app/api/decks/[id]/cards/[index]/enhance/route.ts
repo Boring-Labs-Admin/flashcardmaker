@@ -3,11 +3,11 @@ import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI, Type } from '@google/genai';
 import { supabaseAdmin } from '@/lib/supabase-admin';
+import { hasPlusAccess } from '@/lib/plusAccess';
 
 export const maxDuration = 30;
 
 const ADMIN_EMAIL = 'admin@boringlabs.co.uk';
-const FREE_ENHANCES_PER_DAY = 20;
 const PLUS_ENHANCES_PER_DAY = 100;
 
 // POST /api/decks/[id]/cards/[index]/enhance — AI-improve a single card's wording
@@ -26,20 +26,15 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // Daily cap — this endpoint has no credit cost of its own, so without a limit
-  // any logged-in user could call it unboundedly for free.
-  const isAdmin = session.user.email === ADMIN_EMAIL;
-  let dailyLimit = FREE_ENHANCES_PER_DAY;
-  if (isAdmin) {
-    dailyLimit = Infinity;
-  } else {
-    const { data: planData } = await supabaseAdmin
-      .from('user_plans')
-      .select('plan')
-      .eq('user_id', session.user.id)
-      .single();
-    if (planData?.plan === 'plus') dailyLimit = PLUS_ENHANCES_PER_DAY;
+  // AI enhancement is Plus-only.
+  if (!(await hasPlusAccess(session.user.id, session.user.email))) {
+    return NextResponse.json({ error: 'AI enhancement is a Plus feature.', upgradeRequired: true }, { status: 403 });
   }
+
+  // Daily cap — this endpoint has no credit cost of its own, so without a limit
+  // any Plus user could call it unboundedly.
+  const isAdmin = session.user.email === ADMIN_EMAIL;
+  const dailyLimit = isAdmin ? Infinity : PLUS_ENHANCES_PER_DAY;
 
   if (dailyLimit !== Infinity) {
     const since = new Date();

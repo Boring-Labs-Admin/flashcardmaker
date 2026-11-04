@@ -679,7 +679,7 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .deck-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,74,173,0.2); }
 .deck-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; }
 .deck-topic-badge { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; background: var(--cobalt-blue); color: var(--yellow-bolt); padding: 3px 10px; border-radius: 4px; text-transform: capitalize; }
-.deck-card-actions { display: flex; align-items: center; gap: 0.25rem; flex-shrink: 0; }
+.deck-card-actions { margin-left: auto; display: flex; align-items: center; gap: 0.25rem; flex-shrink: 0; }
 .deck-action-btn { display: inline-flex; align-items: center; background: none; border: none; cursor: pointer; opacity: 0.45; padding: 2px; line-height: 1; transition: opacity 0.2s; }
 .deck-action-btn:hover { opacity: 1; }
 .deck-delete-btn { display: inline-flex; align-items: center; background: none; border: none; cursor: pointer; opacity: 0.65; padding: 2px; line-height: 1; transition: opacity 0.2s; flex-shrink: 0; }
@@ -704,6 +704,7 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .deck-card-title-input { font-size: 1.1rem; font-weight: 700; color: var(--cobalt-blue); line-height: 1.3; border: 2px solid var(--cobalt-blue); border-radius: 6px; padding: 2px 6px; width: 100%; background: white; font-family: inherit; outline: none; }
 .deck-card-meta { display: flex; justify-content: space-between; font-size: 0.8rem; opacity: 0.6; font-weight: 500; }
 .deck-btn-row { display: flex; gap: 0.5rem; margin-top: auto; }
+.deck-review-btn { display: flex; align-items: center; justify-content: center; gap: 0.4rem; flex: 1; padding: 0.7rem 0.75rem; font-size: 0.85rem; }
 .deck-study-btn { display: flex; align-items: center; justify-content: center; gap: 0.4rem; flex: 1; padding: 0.7rem 0.75rem; font-size: 0.85rem; }
 
 .btn-outline { background: white; border: 2px solid var(--cobalt-blue); color: var(--cobalt-blue); border-radius: 8px; padding: 0.65rem 1.25rem; font-family: "IBM Plex Mono", monospace; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: all 0.15s; }
@@ -1186,7 +1187,6 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 
 /* ── Deck card mastery ring (top-right corner) + Set tag ── */
 .deck-card { position: relative; }
-.deck-mastery-ring-corner { position: absolute; top: 0.75rem; right: 0.75rem; z-index: 1; }
 .deck-set-tag { display: inline-flex; align-items: center; gap: 0.4rem; align-self: flex-start; max-width: 100%; background: white; border: 1px solid var(--line); border-radius: 999px; padding: 0.15rem 0.6rem 0.15rem 0.2rem; font-size: 0.72rem; font-weight: 600; color: var(--cobalt-blue); }
 .deck-set-tag span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
@@ -1296,9 +1296,9 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .make-option b { font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; }
 .make-option span { font-size: 0.8rem; font-weight: 500; color: var(--slate); line-height: 1.4; }
 .make-option:hover { background: var(--light-blue); border-color: var(--cobalt-blue); }
-.make-option-manual { background: linear-gradient(135deg, #ff8a3d, #ff6b00); border-color: transparent; color: white; }
-.make-option-manual span { color: rgba(255,255,255,0.9); }
-.make-option-manual:hover { background: linear-gradient(135deg, #ff8a3d, #ff6b00); filter: brightness(1.05); border-color: transparent; }
+.make-option-featured { background: linear-gradient(135deg, #ff8a3d, #ff6b00); border-color: transparent; color: white; }
+.make-option-featured span { color: rgba(255,255,255,0.9); }
+.make-option-featured:hover { background: linear-gradient(135deg, #ff8a3d, #ff6b00); filter: brightness(1.05); border-color: transparent; }
 .source-hint { text-align: right; font-size: 0.75rem; opacity: 0.6; margin: -0.35rem 0 0.25rem; }
 .make-link { background: none; border: none; padding: 0; color: var(--cobalt-blue); font: inherit; font-weight: 700; cursor: pointer; text-decoration: underline; }
 @media (max-width: 640px) { .make-options { grid-template-columns: 1fr; } }

@@ -5,6 +5,16 @@ import { Image as ImageIcon, Music, Sparkles, X, Loader2 } from 'lucide-react';
 import { Flashcard } from '@/lib/types';
 import { useCardEditor } from './CardEditorProvider';
 import { compressImage, dataUrlToBlob } from '@/lib/imageCompression';
+import { useDashboard } from '@/lib/dashboard-context';
+import PlusFeatureModal from '@/components/dashboard/PlusFeatureModal';
+
+type PlusFeature = 'image' | 'audio' | 'enhance';
+
+const PLUS_COPY: Record<PlusFeature, { title: string; description: string }> = {
+  image: { title: 'Adding images is a Plus feature', description: 'Upgrade to Plus to add pictures to your flashcards.' },
+  audio: { title: 'Adding sound is a Plus feature', description: 'Upgrade to Plus to attach MP3 audio to your flashcards.' },
+  enhance: { title: 'AI enhancement is a Plus feature', description: 'Upgrade to Plus to have AI improve the wording of your flashcards.' },
+};
 
 const IMAGE_ACCEPT = 'image/jpeg,image/png,image/webp';
 const AUDIO_ACCEPT = 'audio/mpeg';
@@ -21,6 +31,9 @@ function MediaTools({
   onEnhance?: () => void;
 }) {
   const { deckId, updateCard } = useCardEditor();
+  const { isAdmin, planData } = useDashboard();
+  const isPlus = isAdmin || planData?.plan === 'plus';
+  const [plusPrompt, setPlusPrompt] = useState<PlusFeature | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState<'image' | 'audio' | null>(null);
@@ -45,7 +58,11 @@ function MediaTools({
 
       const res = await fetch(`/api/decks/${deckId}/cards/${index}/upload`, { method: 'POST', body: formData });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || 'Upload failed.'); return; }
+      if (!res.ok) {
+        if (data.upgradeRequired) setPlusPrompt(type);
+        else setError(data.error || 'Upload failed.');
+        return;
+      }
       updateCard(index, { [type === 'image' ? imageField : audioField]: data.url });
     } catch {
       setError('Upload failed. Please try again.');
@@ -70,14 +87,14 @@ function MediaTools({
   return (
     <>
       <div className="card-media-tools">
-        <button type="button" className="card-media-btn" title="Add an image to your Flashcard" onClick={() => imageInputRef.current?.click()} disabled={uploading !== null}>
+        <button type="button" className="card-media-btn" title={`Add an image to your Flashcard${isPlus ? '' : ' (Plus)'}`} onClick={() => isPlus ? imageInputRef.current?.click() : setPlusPrompt('image')} disabled={uploading !== null}>
           {uploading === 'image' ? <Loader2 size={14} className="cbr-spin" /> : <ImageIcon size={14} />}
         </button>
-        <button type="button" className="card-media-btn" title="Add sound (MP3) to your Flashcard" onClick={() => audioInputRef.current?.click()} disabled={uploading !== null}>
+        <button type="button" className="card-media-btn" title={`Add sound (MP3) to your Flashcard${isPlus ? '' : ' (Plus)'}`} onClick={() => isPlus ? audioInputRef.current?.click() : setPlusPrompt('audio')} disabled={uploading !== null}>
           {uploading === 'audio' ? <Loader2 size={14} className="cbr-spin" /> : <Music size={14} />}
         </button>
         {onEnhance && (
-          <button type="button" className="card-media-btn card-enhance-btn" title="Enhance this Flashcard with AI" onClick={onEnhance}>
+          <button type="button" className="card-media-btn card-enhance-btn" title={`Enhance this Flashcard with AI${isPlus ? '' : ' (Plus)'}`} onClick={() => isPlus ? onEnhance() : setPlusPrompt('enhance')}>
             <Sparkles size={14} />
           </button>
         )}
@@ -88,6 +105,14 @@ function MediaTools({
       </div>
 
       {error && <div className="card-media-error">{error}</div>}
+
+      {plusPrompt && (
+        <PlusFeatureModal
+          title={PLUS_COPY[plusPrompt].title}
+          description={PLUS_COPY[plusPrompt].description}
+          onClose={() => setPlusPrompt(null)}
+        />
+      )}
 
       {card[imageField] && (
         <div className="card-image-preview">

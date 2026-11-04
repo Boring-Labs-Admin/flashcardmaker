@@ -3,7 +3,6 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Pencil, Palette, Trash2, Zap, ListChecks, FolderInput } from 'lucide-react';
 import { Deck, ClassSummary } from '@/lib/types';
-import MasteryRing from '@/components/MasteryRing';
 import ClassCoverIcon from '@/components/class/ClassCoverIcon';
 
 const COLORS = [
@@ -89,10 +88,6 @@ export default function DeckCard({ deck, onDelete, onStudy, onUpdate, sets }: De
       className="deck-card"
       style={{ backgroundColor: bgColor }}
     >
-      {!!deck.mastery_pct && deck.mastery_pct > 0 && (
-        <div className="deck-mastery-ring-corner"><MasteryRing pct={deck.mastery_pct} size={40} strokeWidth={4} /></div>
-      )}
-
       <div className="deck-card-top">
         {deck.topic && <span className="deck-topic-badge">{deck.topic}</span>}
         <div className="deck-card-actions">
@@ -205,10 +200,10 @@ export default function DeckCard({ deck, onDelete, onStudy, onUpdate, sets }: De
         </div>
       )}
       <div className="deck-btn-row">
-        <button className="btn deck-study-btn" onClick={() => onStudy(deck)}><Zap size={15} /> Study</button>
-        <button className="deck-action-btn deck-edit-cards-btn" onClick={() => router.push(`/dashboard/decks/${deck.id}/edit`)} title="Edit cards">
-          <ListChecks size={15} />
+        <button className="btn-outline deck-review-btn" onClick={() => router.push(`/dashboard/decks/${deck.id}/edit`)} title="Review and edit this deck's cards">
+          <ListChecks size={15} /> Review
         </button>
+        <button className="btn deck-study-btn" onClick={() => onStudy(deck)}><Zap size={15} /> Study</button>
       </div>
     </div>
   );

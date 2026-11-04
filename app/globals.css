@@ -1665,12 +1665,7 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
   .enhance-compare-cols { grid-template-columns: 1fr; }
 }
 
-/* ── Create Flashcards page (class-aware) ── */
-  display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; background: white; border: 1.5px solid var(--line);
-  border-radius: 999px; padding: 0.4rem 0.9rem 0.4rem 0.4rem; font-family: var(--sans); font-size: 0.85rem; font-weight: 600;
-  color: var(--ink); cursor: pointer; white-space: nowrap; transition: border-color 0.15s ease, background 0.15s ease;
-}
-
+/* ── Create Flashcards page (saved banner) ── */
 .create-saved-banner {
   display: flex; align-items: center; gap: 0.6rem; background: #e8f5e9; border: 1px solid #a5d6a7; color: #1a5e20;
   border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 0.88rem; flex-wrap: wrap;

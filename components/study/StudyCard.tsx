@@ -2,7 +2,7 @@
 
 import LatexRenderer from '@/components/LatexRenderer';
 import { useStudySession } from './StudySessionProvider';
-import { CONFIDENCE_COLORS, CONFIDENCE_LABELS, UNRATED_COLOR } from './cbrConstants';
+import { CONFIDENCE_COLORS, CONFIDENCE_LABELS } from './cbrConstants';
 import { Confidence } from '@/lib/types';
 
 const RATING_ORDER: Confidence[] = [1, 2, 3, 4, 5];
@@ -14,7 +14,7 @@ export default function StudyCard() {
 
   const barColor = currentCard.currentConfidence
     ? CONFIDENCE_COLORS[currentCard.currentConfidence]
-    : UNRATED_COLOR;
+    : 'var(--cobalt-blue)'; // unrated cards use the brand blue; rated ones keep the confidence colour
 
   return (
     <>

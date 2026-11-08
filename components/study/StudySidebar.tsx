@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useStudySession } from './StudySessionProvider';
 import { CONFIDENCE_COLORS, UNRATED_COLOR, formatRoundTimer } from './cbrConstants';
 import MasteryRing from '@/components/MasteryRing';
@@ -42,7 +42,13 @@ export default function StudySidebar() {
     totalCards,
   } = useStudySession();
 
+  const dotsRef = useRef<HTMLDivElement>(null);
   const [tab, setTab] = useState<'round' | 'overall'>('round');
+
+  // Keep the current card's dot visible as the (now independently scrolling) list advances.
+  useEffect(() => {
+    dotsRef.current?.querySelector('[data-active="true"]')?.scrollIntoView({ block: 'nearest' });
+  }, [currentCard]);
   const [overallStat, setOverallStat] = useState<{ uniqueCardsStudied: number; totalCards: number } | null>(null);
 
   useEffect(() => {
@@ -90,13 +96,13 @@ export default function StudySidebar() {
         </div>
       )}
 
-      <div className="cbr-dots">
+      <div className="cbr-dots" ref={dotsRef}>
         {initialCardKeys.map(key => {
           const rating = sessionRatings[key];
           const activeKey = currentCard ? `${currentCard.deckId ?? primaryDeckId}:${currentCard.index}` : null;
           const isActive = activeKey === key && !rating;
           const color = rating ? CONFIDENCE_COLORS[rating] : (isActive ? '#ffffff' : UNRATED_COLOR);
-          return <span key={key} className="cbr-dot" style={{ background: color }} />;
+          return <span key={key} className="cbr-dot" data-active={isActive} style={{ background: color }} />;
         })}
       </div>
 

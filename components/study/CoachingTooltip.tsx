@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { X, HelpCircle } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useStudySession } from './StudySessionProvider';
 
 export default function CoachingTooltip() {
@@ -19,7 +19,6 @@ export default function CoachingTooltip() {
     <div className="cbr-coaching-tooltip" key={coachingMessage.id}>
       <button className="cbr-coaching-close" onClick={dismissCoaching} aria-label="Dismiss"><X size={16} /></button>
       <p>{coachingMessage.text}</p>
-      <div className="cbr-coaching-help"><HelpCircle size={14} /> Help</div>
     </div>
   );
 }

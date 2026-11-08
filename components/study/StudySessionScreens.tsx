@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { X } from 'lucide-react';
+import { X, HelpCircle } from 'lucide-react';
+import { useDashboard } from '@/lib/dashboard-context';
 import { Confidence } from '@/lib/types';
 import { StudySessionProvider, useStudySession } from './StudySessionProvider';
 import StudyCard from './StudyCard';
@@ -23,6 +24,7 @@ interface DeckSessionSummary {
 
 function Screens({ onExit }: { onExit: () => void }) {
   const { isComplete, pointsEarned, bonusPoints, lastRating, endSessionEarly } = useStudySession();
+  const { setHelpOpen } = useDashboard();
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackRating, setFeedbackRating] = useState<Confidence | null>(null);
   const [ratedOnce, setRatedOnce] = useState(false);
@@ -68,6 +70,10 @@ function Screens({ onExit }: { onExit: () => void }) {
         </div>
         <CoachingTooltip />
       </div>
+
+      <button className="cbr-help-btn" onClick={() => setHelpOpen(true)}>
+        <HelpCircle size={14} /> Help
+      </button>
 
       {showFeedback && feedbackRating && (
         <ConfidenceFeedbackScreen rating={feedbackRating} onDismiss={dismissFeedback} />

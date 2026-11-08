@@ -46,7 +46,8 @@ export default function HelpModal() {
   if (!isHelpOpen) return null;
 
   return (
-    <div className="modal-overlay active" onClick={() => setHelpOpen(false)}>
+    // z-index above the full-screen study session (1000) and its overlays (up to 1300)
+    <div className="modal-overlay active" style={{ zIndex: 1500 }} onClick={() => setHelpOpen(false)}>
       <div className="modal modal-wide" onClick={(e) => e.stopPropagation()}>
         <div className="modal-title">Help &amp; FAQ</div>
         <div className="modal-subtitle">Quick answers to common questions</div>

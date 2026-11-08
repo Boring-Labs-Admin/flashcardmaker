@@ -64,8 +64,8 @@ function CreateFlashcardsContent() {
             </button>
             <button className="make-option make-option-featured" onClick={openTopic}>
               <Wand2 size={26} />
-              <b>Generate from a topic {!isPlus && <span className="gen-tab-badge">PLUS</span>}</b>
-              <span>Type a topic and a full deck is written for you.</span>
+              <b>Generate with AI {!isPlus && <span className="gen-tab-badge">PLUS</span>}</b>
+              <span>Type a topic and AI writes a full deck for you.</span>
             </button>
           </div>
         </div>
@@ -80,8 +80,8 @@ function CreateFlashcardsContent() {
 
       {showTopicUpgrade && (
         <PlusFeatureModal
-          title="Generating from a topic is a Plus feature"
-          description="Upgrade to Plus to type any topic and get a full deck written for you. You can still type cards yourself, paste notes or upload documents for free."
+          title="Generating with AI is a Plus feature"
+          description="Upgrade to Plus to type any topic and have AI write a full deck for you. You can still type cards yourself, paste notes or upload documents for free."
           onClose={() => setShowTopicUpgrade(false)}
         />
       )}

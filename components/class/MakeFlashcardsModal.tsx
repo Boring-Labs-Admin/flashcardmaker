@@ -43,8 +43,8 @@ export default function MakeFlashcardsModal({
           </button>
           <button className="make-option make-option-featured" onClick={() => goTo('topic')}>
             <Wand2 size={26} />
-            <b>Generate from a topic <span className="gen-tab-badge">PLUS</span></b>
-            <span>Type a topic and a full deck is written for you.</span>
+            <b>Generate with AI <span className="gen-tab-badge">PLUS</span></b>
+            <span>Type a topic and AI writes a full deck for you.</span>
           </button>
         </div>
       </div>

@@ -17,7 +17,7 @@ const TOPIC_CHIPS = ['Photosynthesis', 'The French Revolution', 'Algebra basics'
 const COPY: Record<CreateSourceMode, { title: string; note: string }> = {
   paste: { title: 'Paste your notes', note: 'Paste a big batch of text and we’ll turn it into flashcards.' },
   upload: { title: 'Upload documents', note: 'Add PDFs, Word docs, text files or photos of your notes.' },
-  topic: { title: 'Generate from a topic', note: 'Tell us what you’re studying and we’ll write the deck for you.' },
+  topic: { title: 'Generate with AI', note: 'Tell us what you’re studying and AI will write the deck for you.' },
 };
 
 // Native dashboard version of the homepage generator: same API, dashboard styling,

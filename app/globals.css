@@ -891,6 +891,11 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 .library-card-hint { font-size: 0.65rem; font-weight: 600; opacity: 0.45; text-align: right; }
 
 /* ── LIBRARY GATE ────────────────────────────────── */
+.library-questions { padding: 2rem 0 1rem; border-top: 1.5px solid #E0E8F5; }
+.library-questions-intro { font-size: 0.85rem; line-height: 1.6; opacity: 0.7; margin: 0.5rem 0 1rem; }
+.library-questions-list { margin: 0 0 1rem; padding-left: 1.4rem; font-size: 0.85rem; line-height: 1.7; columns: 2; column-gap: 2.5rem; }
+.library-questions-list li { break-inside: avoid; margin-bottom: 0.3rem; }
+@media (max-width: 720px) { .library-questions-list { columns: 1; } }
 .library-related { padding: 2rem 0 1rem; border-top: 1.5px solid #E0E8F5; }
 .library-related-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
 .library-related-title { font-size: 1.1rem; font-weight: 800; color: var(--cobalt-blue); margin: 0; }

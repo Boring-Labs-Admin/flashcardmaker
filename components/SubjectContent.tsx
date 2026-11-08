@@ -43,7 +43,31 @@ export default function SubjectContent({ topic }: SubjectContentProps) {
   const Icon = entry?.icon;
   const shortLabel = seo?.h1?.replace(' Flashcards', '') ?? topic;
 
-  const otherSubjects = SUBJECTS.filter(s => s.href !== `/${topic}-flashcards`).slice(0, 4);
+  // Every other subject (not the same first four on every page) so link equity is shared around.
+  const otherSubjects = SUBJECTS.filter(s => s.href !== `/${topic}-flashcards`);
+  const otherLevels = CURRICULA.filter(c => c.href !== `/${topic}-flashcards`);
+
+  const pageUrl = `https://flashcardmaker.co.uk/${topic}-flashcards`;
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://flashcardmaker.co.uk' },
+      { '@type': 'ListItem', position: 2, name: seo?.h1 ?? `${shortLabel} Flashcards`, item: pageUrl },
+    ],
+  };
+  const deckListSchema = relatedDecks.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `Free ${shortLabel} flashcard decks`,
+    numberOfItems: relatedDecks.length,
+    itemListElement: relatedDecks.map((d, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: d.title,
+      url: `https://flashcardmaker.co.uk/library/${d.slug}`,
+    })),
+  } : null;
 
   // Split into two columns so the deck list matches the reference's 2-up card grid
   const half = Math.ceil(relatedDecks.length / 2);
@@ -51,6 +75,11 @@ export default function SubjectContent({ topic }: SubjectContentProps) {
 
   return (
     <main>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      {deckListSchema && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(deckListSchema) }} />
+      )}
+
       {/* Interactive section — NavBar, hero, FlashcardGenerator, login modal */}
       <SubjectPageClient
         title={seo?.h1 ?? topic}
@@ -112,6 +141,17 @@ export default function SubjectContent({ topic }: SubjectContentProps) {
                 );
               })}
             </div>
+            {otherLevels.length > 0 && (
+              <p style={{ marginTop: '1.5rem', fontSize: '0.9rem', fontFamily: 'var(--sans)' }}>
+                Revising for an exam?{' '}
+                {otherLevels.map((c, i) => (
+                  <span key={c.href}>
+                    {i > 0 && ' · '}
+                    <Link href={c.href} style={{ color: 'var(--cobalt-blue)', fontWeight: 700 }}>{c.name}</Link>
+                  </span>
+                ))}
+              </p>
+            )}
           </div>
         )}
 

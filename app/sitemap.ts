@@ -4,14 +4,21 @@ import { LIBRARY_DECKS } from '@/lib/library';
 
 const BASE = 'https://flashcardmaker.co.uk';
 
-const LIBRARY_UPDATED = new Date('2026-05-26');
-const SUBJECTS_UPDATED = new Date('2026-05-26');
-const HOME_UPDATED = new Date('2026-06-16');
+// Bump this date whenever library/subject/home content meaningfully changes — Google uses
+// lastModified as a recrawl hint, and a stale date tells it there is nothing new to fetch.
+const CONTENT_LAST_UPDATED = new Date('2026-11-08');
+const LIBRARY_UPDATED = CONTENT_LAST_UPDATED;
+const SUBJECTS_UPDATED = CONTENT_LAST_UPDATED;
+const HOME_UPDATED = CONTENT_LAST_UPDATED;
 const STATIC_UPDATED = new Date('2025-01-01');
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const subjectEntries = SUBJECTS.map((s) => ({
-    url: `${BASE}${s.href}`,
+  const subjectEntries = [
+    ...SUBJECTS.map((s) => s.href),
+    // Science isn't a tile in the subject grid, but it is a real indexable landing page.
+    '/science-flashcards',
+  ].map((href) => ({
+    url: `${BASE}${href}`,
     lastModified: SUBJECTS_UPDATED,
     changeFrequency: 'weekly' as const,
     priority: 0.6,

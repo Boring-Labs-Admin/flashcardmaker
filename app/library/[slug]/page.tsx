@@ -30,6 +30,8 @@ export async function generateMetadata({
       title,
       description,
       url: `https://flashcardmaker.co.uk/library/${deck.slug}`,
+      // Next replaces the whole openGraph object per page, so repeat the site image here.
+      images: ['/opengraph-image'],
     },
   };
 }
@@ -63,10 +65,14 @@ export default function LibraryDeckPage({ params }: { params: { slug: string } }
     Geography: 'geography', Economics: 'business', 'Business Studies': 'business',
   };
   const subjectSlug = SUBJECT_PAGE_SLUGS[deck.subject];
+  // Subjects without their own landing page fall back to the library index as the parent level,
+  // so every deck sits at the same depth in the breadcrumb and links up to a hub.
   const breadcrumbItems = [
     { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://flashcardmaker.co.uk' },
-    ...(subjectSlug ? [{ '@type': 'ListItem', position: 2, name: `${deck.subject} Flashcards`, item: `https://flashcardmaker.co.uk/${subjectSlug}-flashcards` }] : []),
-    { '@type': 'ListItem', position: subjectSlug ? 3 : 2, name: seo?.h1 ?? deck.title, item: `https://flashcardmaker.co.uk/library/${deck.slug}` },
+    subjectSlug
+      ? { '@type': 'ListItem', position: 2, name: `${deck.subject} Flashcards`, item: `https://flashcardmaker.co.uk/${subjectSlug}-flashcards` }
+      : { '@type': 'ListItem', position: 2, name: 'Free Flashcard Library', item: 'https://flashcardmaker.co.uk/library' },
+    { '@type': 'ListItem', position: 3, name: seo?.h1 ?? deck.title, item: `https://flashcardmaker.co.uk/library/${deck.slug}` },
   ];
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
@@ -85,6 +91,28 @@ export default function LibraryDeckPage({ params }: { params: { slug: string } }
       <main>
         <NavBar />
         <LibraryDeckView deck={deck} />
+
+        {/* Server-rendered for everyone (and crawlers): every question in the deck, answers excluded.
+            Answers past card 10 stay behind the sign-up gate in LibraryDeckView. */}
+        <div className="container">
+          <section className="library-questions" aria-labelledby="deck-questions-heading">
+            <h2 id="deck-questions-heading" className="library-related-title">
+              All {deck.cards.length} questions in this {deck.topic} deck
+            </h2>
+            <p className="library-questions-intro">
+              These free {deck.subject} flashcards cover {deck.topic}. Preview the first {FREE_LIMIT} cards
+              with their answers without an account, or create a free account to unlock the full deck.
+            </p>
+            <ol className="library-questions-list">
+              {deck.cards.map((card, i) => (
+                <li key={i}>{card.question.replace(/\$/g, '')}</li>
+              ))}
+            </ol>
+            {!subjectSlug && (
+              <Link href="/library" className="library-related-view-all">Browse the full flashcard library →</Link>
+            )}
+          </section>
+        </div>
 
         {relatedDecks.length > 0 && (
           <div className="container">

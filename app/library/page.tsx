@@ -4,22 +4,43 @@ import NavBar from '@/components/NavBar';
 import { LIBRARY_DECKS, getDecksBySubject } from '@/lib/library';
 import type { Metadata } from 'next';
 
+const decksBySubject = getDecksBySubject();
+const deckCount = LIBRARY_DECKS.length;
+const subjectCount = Object.keys(decksBySubject).length;
+
+const description = `Browse ${deckCount} free pre-made flashcard sets across ${subjectCount} subjects including Biology, Chemistry, History and Psychology. No account needed — start studying instantly.`;
+
 export const metadata: Metadata = {
   title: 'Free Flashcard Library | Flashcard Maker',
-  description: 'Browse hundreds of free pre-made flashcard sets across Biology, Chemistry, History, Psychology and more. No account needed — start studying instantly.',
+  description,
   alternates: {
     canonical: 'https://flashcardmaker.co.uk/library',
   },
   openGraph: {
     title: 'Free Flashcard Library | Flashcard Maker',
-    description: 'Browse hundreds of free pre-made flashcard sets across Biology, Chemistry, History, Psychology and more. No account needed — start studying instantly.',
+    description,
     url: 'https://flashcardmaker.co.uk/library',
+    images: ['/opengraph-image'],
   },
 };
 
-const decksBySubject = getDecksBySubject();
-const deckCount = LIBRARY_DECKS.length;
-const subjectCount = Object.keys(decksBySubject).length;
+// Machine-readable list of every deck so the hub page tells search engines what it links to.
+const libraryItemListSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Free Flashcard Library',
+  url: 'https://flashcardmaker.co.uk/library',
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: deckCount,
+    itemListElement: LIBRARY_DECKS.map((d, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: d.title,
+      url: `https://flashcardmaker.co.uk/library/${d.slug}`,
+    })),
+  },
+};
 
 // Subjects that have their own dedicated landing page get a "See all {Subject} →" link
 const SUBJECT_PAGE_SLUGS: Record<string, string> = {
@@ -32,6 +53,7 @@ const SUBJECT_PAGE_SLUGS: Record<string, string> = {
 export default function LibraryIndexPage() {
   return (
     <main>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(libraryItemListSchema) }} />
       <NavBar />
 
       <section className="header" style={{ textAlign: 'center' }}>

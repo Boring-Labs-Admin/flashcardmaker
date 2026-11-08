@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import FlashboardModal from './FlashboardModal';
+import { SUBJECTS, CURRICULA } from '@/lib/subjects';
 
 interface NavBarProps {
   onLoginClick?: () => void;
@@ -16,6 +17,8 @@ export default function NavBar({ onLoginClick }: NavBarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
+  const [isSubjectsOpen, setIsSubjectsOpen] = useState(false);
+  const subjectsRef = useRef<HTMLDivElement>(null);
 
   const handleLoginClick = onLoginClick ?? (() => setIsModalOpen(true));
 
@@ -30,6 +33,17 @@ export default function NavBar({ onLoginClick }: NavBarProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isAccountOpen]);
 
+  useEffect(() => {
+    if (!isSubjectsOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (subjectsRef.current && !subjectsRef.current.contains(e.target as Node)) {
+        setIsSubjectsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isSubjectsOpen]);
+
   const displayName = user?.user_metadata?.full_name || user?.email || '';
 
   return (
@@ -42,6 +56,26 @@ export default function NavBar({ onLoginClick }: NavBarProps) {
         {/* Desktop buttons */}
         <div className="nav-buttons">
           <div className="nav-links">
+            {/* Links stay in the DOM when closed (display:none) so crawlers still see every subject page. */}
+            <div className="nav-account" ref={subjectsRef}>
+              <button
+                onClick={() => setIsSubjectsOpen(o => !o)}
+                aria-expanded={isSubjectsOpen}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'white', fontFamily: 'inherit', fontSize: '0.85rem', fontWeight: 600, opacity: 0.8, display: 'flex', alignItems: 'center', gap: '0.3rem', padding: 0 }}
+              >
+                Subjects <ChevronDown size={14} />
+              </button>
+              <div
+                className="nav-account-dropdown"
+                style={{ display: isSubjectsOpen ? 'block' : 'none', right: 'auto', left: 0, maxHeight: '70vh', overflowY: 'auto' }}
+              >
+                {[...SUBJECTS, { name: 'Science Flashcards', href: '/science-flashcards' }, ...CURRICULA].map(s => (
+                  <Link key={s.href} href={s.href} className="nav-account-dropdown-item" onClick={() => setIsSubjectsOpen(false)}>
+                    {s.name.replace(' Flashcards', '')}
+                  </Link>
+                ))}
+              </div>
+            </div>
             <Link href="/library" style={{ color: 'white', fontSize: '0.85rem', fontWeight: 600, opacity: 0.8, textDecoration: 'none' }}>
               Free Library
             </Link>

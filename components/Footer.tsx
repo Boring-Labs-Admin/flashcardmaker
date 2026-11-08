@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import FlashboardModal from './FlashboardModal';
+import { SUBJECTS, CURRICULA } from '@/lib/subjects';
 
 export default function Footer() {
   const pathname = usePathname();
@@ -49,11 +50,15 @@ export default function Footer() {
 
         <div>
           <div className="site-footer-col-title">Subjects</div>
-          <div className="site-footer-col-links">
-            <Link href="/biology-flashcards">Biology</Link>
-            <Link href="/chemistry-flashcards">Chemistry</Link>
-            <Link href="/maths-flashcards">Maths</Link>
-            <Link href="/history-flashcards">History</Link>
+          {/* Sitewide, server-rendered links to every landing page — the main internal-linking hub. */}
+          <div className="site-footer-col-links" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem 1.25rem' }}>
+            {SUBJECTS.map(s => (
+              <Link key={s.href} href={s.href}>{s.name.replace(' Flashcards', '')}</Link>
+            ))}
+            <Link href="/science-flashcards">Science</Link>
+            {CURRICULA.map(c => (
+              <Link key={c.href} href={c.href}>{c.name.replace(' Flashcards', '')}</Link>
+            ))}
           </div>
         </div>
 

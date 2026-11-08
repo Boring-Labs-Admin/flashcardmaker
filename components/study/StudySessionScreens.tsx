@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { X } from 'lucide-react';
 import { Confidence } from '@/lib/types';
 import { StudySessionProvider, useStudySession } from './StudySessionProvider';
 import StudyCard from './StudyCard';
@@ -21,7 +22,7 @@ interface DeckSessionSummary {
 }
 
 function Screens({ onExit }: { onExit: () => void }) {
-  const { isComplete, pointsEarned, bonusPoints, lastRating } = useStudySession();
+  const { isComplete, pointsEarned, bonusPoints, lastRating, endSessionEarly } = useStudySession();
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackRating, setFeedbackRating] = useState<Confidence | null>(null);
   const [ratedOnce, setRatedOnce] = useState(false);
@@ -51,6 +52,15 @@ function Screens({ onExit }: { onExit: () => void }) {
 
   return (
     <>
+      {!isComplete && (
+        <button
+          className="cbr-exit-btn"
+          onClick={() => { endSessionEarly(); onExit(); }}
+        >
+          <X size={16} strokeWidth={2.5} /> Exit
+        </button>
+      )}
+
       <div className="cbr-layout">
         <StudySidebar />
         <div className="cbr-main">

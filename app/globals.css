@@ -1013,6 +1013,12 @@ textarea:focus { outline: none; border-color: var(--yellow-bolt); box-shadow: 0 
 
 /* ── Layout: sidebar + main study area ── */
 .cbr-layout { display: flex; min-height: 100vh; }
+.cbr-exit-btn {
+  position: fixed; top: 1rem; right: 1.25rem; z-index: 1001; display: inline-flex; align-items: center; gap: 0.35rem;
+  background: #d32f2f; color: white; border: none; border-radius: 8px; padding: 0.5rem 1rem;
+  font-family: var(--sans); font-size: 0.85rem; font-weight: 700; cursor: pointer; box-shadow: 0 2px 8px rgba(211,47,47,0.35);
+}
+.cbr-exit-btn:hover { background: #b71c1c; }
 
 .cbr-sidebar {
   width: 260px; flex-shrink: 0; background: var(--navy-900); color: white;

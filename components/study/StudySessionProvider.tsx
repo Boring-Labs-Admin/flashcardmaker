@@ -46,6 +46,7 @@ interface StudySessionContextType {
   dismissCoaching: () => void;
   revealAnswer: () => void;
   rateCard: (confidence: Confidence) => void;
+  endSessionEarly: () => void;
 }
 
 const StudySessionContext = createContext<StudySessionContextType | null>(null);
@@ -193,32 +194,42 @@ export function StudySessionProvider({
     }
   }
 
+  // Group ratings back out by deck so each deck gets its own study_sessions row
+  // (and its own contribution to the streak/points total via complete-session).
+  function buildSummaries(): DeckSessionSummary[] {
+    const byDeck = new Map<string, Confidence[]>();
+    Object.entries(sessionRatings).forEach(([key, confidence]) => {
+      const deckId = key.slice(0, key.lastIndexOf(':'));
+      if (!byDeck.has(deckId)) byDeck.set(deckId, []);
+      byDeck.get(deckId)!.push(confidence);
+    });
+
+    return Array.from(byDeck.entries()).map(([deckId, ratings]) => ({
+      deckId,
+      cardsStudied: ratings.length,
+      pointsEarned: pointsEarnedByDeck[deckId] ?? 0,
+      avgConfidence: ratings.reduce((s, r) => s + r, 0) / ratings.length,
+    }));
+  }
+
   // When the queue empties, finish the session exactly once
   useEffect(() => {
     if (queue.length === 0 && totalCards > 0 && !completedRef.current) {
       completedRef.current = true;
       setIsComplete(true);
-
-      // Group ratings back out by deck so each deck gets its own study_sessions row
-      // (and its own contribution to the streak/points total via complete-session).
-      const byDeck = new Map<string, Confidence[]>();
-      Object.entries(sessionRatings).forEach(([key, confidence]) => {
-        const deckId = key.slice(0, key.lastIndexOf(':'));
-        if (!byDeck.has(deckId)) byDeck.set(deckId, []);
-        byDeck.get(deckId)!.push(confidence);
-      });
-
-      const summaries: DeckSessionSummary[] = Array.from(byDeck.entries()).map(([deckId, ratings]) => ({
-        deckId,
-        cardsStudied: ratings.length,
-        pointsEarned: pointsEarnedByDeck[deckId] ?? 0,
-        avgConfidence: ratings.reduce((s, r) => s + r, 0) / ratings.length,
-      }));
-
-      onSessionComplete(summaries);
+      onSessionComplete(buildSummaries());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queue.length]);
+
+  // Leaving mid-round: each rating was already saved, but the session summary (points,
+  // streak) is only sent on completion — so send what was studied so far, once.
+  function endSessionEarly() {
+    if (completedRef.current) return;
+    completedRef.current = true;
+    const summaries = buildSummaries();
+    if (summaries.length > 0) onSessionComplete(summaries);
+  }
 
   const currentCard = queue[0] ?? null;
 
@@ -246,6 +257,7 @@ export function StudySessionProvider({
         dismissCoaching,
         revealAnswer,
         rateCard,
+        endSessionEarly,
       }}
     >
       {children}

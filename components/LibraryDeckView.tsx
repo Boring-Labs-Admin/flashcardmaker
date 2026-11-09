@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import posthog from 'posthog-js';
 import { Check, Lock } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
@@ -14,6 +15,7 @@ const FREE_LIMIT = 10;
 
 export default function LibraryDeckView({ deck }: { deck: LibraryDeck }) {
   const { user } = useAuth();
+  const pathname = usePathname();
   const seo = DECK_SEO[deck.slug];
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [flipped, setFlipped] = useState<Record<number, boolean>>({});
@@ -109,7 +111,7 @@ export default function LibraryDeckView({ deck }: { deck: LibraryDeck }) {
         </div>
       )}
 
-      <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} reason="library" />
+      <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} reason="library" next={pathname} />
     </div>
   );
 }

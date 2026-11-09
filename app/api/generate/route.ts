@@ -7,6 +7,13 @@ import { cookies } from 'next/headers';
 import { hashIP, checkRateLimit, recordGeneration } from '@/lib/rateLimit';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { PLANS } from '@/lib/plans';
+import {
+  checkFreeAccountLimits,
+  reserveGeneration,
+  releaseReservation,
+  completeReservation,
+  type Reservation,
+} from '@/lib/generationLimits';
 import mammoth from 'mammoth';
 
 const DOCX_MIME_TYPES = new Set([
@@ -23,7 +30,27 @@ const SUPPORTED_INLINE_MIME_TYPES = new Set([
 const PLUS_REQUESTS_PER_MINUTE = 10;
 const MAX_FILE_BYTES = 20 * 1024 * 1024; // 20MB total base64 payload
 
+interface GenerateContext {
+  // Set once a logged-in request has reserved a slot in generation_log (see lib/generationLimits).
+  reservation: Reservation | null;
+}
+
+// Wrapper: any non-2xx outcome (validation error, Gemini failure) gives the reserved slot back,
+// so a failed attempt doesn't count against the user's rate limit.
 export async function POST(request: NextRequest) {
+  const ctx: GenerateContext = { reservation: null };
+  let response: NextResponse;
+  try {
+    response = await handleGenerate(request, ctx);
+  } catch (err) {
+    await releaseReservation(ctx.reservation);
+    throw err;
+  }
+  if (!response.ok) await releaseReservation(ctx.reservation);
+  return response;
+}
+
+async function handleGenerate(request: NextRequest, ctx: GenerateContext): Promise<NextResponse> {
   // 1. Check API key / emergency shutoff
   if (!process.env.GEMINI_API_KEY) {
     return NextResponse.json(
@@ -132,6 +159,15 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      // Abuse controls: per-account rate, one-at-a-time cooldown, and a per-network daily cap.
+      const limitFailure = await checkFreeAccountLimits(userId, ip, identifier);
+      if (limitFailure) {
+        return NextResponse.json(
+          { error: limitFailure.error, upgradeRequired: limitFailure.upgradeRequired },
+          { status: limitFailure.status }
+        );
+      }
+
       cardLimit = PLANS.free.cardLimit;
       charLimit = PLANS.free.charLimit;
     }
@@ -145,6 +181,12 @@ export async function POST(request: NextRequest) {
         { status: 429 }
       );
     }
+  }
+
+  // Reserve a slot now (before parsing/Gemini) so concurrent requests from the same account see
+  // each other. POST() releases it if the request ends up failing.
+  if (loggedInUserId) {
+    ctx.reservation = await reserveGeneration(loggedInUserId, identifier);
   }
 
   // 4. Parse and validate request
@@ -414,15 +456,23 @@ ${targetLine}
     if (isAnonymous) await recordGeneration(identifier);
 
     // Log generation for rate limiting and cost visibility (fire-and-forget)
-    supabaseAdmin
-      .from('generation_log')
-      .insert({
-        user_id: loggedInUserId,
-        identifier_hash: isAnonymous ? identifier : null,
-        input_chars: generationMode === 'prompt' ? (topic?.length ?? 0) : contents.filter((c) => !c.startsWith('data:')).reduce((s, c) => s + c.length, 0),
-        file_count: generationMode === 'prompt' ? 0 : contents.filter((c) => c.startsWith('data:')).length,
-      })
-      .then(({ error }) => { if (error) console.error('Failed to log generation:', error.message); });
+    const inputChars = generationMode === 'prompt' ? (topic?.length ?? 0) : contents.filter((c) => !c.startsWith('data:')).reduce((s, c) => s + c.length, 0);
+    const fileCount = generationMode === 'prompt' ? 0 : contents.filter((c) => c.startsWith('data:')).length;
+
+    if (ctx.reservation) {
+      // Logged-in: the row was inserted when the request started — just fill in the details.
+      void completeReservation(ctx.reservation, { inputChars, fileCount });
+    } else {
+      supabaseAdmin
+        .from('generation_log')
+        .insert({
+          user_id: loggedInUserId,
+          identifier_hash: identifier,
+          input_chars: inputChars,
+          file_count: fileCount,
+        })
+        .then(({ error }) => { if (error) console.error('Failed to log generation:', error.message); });
+    }
 
     return NextResponse.json({ flashcards: validFlashcards });
   } catch (err) {

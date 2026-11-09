@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import posthog from 'posthog-js';
+import { loginUrl } from '@/lib/loginUrl';
+import { stashPendingDeck } from '@/lib/pendingDeck';
 import { Check, Save, Lock, Download, Trash2, Files, Zap, Target, ArrowLeft } from 'lucide-react';
 import { Flashcard, ViewMode, Deck } from '@/lib/types';
 import { useAuth } from '@/lib/auth-context';
@@ -29,7 +32,8 @@ interface FlashcardGeneratorProps {
 type LimitReason = 'daily' | 'generations' | 'chars';
 
 export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, onDeckSaved, onModeChange, initialTab }: FlashcardGeneratorProps) {
-  const { user, signInWithGoogle } = useAuth();
+  const { user } = useAuth();
+  const router = useRouter();
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -273,7 +277,9 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
       setIsSaveModalOpen(true);
     } else {
       posthog.capture('save_prompt_shown', { reason: 'save' });
-      openAuthModal('save');
+      // Keep the deck in this browser so it can be saved automatically after they sign in.
+      stashPendingDeck(flashcards, topic);
+      router.push(loginUrl('save'));
     }
   };
 
@@ -391,7 +397,7 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
         isOpen={limitHit !== null}
         onClose={() => setLimitHit(null)}
         reason={limitHit ?? 'daily'}
-        onSignIn={signInWithGoogle}
+        onSignIn={() => router.push(loginUrl())}
         charsOver={charsOver}
         onTrimText={limitHit === 'chars' ? () => {
           inputRef.current?.trimToLimit();

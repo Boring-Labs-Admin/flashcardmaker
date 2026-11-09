@@ -1,46 +1,31 @@
 'use client';
-import { Zap, Sparkles, X } from 'lucide-react';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
+import { loginUrl, LoginReason } from '@/lib/loginUrl';
 
-export type FlashboardModalReason = 'save' | 'library' | 'generic';
+export type FlashboardModalReason = LoginReason;
 
 interface FlashboardModalProps {
   isOpen: boolean;
   onClose: () => void;
   reason?: FlashboardModalReason;
+  // Where to return after signing in. Omit to land on the dashboard.
+  next?: string;
 }
 
-const SUBTITLES: Record<FlashboardModalReason, string> = {
-  save: 'Create a free account to save this deck forever — access it anytime from your Flashboard.',
-  library: 'Create a free account to see every card in this deck — no payment needed.',
-  generic: 'Save your decks, access them anywhere, and track your progress.',
-};
+// There is no popup any more: "opening" this sends the visitor to the /login page.
+// Kept as a component so every existing call site keeps working unchanged.
+export default function FlashboardModal({ isOpen, onClose, reason = 'generic', next }: FlashboardModalProps) {
+  const router = useRouter();
+  const { user } = useAuth();
 
-export default function FlashboardModal({ isOpen, onClose, reason = 'generic' }: FlashboardModalProps) {
-  const { user, signInWithGoogle } = useAuth();
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (!isOpen) return;
+    onClose(); // reset the caller's flag so the button works again if the user comes back
+    if (!user) router.push(loginUrl(reason, next));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
-  return (
-    <div className="modal-overlay active" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-logo"><Zap size={48} strokeWidth={1.75} /></div>
-        <div className="modal-title">Log in to your Flashboard</div>
-        <div className="modal-subtitle">
-          {SUBTITLES[reason]}
-        </div>
-        {!user ? (
-          <>
-            <button className="modal-btn" onClick={signInWithGoogle}>
-              Continue with Google
-            </button>
-          </>
-        ) : (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', background: 'var(--light-blue)', border: '2px solid var(--cobalt-blue)', borderRadius: 8, padding: '1rem', marginBottom: '1rem', fontSize: '0.9rem' }}>
-            <Sparkles size={16} /> Coming soon for logged-in users
-          </div>
-        )}
-        <button className="modal-close" onClick={onClose}><X size={14} /> Not now</button>
-      </div>
-    </div>
-  );
+  return null;
 }

@@ -1,7 +1,9 @@
 'use client';
 
 import { Suspense, useEffect, ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { loginUrl } from '@/lib/loginUrl';
+import PendingDeckSaver from '@/components/PendingDeckSaver';
 import { useAuth } from '@/lib/auth-context';
 import { DashboardProvider } from '@/lib/dashboard-context';
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
@@ -12,15 +14,18 @@ import HelpModal from '@/components/dashboard/HelpModal';
 function DashboardShell({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+  const search = useSearchParams().toString();
 
   useEffect(() => {
-    if (!loading && !user) router.push('/');
-  }, [user, loading, router]);
+    if (!loading && !user) router.replace(loginUrl(undefined, search ? `${pathname}?${search}` : pathname));
+  }, [user, loading, router, pathname, search]);
 
   if (loading || !user) return null;
 
   return (
     <DashboardProvider>
+      <PendingDeckSaver />
       <div className="dashboard-shell">
         <DashboardSidebar />
         <main className="dashboard-main">{children}</main>

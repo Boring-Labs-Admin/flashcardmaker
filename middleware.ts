@@ -22,7 +22,15 @@ export async function middleware(req: NextRequest) {
   try {
     const supabase = createMiddlewareClient({ req, res });
     // Refresh session if expired
-    await supabase.auth.getSession();
+    const { data: { session } } = await supabase.auth.getSession();
+
+    // Logged-out visitors never see the dashboard shell: send them to the login page.
+    const { pathname, search } = req.nextUrl;
+    if (!session && (pathname === '/dashboard' || pathname.startsWith('/dashboard/'))) {
+      const url = new URL('/login', req.url);
+      url.searchParams.set('next', pathname + search);
+      return NextResponse.redirect(url);
+    }
   } catch {
     // Supabase not available - continue without auth
   }

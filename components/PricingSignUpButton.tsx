@@ -32,7 +32,7 @@ export default function PricingSignUpButton() {
       <button onClick={() => setShowModal(true)} className="btn-ghost" style={{ width: '100%', justifyContent: 'center', marginBottom: '1.5rem' }}>
         Get started free
       </button>
-      <FlashboardModal isOpen={showModal} onClose={() => setShowModal(false)} />
+      <FlashboardModal isOpen={showModal} onClose={() => setShowModal(false)} next="/pricing" />
     </>
   );
 }

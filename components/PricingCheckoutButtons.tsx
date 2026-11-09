@@ -58,7 +58,7 @@ export default function PricingCheckoutButtons() {
         )}
       </div>
 
-      <FlashboardModal isOpen={showSignIn} onClose={() => setShowSignIn(false)} />
+      <FlashboardModal isOpen={showSignIn} onClose={() => setShowSignIn(false)} next="/pricing" />
     </>
   );
 }

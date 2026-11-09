@@ -7,6 +7,7 @@ import { AuthProvider } from '@/lib/auth-context';
 import { PostHogProvider } from './providers';
 import { PostHogPageview } from './posthog-pageview';
 import Footer from '@/components/Footer';
+import AdSenseScript from '@/components/AdSenseScript';
 
 export const metadata: Metadata = {
   title: 'Flashcard Maker - Generate flashcards and revise for free',
@@ -40,6 +41,8 @@ export const metadata: Metadata = {
     description: 'Turn your documents into flashcards instantly. Free flashcard maker.',
     images: ['/opengraph-image'],
   },
+  // Lets AdSense confirm site ownership from the server-rendered HTML.
+  other: { 'google-adsense-account': 'ca-pub-5558361880956706' },
   robots: {
     index: true,
     follow: true,
@@ -79,6 +82,7 @@ export default function RootLayout({
             </Suspense>
             {children}
             <Footer />
+            <AdSenseScript />
           </AuthProvider>
         </PostHogProvider>
       </body>

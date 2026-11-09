@@ -1,8 +1,9 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Pencil, Palette, Trash2, Zap, ListChecks, FolderInput } from 'lucide-react';
+import { Pencil, Palette, Trash2, Zap, ListChecks, FolderInput, Download } from 'lucide-react';
 import { Deck, ClassSummary } from '@/lib/types';
+import { downloadDeckCsv } from '@/lib/deckExport';
 import ClassCoverIcon from '@/components/class/ClassCoverIcon';
 
 const COLORS = [
@@ -108,6 +109,11 @@ export default function DeckCard({ deck, onDelete, onStudy, onUpdate, sets }: De
               title="Assign to a set"
             ><FolderInput size={15} /></button>
           )}
+          <button
+            className="deck-action-btn"
+            onClick={(e) => { e.stopPropagation(); downloadDeckCsv(deck.title, deck.flashcards); }}
+            title="Download as CSV"
+          ><Download size={15} /></button>
           <button
             className="deck-delete-btn"
             onClick={handleDelete}

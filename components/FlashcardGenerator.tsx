@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import posthog from 'posthog-js';
 import { loginUrl } from '@/lib/loginUrl';
+import { downloadDeckCsv } from '@/lib/deckExport';
 import { stashPendingDeck } from '@/lib/pendingDeck';
 import { Check, Save, Lock, Download, Trash2, Files, Zap, Target, ArrowLeft } from 'lucide-react';
 import { Flashcard, ViewMode, Deck } from '@/lib/types';
@@ -16,6 +17,7 @@ import SideBySideView from './SideBySideView';
 import GridView from './GridView';
 import FlashboardModal, { FlashboardModalReason } from './FlashboardModal';
 import SaveDeckModal from './SaveDeckModal';
+import SignupNudgeModal from './SignupNudgeModal';
 import LimitModal from './LimitModal';
 import DownloadModal from './DownloadModal';
 import GeneratingLoader from './GeneratingLoader';
@@ -30,6 +32,9 @@ interface FlashcardGeneratorProps {
 }
 
 type LimitReason = 'daily' | 'generations' | 'chars';
+
+const NUDGE_DELAY_MS = 30_000;
+const NUDGE_DISMISSED_KEY = 'signup_nudge_dismissed';
 
 export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, onDeckSaved, onModeChange, initialTab }: FlashcardGeneratorProps) {
   const { user } = useAuth();
@@ -49,6 +54,7 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [savedDeck, setSavedDeck] = useState<Deck | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showNudge, setShowNudge] = useState(false);
 
   const openAuthModal = onOpenModal ?? ((reason: FlashboardModalReason = 'generic') => {
     setModalReason(reason);
@@ -77,6 +83,22 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [flashcards.length, savedDeck]);
+
+  // Logged-out visitors who keep looking at their generated deck get one friendly sign-up prompt.
+  useEffect(() => {
+    if (user || flashcards.length === 0) return;
+    try { if (sessionStorage.getItem(NUDGE_DISMISSED_KEY)) return; } catch { /* storage blocked: still show once */ }
+    const timer = setTimeout(() => {
+      setShowNudge(true);
+      posthog.capture('signup_nudge_shown');
+    }, NUDGE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [user, flashcards.length]);
+
+  const dismissNudge = () => {
+    setShowNudge(false);
+    try { sessionStorage.setItem(NUDGE_DISMISSED_KEY, '1'); } catch { /* ignore */ }
+  };
 
   useEffect(() => {
     onModeChange?.(isLoading || flashcards.length > 0);
@@ -194,18 +216,7 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
 
   const handleDownloadCSV = () => {
     const title = savedDeck?.title ?? (topic ? topic.charAt(0).toUpperCase() + topic.slice(1) + ' Flashcards' : 'My Deck');
-    const rows = [
-      ['Question', 'Answer'],
-      ...flashcards.map(f => [f.question, f.answer]),
-    ];
-    const csv = rows.map(r => r.map(c => `"${c.replace(/"/g, '""')}"`).join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${title}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadDeckCsv(title, flashcards);
   };
 
   const handleDownloadPDF = async () => {
@@ -315,7 +326,9 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
                   <Save size={15} /> Save forever <span className="locked-icon"><Lock size={12} /></span>
                 </button>
               ) : null}
-              <button className="locked-btn" onClick={() => setIsDownloadModalOpen(true)}><Download size={15} /> Download</button>
+              {user && (
+                <button className="locked-btn" onClick={() => setIsDownloadModalOpen(true)}><Download size={15} /> Download</button>
+              )}
               <button className="reset-btn" onClick={handleReset}>
                 <Trash2 size={15} /> New deck
               </button>
@@ -337,6 +350,11 @@ export default function FlashcardGenerator({ topic, onOpenModal, hideFeatures, o
         </div>
 
         <FlashboardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} reason={modalReason} />
+        <SignupNudgeModal
+          isOpen={showNudge && !user}
+          onClose={() => { posthog.capture('signup_nudge_dismissed'); dismissNudge(); }}
+          onSignUp={() => { posthog.capture('signup_nudge_clicked'); dismissNudge(); handleSaveClick(); }}
+        />
         <DownloadModal
           isOpen={isDownloadModalOpen}
           onClose={() => setIsDownloadModalOpen(false)}

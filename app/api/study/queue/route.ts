@@ -73,8 +73,13 @@ export async function GET(request: NextRequest) {
     ...due.map(({ nextReviewAt: _nextReviewAt, ...rest }) => rest),
   ];
 
+  // Every rated card's confidence, including ones not due yet (the queue leaves those out).
+  const ratings: Record<number, number> = {};
+  (confidenceRows ?? []).forEach(row => { ratings[row.card_index] = row.confidence; });
+
   return NextResponse.json({
     queue,
+    ratings,
     totalCards: cards.length,
     dueCards: queue.length,
   });

@@ -16,9 +16,10 @@ export default function BrowseTab({ onEditCard }: { onEditCard: (index: number) 
       .then(r => r.json())
       .then(data => {
         if (data.error) return;
+        // `ratings` covers every rated card; the queue alone omits cards that aren't due yet.
         const map: Record<number, Confidence | null> = {};
-        (data.queue ?? []).forEach((c: { index: number; currentConfidence: Confidence | null }) => {
-          map[c.index] = c.currentConfidence;
+        Object.entries(data.ratings ?? {}).forEach(([index, confidence]) => {
+          map[Number(index)] = confidence as Confidence;
         });
         setConfidenceByIndex(map);
       })

@@ -1,5 +1,6 @@
 'use client';
 
+import { invalidateStatsCache } from '@/lib/statsCache';
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
@@ -55,6 +56,7 @@ function StudyPageContent() {
           body: JSON.stringify(summary),
         })
       ));
+      invalidateStatsCache();
     } catch {
       // Non-fatal — the round complete screen still shows local results
     }

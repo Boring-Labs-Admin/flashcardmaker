@@ -11,8 +11,7 @@ import StudyHistoryChart from './StudyHistoryChart';
 import ClassListItem from '@/components/class/ClassListItem';
 import ClassCreationFlow from '@/components/class/ClassCreationFlow';
 
-const STATS_CACHE_KEY = 'user_stats_cache';
-const STATS_CACHE_TTL_MS = 5 * 60 * 1000;
+import { STATS_CACHE_KEY, STATS_CACHE_TTL_MS } from '@/lib/statsCache';
 
 const NAV_ITEMS = [
   { label: 'Create Flashcards', href: '/dashboard', icon: Zap },
@@ -77,7 +76,9 @@ export default function DashboardSidebar() {
         sessionStorage.setItem(STATS_CACHE_KEY, JSON.stringify({ data, cachedAt: Date.now() }));
       })
       .catch(() => {});
-  }, [user]);
+    // pathname: the sidebar stays mounted between pages, so re-check when the user navigates
+    // (the cache keeps this from refetching on every click).
+  }, [user, pathname]);
 
   const displayName = user?.user_metadata?.full_name || user?.email || '';
   const initial = displayName.charAt(0).toUpperCase();
